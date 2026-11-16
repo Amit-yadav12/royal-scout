@@ -5,7 +5,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 export const metadata: Metadata = {
   title: "Royal Scout Intelligence OS — Every Player. Every Metric. Every Insight.",
   description: "A provenance-first cricket scouting and performance intelligence platform.",
-  icons: { icon: "/icon.svg" },
+  icons: { icon: "/royal-scout-favicon.png" },
   robots: { index: false, follow: false },
 };
 

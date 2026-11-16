@@ -1,6 +1,6 @@
 # Royal Scout visual system
 
-Royal Scout uses an original, compact identity intended for a private, evidence-led cricket scouting workspace—not a public-facing score feed. The current mark combines an RS monogram, a precision ring, and a restrained seam accent. Source assets are `web/src/components/brand-mark.tsx`, `web/src/app/icon.svg`, and the SVG exports in `web/public/`.
+Royal Scout uses an original, compact identity intended for a private, evidence-led cricket scouting workspace—not a public-facing score feed. The current mark combines an RS monogram, a precision ring, and a restrained seam accent. The selected emblem is optimized as `web/public/royal-scout-mark.webp` and used in the application. A small PNG favicon (`web/public/royal-scout-favicon.png`) provides broad browser compatibility, while the horizontal lockup is `web/public/royal-scout-logo.svg`. The React treatment lives in `web/src/components/brand-mark.tsx`.
 
 ## Tokens and components
 
