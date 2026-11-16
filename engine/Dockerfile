@@ -16,7 +16,6 @@ COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY royalscout ./royalscout
-COPY tests ./tests
 
 RUN useradd --create-home --uid 10001 worker \
     && mkdir -p /data/storage && chown -R worker:worker /data /app
