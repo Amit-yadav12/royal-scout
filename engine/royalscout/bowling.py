@@ -50,6 +50,7 @@ class BowlingRaw:
     runs_conceded: int = 0
     runs_missing: int = 0
     wickets: int = 0
+    wickets_missing: int = 0
     dots: int | None = 0
     maidens: int | None = 0
     best: tuple[int, int] | None = None
@@ -67,8 +68,12 @@ class BowlingRaw:
         return self.balls_missing == 0 and self.legal_balls > 0
 
     @property
+    def wickets_known(self) -> bool:
+        return self.wickets_missing == 0
+
+    @property
     def average(self) -> float | None:
-        if self.wickets <= 0 or self.runs_missing:
+        if not self.wickets_known or self.wickets <= 0 or self.runs_missing:
             return None
         return self.runs_conceded / self.wickets
 
@@ -80,7 +85,7 @@ class BowlingRaw:
 
     @property
     def strike_rate(self) -> float | None:
-        if self.wickets <= 0 or not self.balls_known:
+        if not self.wickets_known or self.wickets <= 0 or not self.balls_known:
             return None
         return self.legal_balls / self.wickets
 
@@ -112,7 +117,10 @@ def compute_bowling_raw(records: Iterable[dict[str, Any]]) -> dict[str, BowlingR
             b.runs_missing += 1
         else:
             b.runs_conceded += int(r["runs_conceded"])
-        b.wickets += int(r.get("wickets") or 0)
+        if r.get("wickets") is None:
+            b.wickets_missing += 1
+        else:
+            b.wickets += int(r["wickets"])
         b.dots = None if (b.dots is None or r.get("dot_balls") is None) else b.dots + int(r["dot_balls"])
         b.maidens = None if (b.maidens is None or r.get("maidens") is None) else b.maidens + int(r["maidens"])
         for key, attr in (("team", "teams"), ("competition", "competitions"),
@@ -125,7 +133,8 @@ def compute_bowling_raw(records: Iterable[dict[str, Any]]) -> dict[str, BowlingR
             b.granularity = GRANULARITY_INNINGS
             if balls:
                 b.econ_series.append(int(r["runs_conceded"] or 0) * 6 / int(balls))
-                b.wicket_series.append((int(r.get("wickets") or 0), int(balls)))
+                if r.get("wickets") is not None:
+                    b.wicket_series.append((int(r["wickets"]), int(balls)))
         best = r.get("best_bowling")
         if best and "/" in str(best):
             try:
@@ -151,6 +160,8 @@ def compute_bowling_raw(records: Iterable[dict[str, Any]]) -> dict[str, BowlingR
             b.unavailable["legal_balls"] = f"{b.balls_missing} record(s) had no recoverable overs/workload"
         if b.runs_missing:
             b.unavailable["economy"] = f"{b.runs_missing} record(s) had no runs-conceded value"
+        if b.wickets_missing:
+            b.unavailable["wickets"] = f"{b.wickets_missing} record(s) had unclassified wicket attribution"
         if "invalid_overs" in b.flags:
             b.unavailable["overs_notation"] = "at least one source row used illegal overs notation"
         if b.dots is None:
@@ -175,8 +186,9 @@ class BowlingBaseline:
 
 def bowling_baseline(players: dict[str, BowlingRaw]) -> BowlingBaseline:
     balls = sum(p.legal_balls for p in players.values())
-    runs = sum(p.runs_conceded for p in players.values())
-    wkts = sum(p.wickets for p in players.values())
+    eligible = [p for p in players.values() if p.wickets_known and not p.runs_missing]
+    runs = sum(p.runs_conceded for p in eligible)
+    wkts = sum(p.wickets for p in eligible)
     dots = sum(p.dots for p in players.values() if p.dots is not None) if any(
         p.dots is not None for p in players.values()) else None
     return BowlingBaseline(
@@ -252,9 +264,9 @@ def score_bowling_population(raw: dict[str, BowlingRaw], cfg: Config,
         p = raw[pid]
         econ_sh[pid] = shrink(p.economy, p.legal_balls if p.balls_known else None,
                               st.prior_strength_balls_econ, base.economy)
-        avg_sh[pid] = shrink(p.average, p.wickets if p.wickets > 0 else None,
+        avg_sh[pid] = shrink(p.average, p.wickets if p.wickets_known and p.wickets > 0 else None,
                              st.prior_strength_wickets_bowl, base.average)
-        sr_sh[pid] = shrink(p.strike_rate, p.wickets if p.wickets > 0 else None,
+        sr_sh[pid] = shrink(p.strike_rate, p.wickets if p.wickets_known and p.wickets > 0 else None,
                             st.prior_strength_wickets_bowl, base.strike_rate)
         dot_sh[pid] = shrink(p.dot_pct, p.legal_balls if p.balls_known else None,
                              st.prior_strength_balls_bowl, base.dot_pct) if base.dot_pct is not None else None
@@ -276,7 +288,8 @@ def score_bowling_population(raw: dict[str, BowlingRaw], cfg: Config,
     P_sr = percentile_rank(sr_sh, higher_is_better=False)
     P_dot = percentile_rank(dot_sh, higher_is_better=True)
     P_cons = percentile_rank(cons_raw, higher_is_better=True)
-    P_wpi = percentile_rank({p: raw[p].wickets / raw[p].innings if raw[p].innings else None for p in ids},
+    P_wpi = percentile_rank({p: raw[p].wickets / raw[p].innings
+                             if raw[p].wickets_known and raw[p].innings else None for p in ids},
                             higher_is_better=True)
 
     out: dict[str, dict[str, Any]] = {}
@@ -297,7 +310,7 @@ def score_bowling_population(raw: dict[str, BowlingRaw], cfg: Config,
         consistency_detail: dict[str, Any] = {"basis": cons_basis[pid]}
         if P_cons.get(pid) is not None:
             multi_wkt_rate = None
-            if p.wicket_series:
+            if p.wickets_known and p.wicket_series:
                 multi_wkt_rate = sum(1 for w, _ in p.wicket_series if w >= 2) / len(p.wicket_series)
             bonus = 0.0 if multi_wkt_rate is None else (multi_wkt_rate - 0.25) * 40
             consistency = max(0.0, min(100.0, (P_cons[pid] or 0) * 0.85 + 15 * 0.15 + bonus))
@@ -327,7 +340,7 @@ def score_bowling_population(raw: dict[str, BowlingRaw], cfg: Config,
 
         # wicket-taking consistency (share of innings with >=1 wicket) if innings-level
         wkt_conv = None
-        if p.wicket_series:
+        if p.wickets_known and p.wicket_series:
             wkt_conv = 100 * sum(1 for w, _ in p.wicket_series if w > 0) / len(p.wicket_series)
 
         components = {
@@ -350,15 +363,16 @@ def score_bowling_population(raw: dict[str, BowlingRaw], cfg: Config,
             "overs": overs_display(p.legal_balls if p.balls_known else None),
             "legal_balls": p.legal_balls if p.balls_known else None,
             "runs_conceded": p.runs_conceded if not p.runs_missing else None,
-            "wickets": p.wickets,
+            "wickets": p.wickets if p.wickets_known else None,
             "average": _r(p.average), "economy": _r(p.economy), "bowling_strike_rate": _r(p.strike_rate),
             "dot_balls": p.dots, "dot_pct": _r(p.dot_pct),
             "maidens": p.maidens,
             "best_bowling": (f"{p.best[0]}/{p.best[1]}" if p.best else None),
-            "wickets_per_innings": _r(p.wickets / p.innings) if p.innings else None,
+            "wickets_per_innings": _r(p.wickets / p.innings)
+            if p.wickets_known and p.innings else None,
             "wickets_per_match": None,
             "multi_wicket_innings": (sum(1 for w, _ in p.wicket_series if w >= 2)
-                                     if p.wicket_series else None),
+                                     if p.wickets_known and p.wicket_series else None),
             "wicket_conversion_pct": _r(wkt_conv),
             "boundary_conceded_pct": None,  # requires ball-level boundary data; filled by pressure module
             "bowler_type": None,
