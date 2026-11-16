@@ -184,16 +184,7 @@ export function UploadPanel() {
         setJob(data);
         if (data.status === "succeeded") {
           if (data.dataset_id) {
-            try {
-              const activate = await fetch("/api/datasets/active", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ dataset_id: data.dataset_id }),
-              });
-              if (!activate.ok) setHint("Processing succeeded, but the active dataset could not be switched. Use the dataset selector to choose it; the existing selection was kept.");
-            } catch {
-              setHint("Processing succeeded, but the active dataset could not be switched. Use the dataset selector to choose it; the existing selection was kept.");
-            }
+            setHint("Processing succeeded. This upload is a separate dataset; the primary source was not replaced or merged. Choose this dataset from the active-dataset selector when you explicitly want to inspect it.");
           }
           router.refresh();
         }

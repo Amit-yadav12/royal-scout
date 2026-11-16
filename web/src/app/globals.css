@@ -4,16 +4,16 @@
 
 :root {
   --font-sans: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
-  --rs-surface: 255 255 255;
-  --rs-surface-muted: 245 247 250;
-  --rs-surface-line: 224 229 237;
-  --rs-surface-deep: 235 239 245;
-  --rs-ink: 16 27 52;
-  --rs-ink-soft: 78 91 112;
-  --rs-ink-faint: 120 133 153;
-  --rs-scrollbar: 197 205 217;
-  --rs-shadow-card: 16 27 52;
-  color-scheme: light;
+  --rs-surface: 17 25 41;
+  --rs-surface-muted: 9 15 27;
+  --rs-surface-line: 42 54 74;
+  --rs-surface-deep: 25 35 52;
+  --rs-ink: 232 237 245;
+  --rs-ink-soft: 173 184 201;
+  --rs-ink-faint: 127 143 164;
+  --rs-scrollbar: 67 81 103;
+  --rs-shadow-card: 0 0 0;
+  color-scheme: dark;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -119,12 +119,13 @@ html[data-theme="dark"] .text-slate-600,
 html[data-theme="dark"] .text-slate-700 { color: #C2CCDA; }
 html[data-theme="dark"] .bg-emerald-600 { background-color: #317254; }
 
-/* Restrained entrance and hover motion; no JavaScript animation runtime. */
+/* Restrained motion is CSS-only and automatically disabled for reduced motion. */
 @keyframes rs-rise-in {
   from { opacity: 0; transform: translateY(9px); }
   to { opacity: 1; transform: translateY(0); }
 }
 .motion-enter { animation: rs-rise-in 460ms cubic-bezier(.2,.75,.25,1) both; }
+.motion-enter--delay { animation-delay: 90ms; }
 .kpi-grid > :nth-child(2) { animation-delay: 45ms; }
 .kpi-grid > :nth-child(3) { animation-delay: 90ms; }
 .kpi-grid > :nth-child(4) { animation-delay: 135ms; }
@@ -134,6 +135,119 @@ html[data-theme="dark"] .bg-emerald-600 { background-color: #317254; }
 .card-lift:hover { transform: translateY(-1px); box-shadow: 0 12px 32px rgb(var(--rs-shadow-card) / .08); border-color: rgb(var(--rs-ink-faint) / .28); }
 .progress-sheen { background-image: linear-gradient(110deg, transparent 20%, rgb(255 255 255 / .22) 45%, transparent 70%); background-size: 220% 100%; animation: rs-sheen 1.6s linear infinite; }
 @keyframes rs-sheen { to { background-position-x: -220%; } }
+
+/* Private sign-in surface. */
+.private-entry {
+  position: relative;
+  isolation: isolate;
+  background:
+    radial-gradient(ellipse at 14% 22%, rgb(37 75 132 / .23), transparent 42%),
+    radial-gradient(ellipse at 84% 78%, rgb(215 45 121 / .12), transparent 36%),
+    #080E1D;
+}
+.private-entry__grid {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  pointer-events: none;
+  opacity: .22;
+  background-image: linear-gradient(rgb(221 226 234 / .08) 1px, transparent 1px), linear-gradient(90deg, rgb(221 226 234 / .08) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: linear-gradient(to bottom, black, transparent 82%);
+}
+.private-entry::after {
+  position: absolute;
+  z-index: -1;
+  right: -12rem;
+  top: 18%;
+  width: 33rem;
+  height: 33rem;
+  border: 1px solid rgb(201 164 92 / .08);
+  border-radius: 50%;
+  box-shadow: 0 0 0 4rem rgb(201 164 92 / .018), 0 0 0 9rem rgb(201 164 92 / .012);
+  content: "";
+  pointer-events: none;
+}
+.private-entry__intro { animation-duration: 600ms; }
+.private-card {
+  border: 1px solid rgb(221 226 234 / .13);
+  background: linear-gradient(145deg, rgb(22 34 58 / .96), rgb(12 20 37 / .97));
+  box-shadow: 0 30px 100px rgb(0 0 0 / .34), inset 0 1px rgb(255 255 255 / .055);
+  backdrop-filter: blur(20px);
+}
+.private-card__icon {
+  color: #E4C77F;
+  background: linear-gradient(145deg, rgb(201 164 92 / .18), rgb(215 45 121 / .11));
+  box-shadow: inset 0 0 0 1px rgb(201 164 92 / .22);
+}
+.private-label { color: rgb(221 226 234 / .72); font-size: .72rem; font-weight: 550; letter-spacing: .025em; }
+.private-input-wrap {
+  min-height: 2.95rem;
+  padding: 0 .85rem;
+  border: 1px solid rgb(221 226 234 / .15);
+  border-radius: .7rem;
+  background: rgb(8 14 29 / .58);
+  transition: border-color 180ms ease, background-color 180ms ease, box-shadow 180ms ease;
+}
+.private-input-wrap:focus-within {
+  border-color: rgb(215 45 121 / .85);
+  background: rgb(8 14 29 / .84);
+  box-shadow: 0 0 0 3px rgb(215 45 121 / .12);
+}
+.private-input {
+  min-height: 2.75rem;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #F8FAFC;
+  font-size: .82rem;
+}
+.private-input::placeholder { color: rgb(221 226 234 / .28); }
+.private-input:focus-visible { outline: 0; }
+.private-submit {
+  display: inline-flex;
+  min-height: 3rem;
+  align-items: center;
+  justify-content: flex-start;
+  gap: .7rem;
+  border: 1px solid rgb(240 106 168 / .7);
+  border-radius: .7rem;
+  padding: .65rem 1rem;
+  background: linear-gradient(110deg, #D72D79, #B51F62 70%, #9B2056);
+  color: white;
+  box-shadow: 0 9px 25px rgb(215 45 121 / .19), inset 0 1px rgb(255 255 255 / .18);
+  font-size: .79rem;
+  font-weight: 650;
+  transition: transform 180ms ease, box-shadow 180ms ease, filter 180ms ease;
+}
+.private-submit:hover:not(:disabled) { transform: translateY(-1px); filter: brightness(1.08); box-shadow: 0 12px 30px rgb(215 45 121 / .28); }
+.private-submit:focus-visible { outline: 2px solid #E4C77F; outline-offset: 3px; }
+.private-submit:disabled { cursor: not-allowed; opacity: .55; }
+.private-text-button {
+  display: inline-flex;
+  align-items: center;
+  gap: .42rem;
+  border-radius: .4rem;
+  padding: .45rem .25rem;
+  color: #E4C77F;
+  font-size: .69rem;
+  font-weight: 550;
+  transition: color 160ms ease, opacity 160ms ease;
+}
+.private-text-button:hover:not(:disabled) { color: white; }
+.private-text-button:focus-visible { outline: 2px solid #D72D79; outline-offset: 2px; }
+.private-text-button:disabled { cursor: not-allowed; opacity: .35; }
+.private-message {
+  display: flex;
+  gap: .55rem;
+  border-radius: .65rem;
+  padding: .75rem .8rem;
+  font-size: .72rem;
+  line-height: 1.5;
+}
+.private-message--error { border: 1px solid rgb(240 106 168 / .3); background: rgb(215 45 121 / .11); color: #F3A7C2; }
+.private-message--success { border: 1px solid rgb(110 231 183 / .22); background: rgb(16 185 129 / .09); color: #A6DEC2; }
+.rose-metal { color: #E88DB8; background: linear-gradient(95deg, #F0A5C8, #C9A45C 92%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
 
 * { scrollbar-width: thin; scrollbar-color: rgb(var(--rs-scrollbar)) transparent; }
 *::-webkit-scrollbar { width: 9px; height: 9px; }

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 260" fill="none" role="img" aria-labelledby="title desc">
+  <title id="title">Royal Scout crest</title>
+  <desc id="desc">A cricket scouting crest with an RS monogram and a stitched cricket-ball seam.</desc>
+  <defs>
+    <linearGradient id="field" x1="35" y1="24" x2="207" y2="231" gradientUnits="userSpaceOnUse"><stop stop-color="#182746"/><stop offset="1" stop-color="#080E1D"/></linearGradient>
+    <linearGradient id="metal" x1="41" y1="35" x2="207" y2="214" gradientUnits="userSpaceOnUse"><stop stop-color="#E4C77F"/><stop offset=".55" stop-color="#C9A45C"/><stop offset="1" stop-color="#8D6D36"/></linearGradient>
+    <linearGradient id="rose" x1="74" y1="70" x2="167" y2="181" gradientUnits="userSpaceOnUse"><stop stop-color="#F06AA8"/><stop offset="1" stop-color="#D72D79"/></linearGradient>
+  </defs>
+  <path d="M120 10 222 45v76c0 59-37 103-102 129C55 224 18 180 18 121V45l102-35Z" fill="#080E1D"/>
+  <path d="M120 19 213 51v70c0 53-33 93-93 118-60-25-93-65-93-118V51l93-32Z" fill="url(#field)" stroke="url(#metal)" stroke-width="3"/>
+  <path d="M120 32 201 60v60c0 45-27 79-81 103-54-24-81-58-81-103V60l81-28Z" stroke="#C9A45C" stroke-opacity=".35" stroke-width="1.5"/>
+  <path d="M80 163V82h30c20 0 32 11 32 29 0 13-7 22-19 26l28 26h-24l-25-24h-2v24H80Zm20-41h9c9 0 14-4 14-11s-5-11-14-11h-9v22Z" fill="#DDE2EA"/>
+  <path d="M157 89c-7-6-16-9-26-9-17 0-28 9-28 22 0 11 8 17 27 21 10 2 14 5 14 9 0 5-5 8-13 8-9 0-18-4-25-11l-12 14c9 9 22 14 37 14 21 0 34-10 34-26 0-12-8-19-28-24-9-2-13-4-13-8 0-4 4-7 11-7 7 0 14 3 20 8l12-13Z" fill="url(#rose)"/>
+  <path d="M46 76c20 11 34 29 37 52 3 21-4 42-19 60M194 76c-20 11-34 29-37 52-3 21 4 42 19 60" stroke="url(#metal)" stroke-width="2" stroke-linecap="round"/>
+  <path d="m59 91 7 4m-13 8 8 4m-2 7 8 4m124-27-7 4m13 8-8 4m2 7-8 4" stroke="#E4C77F" stroke-width="2" stroke-linecap="round"/>
+  <path d="M120 229v10" stroke="#C9A45C" stroke-width="2" stroke-linecap="round"/>
+</svg>

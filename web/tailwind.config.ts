@@ -7,6 +7,7 @@ const config: Config = {
       colors: {
         navy: { 950: "#080E1D", 900: "#101B34", 800: "#182746", 700: "#23416F", 600: "#315384" },
         royal: { pink: "#D72D79", pinkDark: "#B51F62", gold: "#C9A45C", blue: "#254B84" },
+        gold: { 300: "#E4C77F", 400: "#C9A45C", 500: "#A98447" },
         surface: {
           DEFAULT: "rgb(var(--rs-surface) / <alpha-value>)",
           muted: "rgb(var(--rs-surface-muted) / <alpha-value>)",

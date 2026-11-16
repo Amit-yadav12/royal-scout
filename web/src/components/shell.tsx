@@ -6,7 +6,6 @@ import { loadDashboardDataset } from "@/lib/server-dataset";
 import { DatasetSelector } from "./dataset-selector";
 import { ScopeSelect } from "./scope-select";
 import { Badge } from "./ui/badge";
-import { SignOutButton } from "./sign-out-button";
 import { BrandLockup } from "./brand-mark";
 import { ThemeToggle } from "./theme-provider";
 import { ActiveNavLink, type NavIconName } from "./active-nav-link";
@@ -17,7 +16,6 @@ const NAV_GROUPS: { label: string; items: { href: string; label: string; icon: N
     items: [
       { href: "/", label: "Overview", icon: "LayoutDashboard" },
       { href: "/data-center", label: "Data Center", icon: "Database" },
-      { href: "/ingestion", label: "Data Ingestion", icon: "UploadCloud" },
       { href: "/data-audit", label: "Data Audit", icon: "ShieldAlert" },
     ],
   },
@@ -53,7 +51,7 @@ const NAV_GROUPS: { label: string; items: { href: string; label: string; icon: N
 const SECTION_HELP: Record<string, string> = {
   "/": "Dataset health, capability coverage and the headline findings.",
   "/data-center": "Every dataset version, original file, hash and derived artefact.",
-  "/ingestion": "Upload files or archives and watch the ingestion log.",
+  "/ingestion": "Processing history from the public analytical bundle.",
   "/data-audit": "Column-level audit, cricket-rule validation and a transparent quality score.",
   "/batting": "Batting output, distribution and the components behind each score.",
   "/bowling": "Workload, wicket-taking and containment, with specialist classification.",
@@ -70,6 +68,7 @@ const SECTION_HELP: Record<string, string> = {
 
 export async function Shell({ children }: { children: React.ReactNode }) {
   const datasetContext = await loadDashboardDataset();
+  const navGroups = NAV_GROUPS;
   const bundle = datasetContext.bundle;
   const ready = hasBundle(bundle);
   const isFixture = ready ? bundle.meta.is_fixture : false;
@@ -80,7 +79,7 @@ export async function Shell({ children }: { children: React.ReactNode }) {
           <BrandLockup />
         </div>
         <nav className="flex-1 overflow-y-auto px-2 py-3">
-          {NAV_GROUPS.map((group) => (
+          {navGroups.map((group) => (
             <div key={group.label} className="mb-4">
               <p className="px-2 pb-1 text-[0.6rem] font-semibold tracking-[0.16em] text-white/35 uppercase">
                 {group.label}
@@ -107,8 +106,8 @@ export async function Shell({ children }: { children: React.ReactNode }) {
             <div className="min-w-0">
               <div className="flex items-center gap-2">
                 <h1 className="truncate text-sm font-semibold text-ink">Royal Scout Intelligence OS</h1>
-                {datasetContext.localSnapshot ? (
-                  <Badge tone="warning">LOCAL BUILD SNAPSHOT</Badge>
+                {datasetContext.embeddedSnapshot ? (
+                  <Badge tone="warning">EMBEDDED SNAPSHOT</Badge>
                 ) : isFixture ? (
                   <Badge tone="warning">SYNTHETIC TEST DATA</Badge>
                 ) : ready ? (
@@ -130,18 +129,20 @@ export async function Shell({ children }: { children: React.ReactNode }) {
                 <Download className="h-3.5 w-3.5" /> Exports
               </Link>
               <ThemeToggle />
-              <SignOutButton />
             </div>
           </div>
           <nav aria-label="Dashboard navigation" className="flex gap-1 overflow-x-auto border-t border-surface-line px-3 py-2 lg:hidden">
-            {NAV_GROUPS.flatMap((group) => group.items).map((item) => (
+            {navGroups.flatMap((group) => group.items).map((item) => (
               <ActiveNavLink key={item.href} href={item.href} label={item.label} mobile />
             ))}
           </nav>
-          {datasetContext.localSnapshot ? (
+          <div className="border-t border-sky-200 bg-sky-50 px-4 py-1.5 text-2xs text-sky-900 sm:px-6" role="status">
+            Public read-only dashboard · no account required · uploads and staff administration are disabled.
+          </div>
+          {datasetContext.embeddedSnapshot ? (
             <div className="border-t border-amber-200 bg-amber-50 px-4 py-1.5 text-2xs text-amber-900 sm:px-6" role="status">
-              Local development is showing the build-time snapshot; production requests load the selected private dataset at runtime.
-              {datasetContext.error ? ` Live data unavailable: ${datasetContext.error}` : ""}
+              Showing the versioned dataset snapshot bundled with this deployment.
+              {datasetContext.error ? ` Live dataset unavailable: ${datasetContext.error}` : ""}
             </div>
           ) : datasetContext.error ? (
             <div className="border-t border-amber-200 bg-amber-50 px-4 py-1.5 text-2xs text-amber-900 sm:px-6" role="status">

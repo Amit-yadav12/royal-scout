@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { mayManageIngestion } from "../staff-access";
+import { isPlatformAdmin, mayManageIngestion } from "../staff-access";
 
 function client(role: string | null, error: unknown = null) {
   return { from: vi.fn(() => ({ select: vi.fn(() => ({ eq: vi.fn(() => ({ maybeSingle: vi.fn(async () => ({ data: role ? { role } : null, error })) })) })) })) };
@@ -14,5 +14,14 @@ describe("mayManageIngestion", () => {
     expect(await mayManageIngestion(client("viewer"), "user-id")).toBe(false);
     expect(await mayManageIngestion(client(null), "user-id")).toBe(false);
     expect(await mayManageIngestion(client(null, new Error("lookup failed")), "user-id")).toBe(false);
+  });
+});
+
+describe("isPlatformAdmin", () => {
+  it("allows only an explicitly profiled administrator", async () => {
+    expect(await isPlatformAdmin(client("admin"), "admin-id")).toBe(true);
+    expect(await isPlatformAdmin(client("scout"), "scout-id")).toBe(false);
+    expect(await isPlatformAdmin(client("viewer"), "viewer-id")).toBe(false);
+    expect(await isPlatformAdmin(client(null, new Error("lookup failed")), "missing-id")).toBe(false);
   });
 });

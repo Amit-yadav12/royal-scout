@@ -7,7 +7,6 @@ import { Card, CardBody, CardHeader, Stat } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Notice } from "@/components/ui/empty";
 import { DataTable, TBody, TD, TH, THead } from "@/components/ui/table";
-import { UploadPanel } from "@/components/upload-panel";
 
 export default async function IngestionPage() {
   const bundle = (await loadDashboardDataset()).bundle;
@@ -19,10 +18,10 @@ export default async function IngestionPage() {
       <PageHeader
         title="Data Ingestion"
         icon={UploadCloud}
-        description="Upload single files, batches, ZIP/TAR archives with nested folders, or add a new season to an existing project. Extraction and analysis happen on the background worker — never inside a Vercel request."
+        description="Read-only record of files represented in the active public dataset. Dataset uploads and processing controls are disabled in this no-login dashboard."
       />
 
-      <UploadPanel />
+      <Notice>Public visitors can inspect the processed source history but cannot upload files, start jobs, retry processing, or change staff access.</Notice>
 
       {ing && bundle ? (
         <>

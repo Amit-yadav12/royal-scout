@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Database } from "lucide-react";
 import type { DatasetOption } from "@/lib/dataset-types";
+import { primaryDatasetId } from "@/lib/dataset-selection";
 
 export function DatasetSelector({ datasets, selectedId }: { datasets: DatasetOption[]; selectedId: string | null }) {
   const router = useRouter();
@@ -30,8 +31,8 @@ export function DatasetSelector({ datasets, selectedId }: { datasets: DatasetOpt
     }
   }
 
-  const latestId = datasets[0]?.dataset_id ?? "";
-  const value = selectedId === latestId ? "" : selectedId ?? "";
+  const primaryId = primaryDatasetId(datasets) ?? "";
+  const value = selectedId === primaryId ? "" : selectedId ?? "";
   return (
     <label className="flex min-w-0 items-center gap-2 text-xs text-ink-soft" title={error ?? "Select a successfully processed dataset"}>
       <Database className="hidden h-3.5 w-3.5 shrink-0 sm:block" aria-hidden="true" />
@@ -43,8 +44,8 @@ export function DatasetSelector({ datasets, selectedId }: { datasets: DatasetOpt
         disabled={busy || datasets.length < 2}
         onChange={(event) => void select(event.target.value)}
       >
-        <option value="">Latest successful · {datasets[0].name}</option>
-        {datasets.slice(1).map((dataset) => (
+        <option value="">Primary source · {datasets.find((dataset) => dataset.dataset_id === primaryId)?.name}</option>
+        {datasets.filter((dataset) => dataset.dataset_id !== primaryId).map((dataset) => (
           <option key={dataset.dataset_id} value={dataset.dataset_id}>
             {dataset.name}{dataset.is_fixture ? " · TEST DATA" : ""} · {new Date(dataset.created_at).toLocaleDateString()}
           </option>

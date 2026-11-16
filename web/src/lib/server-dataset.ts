@@ -28,7 +28,7 @@ export type DashboardDatasetContext = {
   datasets: DatasetOption[];
   selectedId: string | null;
   error: string | null;
-  localSnapshot: boolean;
+  embeddedSnapshot: boolean;
 };
 
 function serverEnvironment() {
@@ -43,18 +43,28 @@ function serverEnvironment() {
 async function listSuccessfulDatasets(): Promise<JobRow[]> {
   const env = serverEnvironment();
   if (!env) throw new Error("Private dataset access is not configured.");
-  const query = new URL(`${env.supabaseUrl}/rest/v1/processing_jobs`);
-  query.searchParams.set("select", "id,project_id,dataset_id,dataset_name,status,is_fixture,created_at,finished_at,result");
-  query.searchParams.set("project_id", `eq.${env.projectId}`);
-  query.searchParams.set("status", "eq.succeeded");
-  query.searchParams.set("order", "finished_at.desc.nullslast,created_at.desc");
-  query.searchParams.set("limit", String(MAX_HISTORY));
-  const response = await fetch(query, { headers: env.headers, cache: "no-store", signal: AbortSignal.timeout(12_000) });
-  if (!response.ok) throw new Error("Dataset history is temporarily unavailable.");
-  const rows: unknown = await response.json();
-  if (!Array.isArray(rows)) throw new Error("Dataset history returned an invalid response.");
+  const makeQuery = (order: string, limit: number) => {
+    const query = new URL(`${env.supabaseUrl}/rest/v1/processing_jobs`);
+    query.searchParams.set("select", "id,project_id,dataset_id,dataset_name,status,is_fixture,created_at,finished_at,result");
+    query.searchParams.set("project_id", `eq.${env.projectId}`);
+    query.searchParams.set("status", "eq.succeeded");
+    query.searchParams.set("order", order);
+    query.searchParams.set("limit", String(limit));
+    return query;
+  };
+  // Keep a bounded recent list for the selector, plus the oldest successful run
+  // forever so an initial primary dataset does not disappear from the selector.
+  const [recentResponse, primaryResponse] = await Promise.all([
+    fetch(makeQuery("finished_at.desc.nullslast,created_at.desc", MAX_HISTORY), { headers: env.headers, cache: "no-store", signal: AbortSignal.timeout(12_000) }),
+    fetch(makeQuery("created_at.asc", 1), { headers: env.headers, cache: "no-store", signal: AbortSignal.timeout(12_000) }),
+  ]);
+  if (!recentResponse.ok || !primaryResponse.ok) throw new Error("Dataset history is temporarily unavailable.");
+  const [recentRows, primaryRows]: unknown[] = await Promise.all([recentResponse.json(), primaryResponse.json()]);
+  if (!Array.isArray(recentRows) || !Array.isArray(primaryRows)) throw new Error("Dataset history returned an invalid response.");
+  const rows = [...recentRows, ...primaryRows];
+  const expectedProjectId = process.env.ROYAL_SCOUT_PROJECT_ID ?? "royal-scout";
   return rows.filter((row): row is JobRow => row && typeof row === "object" &&
-    row.status === "succeeded" && typeof row.project_id === "string" && row.project_id === (process.env.ROYAL_SCOUT_PROJECT_ID ?? "royal-scout") &&
+    row.status === "succeeded" && typeof row.project_id === "string" && row.project_id === expectedProjectId &&
     typeof row.dataset_id === "string" && /^[A-Za-z0-9_-]{1,64}$/.test(row.dataset_id) &&
     typeof row.dataset_name === "string" && row.result && typeof row.result === "object" &&
     typeof row.result.bundle_object === "string" && row.result.bundle_object === `${row.project_id}/${row.dataset_id}/bundle.json`);
@@ -115,14 +125,14 @@ function localContext(error: string | null = null): DashboardDatasetContext {
   const ready = hasBundle(snapshot);
   const option: DatasetOption = {
     dataset_id: snapshot.meta.dataset_id,
-    name: `${snapshot.meta.name} (local build snapshot)`,
+    name: `${snapshot.meta.name} (embedded snapshot)`,
     created_at: snapshot.meta.created_at,
     is_fixture: Boolean(snapshot.meta.is_fixture),
   };
-  return { bundle: ready ? snapshot : null, datasets: ready ? [option] : [], selectedId: ready ? option.dataset_id : null, error, localSnapshot: ready };
+  return { bundle: ready ? snapshot : null, datasets: ready ? [option] : [], selectedId: ready ? option.dataset_id : null, error, embeddedSnapshot: ready };
 }
 
-/** Load the selected successful job's private artifact at request time, with no build-time snapshot fallback in production. */
+/** Load the explicitly selected successful dataset. Without server storage configuration, serve the versioned public deployment snapshot. */
 export const loadDashboardDataset = cache(async (): Promise<DashboardDatasetContext> => {
   const cookieStore = await cookies();
   const selectedCookie = cookieStore.get(ACTIVE_COOKIE)?.value ?? null;
@@ -131,39 +141,38 @@ export const loadDashboardDataset = cache(async (): Promise<DashboardDatasetCont
     env = serverEnvironment();
   } catch {
     return process.env.NODE_ENV === "production"
-      ? { bundle: null, datasets: [], selectedId: null, error: "Project configuration is invalid.", localSnapshot: false }
+      ? { bundle: null, datasets: [], selectedId: null, error: "Project configuration is invalid.", embeddedSnapshot: false }
       : localContext("Project configuration is invalid.");
   }
   if (!env) {
-    return process.env.NODE_ENV === "production"
-      ? { bundle: null, datasets: [], selectedId: null, error: "Private live-dataset access is not configured. Contact the administrator.", localSnapshot: false }
-      : localContext();
+    return localContext("Live dataset storage is not configured; showing the embedded public snapshot.");
   }
 
   try {
     const rows = await listSuccessfulDatasets();
     const datasets = datasetOptionsFrom(rows as SuccessfulDatasetRecord[]);
     if (selectedCookie && !/^[A-Za-z0-9_-]{1,64}$/.test(selectedCookie)) {
-      return { bundle: null, datasets, selectedId: selectedCookie, error: "The selected dataset identifier is invalid. Choose a dataset from history.", localSnapshot: false };
+      return { bundle: null, datasets, selectedId: selectedCookie, error: "The selected dataset identifier is invalid. Choose a dataset from history.", embeddedSnapshot: false };
     }
     const selection = resolveDatasetSelection(selectedCookie, datasets);
     if (selection.error || !selection.selectedId) {
-      return { bundle: null, datasets, selectedId: selection.selectedId, error: selection.error ?? "No active dataset is available.", localSnapshot: false };
+      return { bundle: null, datasets, selectedId: selection.selectedId, error: selection.error ?? "No active dataset is available.", embeddedSnapshot: false };
     }
     const selectedId = selection.selectedId;
     const bundle = await downloadBundle(selectedId, rows);
     return bundle
-      ? { bundle, datasets, selectedId, error: null, localSnapshot: false }
-      : { bundle: null, datasets, selectedId, error: "The selected dataset bundle is unavailable. No stale snapshot has been substituted.", localSnapshot: false };
+      ? { bundle, datasets, selectedId, error: null, embeddedSnapshot: false }
+      : { bundle: null, datasets, selectedId, error: "The selected dataset bundle is unavailable. No stale snapshot has been substituted.", embeddedSnapshot: false };
   } catch (cause) {
     const error = cause instanceof Error ? cause.message : "Dataset loading failed.";
     return process.env.NODE_ENV === "production"
-      ? { bundle: null, datasets: [], selectedId: selectedCookie, error, localSnapshot: false }
+      ? { bundle: null, datasets: [], selectedId: selectedCookie, error, embeddedSnapshot: false }
       : localContext(error);
   }
 });
 
 export async function getSuccessfulDatasetOptions(): Promise<DatasetOption[]> {
+  if (!serverEnvironment()) return localContext().datasets;
   const rows = await listSuccessfulDatasets();
   return datasetOptionsFrom(rows as SuccessfulDatasetRecord[]);
 }
