@@ -17,3 +17,13 @@ export async function mayManageIngestion(client: unknown, userId: string): Promi
     return false;
   }
 }
+
+/** Staff administration is deliberately narrower than ingestion permissions. */
+export async function isPlatformAdmin(client: unknown, userId: string): Promise<boolean> {
+  try {
+    const { data, error } = await (client as SupabaseProfileLookup).from("profiles").select("role").eq("id", userId).maybeSingle();
+    return !error && data?.role === "admin";
+  } catch {
+    return false;
+  }
+}

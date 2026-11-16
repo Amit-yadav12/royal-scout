@@ -13,8 +13,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     let saved: string | null = null;
     try { saved = window.localStorage.getItem("royal-scout-theme"); } catch { /* Private browsing can disable storage; system preference still works. */ }
-    const media = window.matchMedia?.("(prefers-color-scheme: dark)");
-    setTheme(saved === "light" || saved === "dark" ? saved : media?.matches ? "dark" : "light");
+    setTheme(saved === "light" || saved === "dark" ? saved : "dark");
   }, []);
 
   useEffect(() => {

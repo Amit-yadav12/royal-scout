@@ -5,13 +5,13 @@ import { ThemeProvider } from "@/components/theme-provider";
 export const metadata: Metadata = {
   title: "Royal Scout Intelligence OS — Every Player. Every Metric. Every Insight.",
   description: "A provenance-first cricket scouting and performance intelligence platform.",
-  icons: { icon: "/royal-scout-favicon.png" },
+  icons: { icon: "/royal-scout-favicon.svg", shortcut: "/royal-scout-favicon.svg", apple: "/royal-scout-crest.svg" },
   robots: { index: false, follow: false },
 };
 
 export const viewport: Viewport = {
-  themeColor: [{ media: "(prefers-color-scheme: light)", color: "#F4F6FA" }, { media: "(prefers-color-scheme: dark)", color: "#080E1D" }],
-  colorScheme: "light dark",
+  themeColor: "#080E1D",
+  colorScheme: "dark light",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

@@ -11,14 +11,32 @@ export type SuccessfulDatasetRecord = {
 export function datasetOptionsFrom(records: SuccessfulDatasetRecord[]): DatasetOption[] {
   const unique = new Map<string, DatasetOption>();
   for (const record of records) {
-    if (!unique.has(record.dataset_id)) unique.set(record.dataset_id, {
-      dataset_id: record.dataset_id,
-      name: record.dataset_name,
-      created_at: record.finished_at || record.created_at,
-      is_fixture: Boolean(record.is_fixture),
-    });
+    const current = unique.get(record.dataset_id);
+    if (!current) {
+      unique.set(record.dataset_id, {
+        dataset_id: record.dataset_id,
+        name: record.dataset_name,
+        created_at: record.created_at,
+        is_fixture: Boolean(record.is_fixture),
+      });
+      continue;
+    }
+    if (Date.parse(record.created_at) < Date.parse(current.created_at)) {
+      unique.set(record.dataset_id, { ...current, created_at: record.created_at });
+    }
   }
   return [...unique.values()];
+}
+
+/** The first uploaded dataset is the default source; later uploads stay isolated. */
+export function primaryDatasetId(datasets: DatasetOption[]): string | null {
+  if (!datasets.length) return null;
+  return [...datasets].sort((a, b) => {
+    const aTime = Date.parse(a.created_at);
+    const bTime = Date.parse(b.created_at);
+    if (Number.isFinite(aTime) && Number.isFinite(bTime)) return aTime - bTime;
+    return datasets.indexOf(b) - datasets.indexOf(a);
+  })[0]?.dataset_id ?? null;
 }
 
 export function resolveDatasetSelection(requestedId: string | null, datasets: DatasetOption[]) {
@@ -26,5 +44,5 @@ export function resolveDatasetSelection(requestedId: string | null, datasets: Da
   if (requestedId && !datasets.some((dataset) => dataset.dataset_id === requestedId)) {
     return { selectedId: requestedId, error: "The selected dataset is no longer in processing history. Choose an available dataset." };
   }
-  return { selectedId: requestedId ?? datasets[0].dataset_id, error: null };
+  return { selectedId: requestedId ?? primaryDatasetId(datasets), error: null };
 }

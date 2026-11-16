@@ -1,30 +1,32 @@
 import Image from "next/image";
 import { cn } from "@/lib/cn";
 
-/** Premium Royal Scout monogram, rendered from the selected optimized emblem artwork. */
+/** Royal Scout's original vector crest; works on the deep-navy command shell. */
 export function BrandMark({ className, title = "Royal Scout" }: { className?: string; title?: string }) {
   return (
     <Image
-      src="/royal-scout-mark.webp"
+      src="/royal-scout-compact.svg"
       alt={title}
-      aria-label={title}
-      className={cn("shrink-0 rounded-xl object-cover", className)}
-      width={768}
-      height={768}
-      sizes="(max-width: 640px) 32px, 40px"
+      className={cn("shrink-0 object-contain", className)}
+      width={120}
+      height={130}
+      sizes="(max-width: 640px) 34px, 44px"
       priority
+      unoptimized
     />
   );
 }
 
-export function BrandLockup({ compact = false }: { compact?: boolean }) {
+export function BrandLockup({ compact = false, className }: { compact?: boolean; className?: string }) {
   return (
-    <span className="inline-flex items-center gap-2.5">
-      <BrandMark className={compact ? "h-8 w-8" : "h-10 w-10"} />
-      {!compact ? <span className="leading-tight">
-        <span className="block text-xs font-bold tracking-[0.16em] text-white">ROYAL SCOUT</span>
-        <span className="mt-0.5 block text-[0.58rem] font-medium tracking-[0.2em] text-white/45 uppercase">Intelligence OS</span>
-      </span> : null}
+    <span className={cn("inline-flex items-center gap-3", className)}>
+      <BrandMark className={compact ? "h-9 w-9" : "h-11 w-11"} />
+      {!compact ? (
+        <span className="leading-tight">
+          <span className="block font-serif text-sm font-bold tracking-[0.17em] text-white">ROYAL SCOUT</span>
+          <span className="mt-1 block text-[0.56rem] font-semibold tracking-[0.19em] text-gold-300 uppercase">Cricket scouting intelligence</span>
+        </span>
+      ) : null}
     </span>
   );
 }

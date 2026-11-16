@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { getScope, hasBundle } from "@/lib/bundle";
 import { loadDashboardDataset } from "@/lib/server-dataset";
-import { createServerSupabase } from "@/lib/supabase";
 import type { PlayerRow } from "@/lib/types";
 import { buildCsv } from "@/lib/csv-provenance";
 
@@ -36,14 +35,6 @@ function csvEscape(value: unknown): string {
  * methodology in force. Provenance is prefixed as `#` comments.
  */
 export async function GET(request: Request) {
-  const sessionClient = await createServerSupabase();
-  if (!sessionClient) {
-    return NextResponse.json({ error: "Authentication is required to export proprietary scouting data." }, { status: 401 });
-  }
-  const { data: authData, error: authError } = await sessionClient.auth.getUser();
-  if (authError || !authData.user) {
-    return NextResponse.json({ error: "Sign in to export scouting data." }, { status: 401 });
-  }
   const { bundle } = await loadDashboardDataset();
   if (!hasBundle(bundle)) {
     return NextResponse.json({ error: "No active dataset is available for export." }, { status: 404, headers: { "Cache-Control": "no-store" } });

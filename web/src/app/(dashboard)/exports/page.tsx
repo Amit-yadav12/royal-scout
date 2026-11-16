@@ -63,11 +63,9 @@ export default async function ExportsPage() {
       </div>
 
       <Card>
-        <CardHeader title="Private processing artefacts" subtitle="Worker-generated files are never placed in the public web directory." />
+        <CardHeader title="Public read-only access" subtitle="The dashboard and analytical exports are available without an account." />
         <CardBody>
-          <Notice>
-            After a dataset finishes processing, authenticated download links for available CSV, Excel and PDF artefacts appear in the upload job panel. Those signed links expire after 10 minutes. Dashboard analytics load the selected successful dataset from private Storage at request time; publishing a new analysis does not require a Vercel rebuild.
-          </Notice>
+          <Notice>Uploads, processing retries, staff invitations and worker artefact downloads are disabled on this public dashboard. CSV exports below are generated from the selected dataset and retain their provenance details.</Notice>
         </CardBody>
       </Card>
 
