@@ -189,6 +189,24 @@ export function UploadPanel() {
     setHint("Status polling reached its time limit. Check the worker job logs; processing may still be running.");
   }
 
+  async function retryJob() {
+    const jobId = job?.job_id ?? job?.id;
+    if (!jobId || busy) return;
+    setBusy(true);
+    setError(null);
+    try {
+      const response = await fetch(`/api/jobs/${encodeURIComponent(jobId)}/retry`, { method: "POST" });
+      const payload = await response.json();
+      if (!response.ok) throw new Error(payload.error ?? `Retry failed (HTTP ${response.status}).`);
+      setJob({ ...payload, job_id: jobId });
+      void poll(jobId);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setBusy(false);
+    }
+  }
+
   async function submit() {
     if (!files.length || busy) return;
     setBusy(true);
@@ -350,6 +368,12 @@ export function UploadPanel() {
               </div>
               <p className="mt-1.5 text-ink-soft">{job.stage}{job.detail ? ` · ${job.detail}` : ""}</p>
               {job.error ? <p className="mt-1 text-rose-700">{job.error}</p> : null}
+              {job.status === "failed" ? (
+                <button className="btn mt-2" onClick={retryJob} disabled={busy}>
+                  {busy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}
+                  Retry processing
+                </button>
+              ) : null}
               {job.logs?.length ? (
                 <ul className="mt-1.5 max-h-24 space-y-0.5 overflow-y-auto font-mono text-[0.6rem] text-ink-faint">
                   {job.logs.slice(-6).map((l, i) => <li key={i}>[{l.stage}] {l.message}</li>)}
@@ -386,7 +410,7 @@ export function UploadPanel() {
           </Notice>
         ) : worker === "not_configured" ? (
           <Notice tone="warning">
-            Secure uploads are not configured. Set Supabase URL, publishable key and server-only service-role key, then configure WORKER_API_URL and WORKER_SHARED_SECRET. Sign in is required for uploads.
+            Secure uploads are not configured. Set Supabase URL, publishable key and server-only SUPABASE_SECRET_KEY (legacy service-role JWT is supported), then configure WORKER_API_URL and WORKER_SHARED_SECRET. Sign in is required for uploads.
           </Notice>
         ) : worker === "unavailable" ? (
           <Notice tone="danger">The processing worker is configured but not responding. Uploads are disabled until it is healthy.</Notice>

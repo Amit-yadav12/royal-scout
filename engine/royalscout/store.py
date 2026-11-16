@@ -10,6 +10,9 @@ from __future__ import annotations
 import json
 import os
 import shutil
+from urllib.parse import quote
+
+from .supabase_auth import get_supabase_server_key, get_supabase_url, supabase_api_headers
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -74,33 +77,37 @@ class ArtifactStore:
 
 
 def publish_to_supabase(paths: list[Path], bucket: str, prefix: str) -> list[dict[str, Any]]:
-    """Upload artefacts to Supabase Storage (private bucket, service role).
+    """Stream files into a private Supabase bucket using central server auth.
 
-    Returns a per-file result list. Never raises: failures are reported so the job
-    can mark itself partially complete instead of silently losing artefacts.
+    Returns status per object; callers must enforce required artifacts before
+    transitioning a job to succeeded. Error details never include credentials.
     """
-    url = os.getenv("SUPABASE_URL") or os.getenv("NEXT_PUBLIC_SUPABASE_URL")
-    key = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
-    if not (url and key):
-        return [{"file": str(p), "status": "skipped", "reason": "Supabase credentials not configured"} for p in paths]
+    try:
+        url, key = get_supabase_url(), get_supabase_server_key()
+    except Exception as exc:
+        return [{"file": p.name, "status": "failed", "reason": str(exc)} for p in paths]
     import httpx
 
+    safe_bucket = bucket.strip()
+    if not safe_bucket or "/" in safe_bucket or ".." in safe_bucket:
+        return [{"file": p.name, "status": "failed", "reason": "invalid artifact bucket"} for p in paths]
     results: list[dict[str, Any]] = []
     for p in paths:
-        key_path = f"{prefix.strip('/')}/{Path(p).name}" if prefix else Path(p).name
+        object_path = f"{prefix.strip('/')}/{p.name}" if prefix else p.name
+        encoded = "/".join(quote(part, safe="") for part in object_path.split("/"))
         try:
-            with open(p, "rb") as fh:
-                r = httpx.post(
-                    f"{url.rstrip('/')}/storage/v1/object/{bucket}/{key_path}",
-                    headers={"apikey": key, "Authorization": f"Bearer {key}", "x-upsert": "true",
-                             "Content-Type": _content_type(p)},
+            with p.open("rb") as fh:
+                response = httpx.post(
+                    f"{url}/storage/v1/object/{quote(safe_bucket, safe='')}/{encoded}",
+                    headers=supabase_api_headers({"x-upsert": "true", "Content-Type": _content_type(p)}, key=key),
                     content=fh, timeout=300)
-            results.append({"file": str(p), "object": key_path,
-                            "status": "uploaded" if r.status_code < 300 else "failed",
-                            "http_status": r.status_code,
-                            "detail": None if r.status_code < 300 else r.text[:300]})
-        except Exception as exc:  # network error must not kill the job
-            results.append({"file": str(p), "status": "failed", "detail": f"{type(exc).__name__}: {exc}"})
+            results.append({"file": p.name, "object": object_path,
+                            "status": "uploaded" if response.is_success else "failed",
+                            "http_status": response.status_code,
+                            "reason": None if response.is_success else f"Storage upload failed (HTTP {response.status_code})"})
+        except Exception as exc:
+            results.append({"file": p.name, "object": object_path, "status": "failed",
+                            "reason": f"Storage upload failed ({type(exc).__name__})"})
     return results
 
 

@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
-import { createServerSupabase } from "@/lib/supabase";
+import { createServerSupabase, supabaseServerHeaders } from "@/lib/supabase";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const DOWNLOADABLE = new Set([".csv", ".xlsx", ".xls", ".pdf"]);
+const trimSlash = (value: string) => value.endsWith("/") ? value.slice(0, -1) : value;
 
 export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -15,9 +15,9 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
 
   const workerUrl = process.env.WORKER_API_URL;
   const secret = process.env.WORKER_SHARED_SECRET;
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const serviceRole = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!workerUrl || !secret || !supabaseUrl || !serviceRole) {
+  const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const serverKey = process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!workerUrl || !secret || !supabaseUrl || !serverKey || serverKey.startsWith("sb_publishable_")) {
     return NextResponse.json({ error: "Private artifact downloads are not configured." }, { status: 503 });
   }
 
@@ -47,7 +47,6 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
     const bucket = process.env.SUPABASE_ARTIFACT_BUCKET ?? "royal-scout-artifacts";
     const prefix = `${job.project_id}/${job.dataset_id}/`;
     const uploads = Array.isArray(job.result?.uploads) ? job.result.uploads : [];
-    const admin = createClient(supabaseUrl, serviceRole, { auth: { autoRefreshToken: false, persistSession: false } });
     const artifacts: { name: string; url: string; expires_in: number }[] = [];
 
     for (const item of uploads) {
@@ -56,9 +55,16 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
       const name = objectPath.split("/").pop() ?? "";
       const ext = name.slice(name.lastIndexOf(".")).toLowerCase();
       if (!objectPath.startsWith(prefix) || objectPath.includes("..") || objectPath.includes("\\") || !DOWNLOADABLE.has(ext)) continue;
-      const { data, error } = await admin.storage.from(bucket).createSignedUrl(objectPath, 10 * 60, { download: name });
-      if (error || !data?.signedUrl) continue;
-      artifacts.push({ name, url: data.signedUrl, expires_in: 600 });
+      const encodedPath = objectPath.split("/").map(encodeURIComponent).join("/");
+      const signed = await fetch(`${trimSlash(supabaseUrl)}/storage/v1/object/sign/${encodeURIComponent(bucket)}/${encodedPath}`, {
+        method: "POST", headers: supabaseServerHeaders(),
+        body: JSON.stringify({ expiresIn: 600, download: name }), cache: "no-store",
+      });
+      const data = await signed.json().catch(() => null);
+      if (!signed.ok || typeof data?.signedURL !== "string") continue;
+      const signedUrl = data.signedURL.startsWith("http") ? data.signedURL :
+        `${trimSlash(supabaseUrl)}/storage/v1/${data.signedURL.replace(/^\/?(?:storage\/v1\/)?/, "")}`;
+      artifacts.push({ name, url: signedUrl, expires_in: 600 });
     }
 
     return NextResponse.json({ artifacts }, { headers: { "Cache-Control": "no-store" } });

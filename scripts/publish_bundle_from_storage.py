@@ -13,6 +13,10 @@ import argparse
 import json
 import os
 import sys
+from urllib.parse import quote
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "engine"))
+from royalscout.supabase_auth import get_supabase_server_key, get_supabase_url, supabase_api_headers
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -30,23 +34,24 @@ def main() -> int:
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
 
-    base_url = (os.getenv("SUPABASE_URL") or os.getenv("NEXT_PUBLIC_SUPABASE_URL") or "").rstrip("/")
-    key = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
-    if not base_url or not key:
-        print("Set SUPABASE_URL (or NEXT_PUBLIC_SUPABASE_URL) and SUPABASE_SERVICE_ROLE_KEY.", file=sys.stderr)
+    try:
+        base_url, key = get_supabase_url(), get_supabase_server_key()
+    except Exception as exc:
+        print(f"Invalid Supabase server configuration: {exc}", file=sys.stderr)
         return 2
     if not args.project.replace("-", "").replace("_", "").isalnum() or not args.dataset.startswith("ds_"):
         print("Invalid project or dataset ID.", file=sys.stderr)
         return 2
 
     object_path = f"{args.project}/{args.dataset}/bundle.json"
+    encoded = "/".join(quote(part, safe="") for part in object_path.split("/"))
     response = httpx.get(
-        f"{base_url}/storage/v1/object/{args.bucket}/{object_path}",
-        headers={"Authorization": f"Bearer {key}", "apikey": key},
+        f"{base_url}/storage/v1/object/{quote(args.bucket, safe='')}/{encoded}",
+        headers=supabase_api_headers(key=key),
         timeout=180,
     )
     if response.status_code >= 300:
-        print(f"Could not download {args.bucket}/{object_path}: HTTP {response.status_code} {response.text[:300]}", file=sys.stderr)
+        print(f"Could not download {args.bucket}/{object_path}: HTTP {response.status_code}", file=sys.stderr)
         return 1
 
     try:

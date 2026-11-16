@@ -18,19 +18,23 @@ POST /analyse                    synchronous analysis for small payloads (dev/QA
 from __future__ import annotations
 
 import os
+import re
 import shutil
 import tempfile
 import uuid
 from pathlib import Path
 from typing import Any, Literal
+from uuid import UUID
 
-from fastapi import Depends, FastAPI, File, Form, Header, HTTPException, UploadFile
+from fastapi import Depends, FastAPI, File, Form, Header, HTTPException, UploadFile, Response
 from pydantic import BaseModel, Field
 
 from .config import DEFAULT_CONFIG, MODEL_VERSION
 from .db import JOB_FAILED, make_queue, new_job
 from .pipeline import run_pipeline
 from .store import ArtifactStore
+from .supabase_auth import (SupabaseConfigurationError, get_supabase_server_key, get_supabase_url,
+                            supabase_api_headers, supabase_key_type)
 
 STORAGE = Path(os.getenv("RS_STORAGE_ROOT", "./storage"))
 SHARED_SECRET = os.getenv("WORKER_SHARED_SECRET", "")
@@ -63,44 +67,110 @@ class JobRequest(BaseModel):
     dataset_name: str = Field(min_length=1, max_length=200)
     sources: list[SourceRef] = Field(min_length=1)
     is_fixture: bool = False
-    created_by: str | None = None
+    created_by: UUID | None = None
+
+
+def _health_report() -> dict[str, Any]:
+    STORAGE.mkdir(parents=True, exist_ok=True)
+    try:
+        configured_url = get_supabase_url()
+        server_key = get_supabase_server_key()
+        key_type = supabase_key_type(server_key)
+        supabase_configured = True
+    except SupabaseConfigurationError:
+        configured_url, server_key, key_type = "", "", None
+        supabase_configured = False
+
+    supabase_reachable = False
+    queue_accessible = False
+    storage_accessible = False
+    queue_diagnostic = "not_checked"
+    storage_diagnostic = "not_checked"
+    queue_name = "unavailable"
+    if supabase_configured:
+        import httpx
+        try:
+            response = httpx.get(f"{configured_url}/rest/v1/processing_jobs?select=id&limit=1",
+                                 headers=supabase_api_headers(key=server_key), timeout=5)
+            supabase_reachable = True  # an HTTP response confirms network/API reachability
+            queue_accessible = response.is_success
+            queue_diagnostic = ("ok" if queue_accessible else {401: "invalid_api_key", 403: "permission_denied",
+                                404: "processing_jobs_missing"}.get(response.status_code, "queue_unavailable"))
+        except Exception:
+            queue_diagnostic = "supabase_unreachable"
+        try:
+            bucket = os.getenv("SUPABASE_ARTIFACT_BUCKET", "royal-scout-artifacts")
+            response = httpx.get(f"{configured_url}/storage/v1/bucket/{bucket}",
+                                 headers=supabase_api_headers(key=server_key), timeout=5)
+            supabase_reachable = True
+            storage_accessible = response.is_success
+            storage_diagnostic = ("ok" if storage_accessible else {401: "invalid_api_key", 403: "permission_denied",
+                                  404: "artifact_bucket_missing"}.get(response.status_code, "storage_unavailable"))
+        except Exception:
+            storage_diagnostic = "supabase_unreachable"
+        try:
+            from .db import SupabaseQueue
+            queue_name = type(SupabaseQueue()).__name__
+        except Exception:
+            pass
+
+    try:
+        probe = STORAGE / ".health-write-probe"
+        probe.write_text("ok", encoding="utf-8")
+        probe.unlink(missing_ok=True)
+        storage_writable = True
+    except OSError:
+        storage_writable = False
+    checks = {
+        "api_running": True, "configuration_valid": supabase_configured,
+        "supabase_configured": supabase_configured, "supabase_key_type": key_type,
+        "supabase_reachable": supabase_reachable, "queue_accessible": queue_accessible,
+        "storage_accessible": storage_accessible,
+        "queue_diagnostic": queue_diagnostic,
+        "storage_diagnostic": storage_diagnostic,
+        "worker_shared_secret_configured": bool(SHARED_SECRET),
+        "temporary_storage_writable": storage_writable,
+        "queue_configuration_valid": (queue_name == "SupabaseQueue" and os.getenv("RS_USE_SUPABASE_QUEUE", "1") == "1") if os.getenv("RS_ENV", "development").lower() == "production" else True,
+    }
+    ready = all(checks[key] for key in ("configuration_valid", "supabase_reachable", "queue_accessible",
+                                         "storage_accessible", "worker_shared_secret_configured",
+                                         "temporary_storage_writable", "queue_configuration_valid"))
+    return {"status": "ready" if ready else "degraded", "ready": ready,
+            "model_version": MODEL_VERSION, "checks": checks, "queue": queue_name,
+            "limits": {"max_single_file_bytes": DEFAULT_CONFIG.limits.max_single_file_bytes,
+                       "max_archive_entries": DEFAULT_CONFIG.limits.max_archive_entries,
+                       "max_total_extracted_bytes": DEFAULT_CONFIG.limits.max_total_extracted_bytes,
+                       "max_files_per_upload": DEFAULT_CONFIG.limits.max_files_per_upload}}
+
+
+@app.get("/health/live")
+def health_live() -> dict[str, Any]:
+    return {"status": "alive", "api_running": True, "model_version": MODEL_VERSION}
+
+
+@app.get("/health/ready")
+def health_ready(response: Response) -> dict[str, Any]:
+    report = _health_report()
+    if not report["ready"]:
+        response.status_code = 503
+    return report
 
 
 @app.get("/health")
 def health() -> dict[str, Any]:
-    STORAGE.mkdir(parents=True, exist_ok=True)
-    supabase_configured = bool(os.getenv("SUPABASE_URL") and os.getenv("SUPABASE_SERVICE_ROLE_KEY"))
-    storage_writable = os.access(STORAGE, os.W_OK)
-    queue_name = "unavailable"
-    queue_error = None
-    try:
-        q = make_queue(STORAGE)
-        queue_name = type(q).__name__
-    except Exception as exc:
-        queue_error = f"{type(exc).__name__}: {exc}"
-    production_ready = os.getenv("RS_ENV", "development").lower() != "production" or (supabase_configured and queue_name == "SupabaseQueue")
-    ready = bool(storage_writable and SHARED_SECRET and production_ready and queue_error is None)
-    return {
-        "status": "ok" if ready else "degraded", "ready": ready, "model_version": MODEL_VERSION,
-        "storage_root": str(STORAGE), "storage_writable": storage_writable,
-        "queue": queue_name, "queue_error": queue_error,
-        "supabase_configured": supabase_configured,
-        "shared_secret_configured": bool(SHARED_SECRET),
-        "limits": {
-            "max_single_file_bytes": DEFAULT_CONFIG.limits.max_single_file_bytes,
-            "max_archive_entries": DEFAULT_CONFIG.limits.max_archive_entries,
-            "max_total_extracted_bytes": DEFAULT_CONFIG.limits.max_total_extracted_bytes,
-            "max_files_per_upload": DEFAULT_CONFIG.limits.max_files_per_upload,
-        },
-    }
+    return _health_report()
 
 
 @app.post("/jobs", dependencies=[Depends(require_secret)])
 def create_job(req: JobRequest) -> dict[str, Any]:
+    if os.getenv("RS_ENV", "development").lower() == "production" and any(s.local_path for s in req.sources):
+        raise HTTPException(400, "Production jobs must reference authorised private Storage objects.")
+    if not all(re.fullmatch(r"[A-Za-z0-9_-]{1,64}", value) for value in (req.project_id, req.dataset_id)):
+        raise HTTPException(400, "Invalid project or dataset identifier.")
     q = make_queue(STORAGE)
     job = new_job(req.project_id, req.dataset_id, req.dataset_name,
                   [s.model_dump(exclude_none=True) for s in req.sources],
-                  is_fixture=req.is_fixture, created_by=req.created_by)
+                  is_fixture=req.is_fixture, created_by=str(req.created_by) if req.created_by else None)
     q.create(job)
     q.log(job.id, "queued", f"{len(req.sources)} source(s) queued")
     return {"job": job.to_dict()}
@@ -110,6 +180,8 @@ def create_job(req: JobRequest) -> dict[str, Any]:
 async def ingest(project_id: str = Form(...), dataset_name: str = Form(...),
                  is_fixture: bool = Form(False), dataset_id: str | None = Form(None),
                  files: list[UploadFile] = File(...)) -> dict[str, Any]:
+    if os.getenv("RS_ENV", "development").lower() == "production":
+        raise HTTPException(410, "Direct uploads are disabled in production; upload directly to private Supabase Storage.")
     if len(files) > MAX_UPLOAD_FILES:
         raise HTTPException(413, f"at most {MAX_UPLOAD_FILES} files per request; "
                                  f"upload an archive or split the batch")
@@ -160,6 +232,10 @@ def retry_job(job_id: str) -> dict[str, Any]:
     job = q.get(job_id)
     if job is None:
         raise HTTPException(404, "job not found")
+    if job.status == "running":
+        raise HTTPException(409, "A running job cannot be retried.")
+    if job.attempts >= job.max_attempts:
+        raise HTTPException(409, "The retry limit has been reached for this job.")
     q.update(job_id, status="queued", error=None, stage="requeued", detail="manually requeued")
     q.log(job_id, "requeued", "job requeued by operator")
     return {"job": q.get(job_id).to_dict()}
@@ -167,10 +243,27 @@ def retry_job(job_id: str) -> dict[str, Any]:
 
 @app.get("/datasets/{project_id}/{dataset_id}/bundle", dependencies=[Depends(require_secret)])
 def get_bundle(project_id: str, dataset_id: str) -> Any:
+    if not all(re.fullmatch(r"[A-Za-z0-9_-]{1,64}", value) for value in (project_id, dataset_id)):
+        raise HTTPException(400, "Invalid project or dataset identifier.")
     path = ArtifactStore(STORAGE).dataset_dir(project_id, dataset_id) / "bundle.json"
-    if not path.exists():
-        raise HTTPException(404, "no bundle for this dataset yet")
-    return ArtifactStore(STORAGE).read_json(path)
+    if path.exists():
+        return ArtifactStore(STORAGE).read_json(path)
+    try:
+        import httpx
+        url, key = get_supabase_url(), get_supabase_server_key()
+        bucket = os.getenv("SUPABASE_ARTIFACT_BUCKET", "royal-scout-artifacts")
+        object_path = f"{project_id}/{dataset_id}/bundle.json"
+        response = httpx.get(f"{url}/storage/v1/object/{bucket}/{object_path}",
+                             headers=supabase_api_headers(key=key), timeout=30)
+        if response.status_code == 404:
+            raise HTTPException(404, "no bundle for this dataset yet")
+        if not response.is_success:
+            raise HTTPException(502, "private analytical bundle is temporarily unavailable")
+        return response.json()
+    except HTTPException:
+        raise
+    except Exception:
+        raise HTTPException(502, "private analytical bundle is temporarily unavailable") from None
 
 
 class AnalyseRequest(BaseModel):

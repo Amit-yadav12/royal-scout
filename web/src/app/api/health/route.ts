@@ -8,7 +8,7 @@ export async function GET() {
   const configured = {
     supabase_url: Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL),
     supabase_publishable_key: Boolean(process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY),
-    supabase_service_role: Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY),
+    supabase_server_key: Boolean(process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY),
     worker_api_url: Boolean(workerUrl),
     worker_shared_secret: Boolean(process.env.WORKER_SHARED_SECRET),
     app_url: Boolean(process.env.NEXT_PUBLIC_APP_URL),
@@ -16,7 +16,7 @@ export async function GET() {
   const uploadsConfigured = Boolean(
     process.env.NEXT_PUBLIC_SUPABASE_URL &&
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY &&
-    process.env.SUPABASE_SERVICE_ROLE_KEY &&
+    (process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY) &&
     (process.env.SUPABASE_UPLOAD_BUCKET ?? "uploads") &&
     workerUrl &&
     process.env.WORKER_SHARED_SECRET,
@@ -34,7 +34,7 @@ export async function GET() {
     );
   }
   try {
-    const res = await fetch(`${workerUrl.replace(/\/$/, "")}/health`, { cache: "no-store" });
+    const res = await fetch(`${workerUrl.replace(/\/$/, "")}/health/ready`, { cache: "no-store", signal: AbortSignal.timeout(8000) });
     const body = await res.json();
     const workerReady = Boolean(res.ok && body.ready);
     return NextResponse.json({
@@ -51,7 +51,7 @@ export async function GET() {
         worker: "unreachable",
         uploads_enabled: false,
         configured,
-        detail: error instanceof Error ? error.message : String(error),
+        detail: "Render worker is unreachable or sleeping; retry after the service starts.",
       },
       { status: 200 },
     );
