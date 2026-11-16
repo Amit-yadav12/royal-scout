@@ -31,6 +31,20 @@ def test_legacy_service_role_jwt_gets_both_headers(monkeypatch):
     assert headers["Prefer"] == "return=representation"
 
 
+def test_secret_key_cannot_be_overridden_with_bearer_by_extra_headers():
+    headers = supabase_api_headers({"Authorization": "Bearer injected", "apikey": "injected", "Prefer": "return=representation"},
+                                   key="sb_secret_private-example")
+    assert headers["apikey"] == "sb_secret_private-example"
+    assert "Authorization" not in headers
+    assert headers["Prefer"] == "return=representation"
+
+
+def test_jwt_without_service_role_claim_is_rejected():
+    monkeypatch_key = "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiYW5vbiJ9.signature"
+    with pytest.raises(SupabaseConfigurationError, match="service_role"):
+        supabase_api_headers(key=monkeypatch_key)
+
+
 def test_secret_key_precedes_legacy_key(monkeypatch):
     monkeypatch.setenv("SUPABASE_SECRET_KEY", "sb_secret_current")
     monkeypatch.setenv("SUPABASE_SERVICE_ROLE_KEY", "a.b.c")
