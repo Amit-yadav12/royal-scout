@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createServerSupabase, supabaseServerHeaders } from "@/lib/supabase";
+import { mayManageIngestion } from "@/lib/staff-access";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -18,6 +19,9 @@ export async function POST(request: Request) {
   const { data: authData, error: authError } = await sessionClient.auth.getUser();
   if (authError || !authData.user) {
     return NextResponse.json({ error: "Sign in before queueing a dataset." }, { status: 401 });
+  }
+  if (!(await mayManageIngestion(sessionClient, authData.user.id))) {
+    return NextResponse.json({ error: "Only authorised analysts, scouts, or admins may queue datasets." }, { status: 403 });
   }
 
   let body: {

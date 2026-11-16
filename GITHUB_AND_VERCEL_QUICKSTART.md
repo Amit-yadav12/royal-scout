@@ -54,7 +54,7 @@ File bytes travel directly from the browser to private Supabase Storage through 
 
 ## 4. Publish a newly analysed dataset
 
-A successful processing job stores a new bundle in private Storage. The currently deployed UI uses the build-time `web/src/data/bundle.json` snapshot. Review the data-quality report and 10+10 shortlist, then use `scripts/publish_bundle_from_storage.py` as documented in `docs/DEPLOYMENT.md`, commit the approved bundle, and redeploy Vercel.
+A successful processing job stores the analytical bundle in private Storage. The authenticated dashboard selects the newly completed dataset at request time and offers processed dataset history; no bundle copy, Git commit, or Vercel rebuild is required. Review the data-quality report and 10+10 shortlist before using any recommendation. The fixed audited shortlist is shown only when its source dataset ID is selected.
 
 The official SupeRR Selector candidate dropdown was not present in the uploaded source archive. Import that exact candidate list and verify auction availability before treating the final 10+10 as submission-ready.
 

@@ -4,7 +4,7 @@
 
 Royal Scout is a Next.js scouting dashboard paired with a Python ingestion and cricket analytics engine. It analyses batting, bowling, match situations, consistency, reliability and statistical uncertainty, then produces independent batting and bowling leaderboards.
 
-**Important data notice:** this project contains a proprietary competition dataset snapshot and derived scouting outputs. Keep the GitHub repository private unless you have explicit permission to publish the supplied data and derived analysis. The raw source ZIP is deliberately distributed separately from this GitHub release archive; keep it outside the repository or place it locally under `data/private/` (Git-ignored) before using the upload flow. Extracted files under `data/real/` are also ignored by Git. The deployed dashboard snapshot in `web/src/data/bundle.json` contains derived player analytics and must also be treated as restricted. Production access fails closed unless Supabase Auth is configured; local development can preview the read-only snapshot.
+**Important data notice:** this project contains a proprietary competition dataset snapshot and derived scouting outputs. Keep the GitHub repository private unless you have explicit permission to publish the supplied data and derived analysis. The raw source ZIP is deliberately distributed separately from this GitHub release archive; keep it outside the repository or place it locally under `data/private/` (Git-ignored) before using the upload flow. Extracted files under `data/real/` are also ignored by Git. The local-development snapshot in `web/src/data/bundle.json` contains derived player analytics and must also be treated as restricted. Production access fails closed unless Supabase Auth is configured; local development can preview the read-only snapshot.
 
 ## What the project contains
 
@@ -20,7 +20,7 @@ Royal Scout is a Next.js scouting dashboard paired with a Python ingestion and c
 | Deployment | Next.js frontend on Vercel; Python worker on Railway or Render |
 | Exports | Authenticated live CSV exports and short-lived signed downloads for worker-generated CSV, Excel and PDF artefacts |
 
-The dashboard uses a precomputed analytical snapshot at `web/src/data/bundle.json`. New datasets are processed in the background and stored as versioned private artefacts. Generated downloads are served through authenticated, short-lived Supabase signed URLs; worker files are never placed in a public web folder. Publishing a new dataset to the dashboard requires refreshing that build-time snapshot and deploying a new Vercel build; see `docs/DEPLOYMENT.md`.
+Production analytics load the selected successfully processed job's bundle directly from private Supabase Storage at request time. The dataset selector/history reads the existing Supabase processing queue, and a completed upload can become active without rebuilding Vercel. `web/src/data/bundle.json` is retained only as an explicitly labelled local-development snapshot; production fails closed rather than silently substituting it. Generated downloads use authenticated access or short-lived signed URLs; worker files are never placed in a public web folder.
 
 Auction availability is not inferred from historical match participation. Player eligibility and future auction availability must be checked against the official candidate list and current verified auction information before a final submission is made.
 
@@ -33,7 +33,7 @@ engine/                 Python ingestion, cricket analytics, API and worker
 web/                    Next.js application (Vercel root directory)
   src/app/              Dashboard pages and API routes
   src/components/       Tables, charts, upload flow and UI components
-  src/data/bundle.json  Build-time analytics snapshot used by the dashboard
+  src/data/bundle.json  Local-development snapshot only (not used for production data selection)
 supabase/migrations/    Database schema, queue, RLS and private storage buckets
 data/demo/              Clearly labelled synthetic fixtures for tests/demo
 data/private/           Optional local-only folder for the original ZIP; ignored by Git and not shipped

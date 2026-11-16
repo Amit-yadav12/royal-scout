@@ -5,10 +5,12 @@ import {
   ListOrdered, ShieldAlert, Sliders, Target, TrendingUp, UploadCloud, Users,
   ShieldCheck,
 } from "lucide-react";
-import { bundle, hasBundle, scopeOptions } from "@/lib/bundle";
-import { datasetBadge } from "@/lib/bundle";
+import { hasBundle, scopeOptions, datasetBadge } from "@/lib/bundle";
+import { loadDashboardDataset } from "@/lib/server-dataset";
+import { DatasetSelector } from "./dataset-selector";
 import { ScopeSelect } from "./scope-select";
 import { Badge } from "./ui/badge";
+import { SignOutButton } from "./sign-out-button";
 
 const NAV_GROUPS: { label: string; items: { href: string; label: string; icon: any }[] }[] = [
   {
@@ -67,8 +69,10 @@ const SECTION_HELP: Record<string, string> = {
   "/methodology": "Exact definitions, weights and thresholds in force.",
 };
 
-export function Shell({ children }: { children: React.ReactNode }) {
-  const ready = hasBundle();
+export async function Shell({ children }: { children: React.ReactNode }) {
+  const datasetContext = await loadDashboardDataset();
+  const bundle = datasetContext.bundle;
+  const ready = hasBundle(bundle);
   const isFixture = ready ? bundle.meta.is_fixture : false;
   return (
     <div className="flex min-h-screen">
@@ -116,25 +120,48 @@ export function Shell({ children }: { children: React.ReactNode }) {
             <div className="min-w-0">
               <div className="flex items-center gap-2">
                 <h1 className="truncate text-sm font-semibold text-ink">Royal Scout Intelligence Hub</h1>
-                {isFixture ? (
+                {datasetContext.localSnapshot ? (
+                  <Badge tone="warning">LOCAL BUILD SNAPSHOT</Badge>
+                ) : isFixture ? (
                   <Badge tone="warning">SYNTHETIC TEST DATA</Badge>
+                ) : ready ? (
+                  <Badge tone="positive">live dataset</Badge>
                 ) : (
-                  <Badge tone="positive">production dataset</Badge>
+                  <Badge tone="neutral">no active dataset</Badge>
                 )}
               </div>
               <p className="mt-0.5 truncate text-2xs text-ink-faint">
-                Every Player. Every Metric. Every Insight. · {datasetBadge()}
+                Every Player. Every Metric. Every Insight. · {datasetBadge(bundle)}
               </p>
             </div>
             <div className="flex items-center gap-2">
+              <DatasetSelector datasets={datasetContext.datasets} selectedId={datasetContext.selectedId} />
               <Suspense fallback={<div className="h-7 w-48 rounded border border-surface-line bg-surface-muted" />}>
-                <ScopeSelect options={scopeOptions()} />
+                <ScopeSelect options={scopeOptions(bundle)} />
               </Suspense>
               <Link href="/exports" className="btn hidden sm:inline-flex">
                 <Download className="h-3.5 w-3.5" /> Exports
               </Link>
+              <SignOutButton />
             </div>
           </div>
+          <nav aria-label="Dashboard navigation" className="flex gap-1 overflow-x-auto border-t border-surface-line px-3 py-2 lg:hidden">
+            {NAV_GROUPS.flatMap((group) => group.items).map((item) => (
+              <Link key={item.href} href={item.href} className="shrink-0 rounded-md px-2.5 py-1.5 text-xs text-ink-soft hover:bg-surface-muted hover:text-ink">
+                {item.label}
+              </Link>
+            ))}
+          </nav>
+          {datasetContext.localSnapshot ? (
+            <div className="border-t border-amber-200 bg-amber-50 px-4 py-1.5 text-2xs text-amber-900 sm:px-6" role="status">
+              Local development is showing the build-time snapshot; production requests load the selected private dataset at runtime.
+              {datasetContext.error ? ` Live data unavailable: ${datasetContext.error}` : ""}
+            </div>
+          ) : datasetContext.error ? (
+            <div className="border-t border-amber-200 bg-amber-50 px-4 py-1.5 text-2xs text-amber-900 sm:px-6" role="status">
+              {datasetContext.error} No unrelated snapshot has been substituted.
+            </div>
+          ) : null}
           {isFixture ? (
             <div className="border-t border-amber-200 bg-amber-50 px-4 py-1.5 text-2xs text-amber-900 sm:px-6">
               <strong className="font-semibold">This deployment is running on a synthetic fixture dataset.</strong>{" "}

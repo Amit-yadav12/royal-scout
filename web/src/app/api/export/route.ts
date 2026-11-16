@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { bundle, getScope, hasBundle } from "@/lib/bundle";
+import { getScope, hasBundle } from "@/lib/bundle";
+import { loadDashboardDataset } from "@/lib/server-dataset";
 import { createServerSupabase } from "@/lib/supabase";
 import type { PlayerRow } from "@/lib/types";
 import { buildCsv } from "@/lib/csv-provenance";
@@ -43,8 +44,9 @@ export async function GET(request: Request) {
   if (authError || !authData.user) {
     return NextResponse.json({ error: "Sign in to export scouting data." }, { status: 401 });
   }
-  if (!hasBundle()) {
-    return NextResponse.json({ error: "No dataset has been analysed." }, { status: 404 });
+  const { bundle } = await loadDashboardDataset();
+  if (!hasBundle(bundle)) {
+    return NextResponse.json({ error: "No active dataset is available for export." }, { status: 404, headers: { "Cache-Control": "no-store" } });
   }
   const url = new URL(request.url);
   const discipline = (url.searchParams.get("discipline") ?? "batting") === "bowling" ? "bowling" : "batting";
@@ -52,7 +54,7 @@ export async function GET(request: Request) {
   const limitParam = Number(url.searchParams.get("limit") ?? 30);
   const limit = Number.isFinite(limitParam) ? Math.max(1, Math.min(500, limitParam)) : 30;
 
-  const scope = getScope(scopeLabel && scopeLabel !== "global" ? scopeLabel : null);
+  const scope = getScope(scopeLabel && scopeLabel !== "global" ? scopeLabel : null, bundle);
   const rows: PlayerRow[] = (discipline === "batting" ? scope?.batters : scope?.bowlers) ?? [];
   const cols = discipline === "batting" ? BAT_COLS : BOWL_COLS;
 
