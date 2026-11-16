@@ -15,12 +15,16 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import threading
 import uuid
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Protocol
+from urllib.parse import quote
+
+from .supabase_auth import get_supabase_server_key, get_supabase_url, supabase_api_headers, validate_supabase_url
 
 JOB_QUEUED = "queued"
 JOB_RUNNING = "running"
@@ -150,92 +154,112 @@ class LocalQueue:
 
 
 class SupabaseQueue:
-    """Production queue over the `processing_jobs` table (service-role key only)."""
+    """Production queue using the Supabase REST API and atomic PostgreSQL RPCs."""
+
+    DB_COLUMNS = {
+        "id", "project_id", "dataset_id", "dataset_name", "sources", "status", "progress",
+        "stage", "detail", "attempts", "max_attempts", "is_fixture", "result", "error",
+        "created_by", "created_at", "updated_at", "started_at", "finished_at",
+    }
 
     def __init__(self, url: str | None = None, key: str | None = None, table: str = "processing_jobs"):
-        self.url = (url or os.getenv("SUPABASE_URL") or os.getenv("NEXT_PUBLIC_SUPABASE_URL") or "").rstrip("/")
-        self.key = key or os.getenv("SUPABASE_SERVICE_ROLE_KEY") or ""
+        self.url = validate_supabase_url(url) if url else get_supabase_url()
+        self.key = key.strip() if key is not None else get_supabase_server_key()
         self.table = table
-        if not (self.url and self.key):
-            raise RuntimeError("SupabaseQueue requires SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY")
+        # Validate injected values too. Use central header helper for all auth behavior.
+        supabase_api_headers(key=self.key)
 
     def _headers(self, extra: dict[str, str] | None = None) -> dict[str, str]:
-        h = {"apikey": self.key, "Authorization": f"Bearer {self.key}",
-             "Content-Type": "application/json"}
-        if extra:
-            h.update(extra)
-        return h
+        return supabase_api_headers(extra, key=self.key)
 
     def _req(self, method: str, path: str, **kw: Any) -> Any:
         import httpx
         r = httpx.request(method, f"{self.url}/rest/v1/{path}", headers=self._headers(kw.pop("headers", None)),
                           timeout=60, **kw)
         if r.status_code >= 300:
-            raise RuntimeError(f"supabase {method} {path} -> {r.status_code}: {r.text[:300]}")
+            # Avoid reflecting upstream response bodies, which may include request details.
+            raise RuntimeError(f"Supabase {method} {path.split('?')[0]} failed (HTTP {r.status_code})")
         return r.json() if r.text else None
+
+    def rpc(self, function: str, payload: dict[str, Any] | None = None) -> Any:
+        return self._req("POST", f"rpc/{function}", json=payload or {})
 
     def _row_to_job(self, row: dict[str, Any]) -> Job:
         return Job(
             id=row["id"], project_id=row["project_id"], dataset_id=row["dataset_id"],
-            dataset_name=row.get("dataset_name") or "dataset",
-            sources=row.get("sources") or [], status=row.get("status") or JOB_QUEUED,
-            progress=float(row.get("progress") or 0), stage=row.get("stage") or "queued",
-            detail=row.get("detail") or "", attempts=int(row.get("attempts") or 0),
-            max_attempts=int(row.get("max_attempts") or 3), is_fixture=bool(row.get("is_fixture")),
-            created_at=row.get("created_at") or _now(), updated_at=row.get("updated_at") or _now(),
-            started_at=row.get("started_at"), finished_at=row.get("finished_at"),
-            error=row.get("error"), logs=row.get("logs") or [], result=row.get("result") or {},
-            created_by=row.get("created_by"))
+            dataset_name=row.get("dataset_name") or "dataset", sources=row.get("sources") or [],
+            status=row.get("status") or JOB_QUEUED, progress=float(row.get("progress") or 0),
+            stage=row.get("stage") or "queued", detail=row.get("detail") or "",
+            attempts=int(row.get("attempts") or 0), max_attempts=int(row.get("max_attempts") or 3),
+            is_fixture=bool(row.get("is_fixture")), created_at=row.get("created_at") or _now(),
+            updated_at=row.get("updated_at") or _now(), started_at=row.get("started_at"),
+            finished_at=row.get("finished_at"), error=row.get("error"), logs=[],
+            result=row.get("result") or {}, created_by=row.get("created_by"))
 
     def create(self, job: Job) -> Job:
-        payload = job.to_dict()
-        payload.pop("id", None) if not job.id else None
+        if not re.fullmatch(r"job_[a-f0-9]{16}", job.id):
+            raise ValueError("job ID must use the job_<16 lowercase hex> format")
+        if (not re.fullmatch(r"[A-Za-z0-9_-]{1,64}", job.project_id) or
+                not re.fullmatch(r"[A-Za-z0-9_-]{1,64}", job.dataset_id) or not job.dataset_name.strip()):
+            raise ValueError("project, dataset, and dataset name are required and must be valid")
+        if not 1 <= int(job.max_attempts) <= 20 or not 0 <= int(job.attempts) <= int(job.max_attempts):
+            raise ValueError("job attempt counters are invalid")
+        if job.status not in {JOB_QUEUED, JOB_RUNNING, JOB_SUCCEEDED, JOB_FAILED, JOB_CANCELLED}:
+            raise ValueError("invalid processing job status")
+        if not 0 <= float(job.progress) <= 100:
+            raise ValueError("job progress must be between 0 and 100")
+        if job.created_by:
+            try:
+                uuid.UUID(job.created_by)
+            except (ValueError, AttributeError) as exc:
+                raise ValueError("created_by must be a valid UUID") from exc
+        if not isinstance(job.sources, list):
+            raise ValueError("job sources must be a JSON array")
+        for source in job.sources:
+            if not isinstance(source, dict) or not ((source.get("bucket") and source.get("path")) or source.get("local_path")):
+                raise ValueError("each source must contain a bucket/path or local_path reference")
+        payload = {key: value for key, value in job.to_dict().items()
+                   if key in self.DB_COLUMNS and key != "logs"}
+        # Job ID is application-generated and matches the database text key.
         rows = self._req("POST", self.table, json=[payload], headers={"Prefer": "return=representation"})
         return self._row_to_job(rows[0])
 
     def get(self, job_id: str) -> Job | None:
-        rows = self._req("GET", f"{self.table}?id=eq.{job_id}&select=*")
-        return self._row_to_job(rows[0]) if rows else None
-
-    def list(self, project_id: str | None = None, limit: int = 50) -> list[Job]:
-        q = f"{self.table}?select=*&order=created_at.desc&limit={limit}"
-        if project_id:
-            q += f"&project_id=eq.{project_id}"
-        return [self._row_to_job(r) for r in (self._req("GET", q) or [])]
-
-    def claim_next(self) -> Job | None:
-        rows = self._req("GET", f"{self.table}?status=eq.{JOB_QUEUED}&select=*&order=created_at.asc&limit=1")
-        if not rows:
-            retry = self._req("GET", f"{self.table}?status=eq.{JOB_FAILED}&select=*&order=created_at.asc&limit=1")
-            rows = [r for r in (retry or []) if int(r.get("attempts") or 0) < int(r.get("max_attempts") or 3)]
+        encoded_id = quote(job_id, safe="")
+        rows = self._req("GET", f"{self.table}?id=eq.{encoded_id}&select=*")
         if not rows:
             return None
         job = self._row_to_job(rows[0])
-        # optimistic claim: only succeeds if nobody else flipped the status
-        updated = self._req(
-            "PATCH", f"{self.table}?id=eq.{job.id}&status=eq.{job.status}",
-            json={"status": JOB_RUNNING, "attempts": job.attempts + 1, "started_at": _now(),
-                  "stage": "starting", "updated_at": _now()},
-            headers={"Prefer": "return=representation"})
-        return self._row_to_job(updated[0]) if updated else None
+        logs = self._req("GET", f"processing_logs?job_id=eq.{encoded_id}&select=stage,message,progress,created_at&order=created_at.asc&limit=200") or []
+        job.logs = [{"at": row.get("created_at"), "stage": row.get("stage"),
+                     "message": row.get("message"), "progress": row.get("progress")} for row in logs]
+        return job
+
+    def list(self, project_id: str | None = None, limit: int = 50) -> list[Job]:
+        q = f"{self.table}?select=*&order=created_at.desc&limit={max(1, min(limit, 100))}"
+        if project_id:
+            q += f"&project_id=eq.{quote(project_id, safe='')}"
+        return [self._row_to_job(r) for r in (self._req("GET", q) or [])]
+
+    def claim_next(self) -> Job | None:
+        rows = self.rpc("claim_processing_job")
+        return self._row_to_job(rows[0]) if rows else None
+
+    def requeue_stale(self) -> int:
+        result = self.rpc("requeue_stale_jobs", {"stale_after": "30 minutes"})
+        return int(result or 0)
 
     def update(self, job_id: str, **fields: Any) -> Job | None:
+        allowed = self.DB_COLUMNS - {"id", "created_at", "created_by", "logs"}
+        fields = {key: value for key, value in fields.items() if key in allowed}
         fields["updated_at"] = _now()
-        rows = self._req("PATCH", f"{self.table}?id=eq.{job_id}", json=fields,
+        rows = self._req("PATCH", f"{self.table}?id=eq.{quote(job_id, safe='')}", json=fields,
                          headers={"Prefer": "return=representation"})
         return self._row_to_job(rows[0]) if rows else None
 
     def log(self, job_id: str, stage: str, message: str, progress: float | None = None) -> None:
-        payload: dict[str, Any] = {"stage": stage, "detail": message}
-        if progress is not None:
-            payload["progress"] = progress
-        self.update(job_id, **payload)
-        try:
-            self._req("POST", "processing_logs",
-                      json=[{"job_id": job_id, "stage": stage, "message": message,
-                             "progress": progress}])
-        except Exception:
-            pass  # logging must never break the job
+        self.rpc("log_job_progress", {"p_job_id": job_id, "p_stage": stage,
+                                       "p_message": message, "p_progress": progress})
 
 
 def make_queue(storage_root: Path) -> JobQueue:
@@ -245,12 +269,13 @@ def make_queue(storage_root: Path) -> JobQueue:
     must therefore never be selected silently in production.
     """
     use_supabase = os.getenv("RS_USE_SUPABASE_QUEUE", "1") == "1"
-    has_supabase = bool(os.getenv("SUPABASE_URL") and os.getenv("SUPABASE_SERVICE_ROLE_KEY"))
+    has_supabase = bool((os.getenv("SUPABASE_URL") or os.getenv("NEXT_PUBLIC_SUPABASE_URL")) and
+                        (os.getenv("SUPABASE_SECRET_KEY") or os.getenv("SUPABASE_SERVICE_ROLE_KEY")))
     if use_supabase and has_supabase:
         return SupabaseQueue()
     if os.getenv("RS_ENV", "development").lower() == "production":
         raise RuntimeError(
-            "Production requires SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY with "
+            "Production requires SUPABASE_URL and SUPABASE_SECRET_KEY (or legacy SUPABASE_SERVICE_ROLE_KEY) with "
             "RS_USE_SUPABASE_QUEUE=1. A local queue cannot be shared across worker services."
         )
     return LocalQueue(Path(storage_root) / "queue")
