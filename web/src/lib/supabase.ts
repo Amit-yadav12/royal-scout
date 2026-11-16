@@ -15,10 +15,21 @@ export function supabaseConfig() {
   return {
     url: url ?? null,
     publishable: publishable ?? null,
-    serviceRole: process.env.SUPABASE_SERVICE_ROLE_KEY ?? null,
     configured: Boolean(url && publishable),
-    serverConfigured: Boolean(url && process.env.SUPABASE_SERVICE_ROLE_KEY),
+    serverConfigured: Boolean(url && (process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY)),
   };
+}
+
+/** Headers for privileged server-side REST/Storage calls. Never use a user's JWT here. */
+export function supabaseServerHeaders(extra: Record<string, string> = {}) {
+  const key = (process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || "").trim();
+  if (!key || key.startsWith("sb_publishable_")) throw new Error("A private Supabase server key is required.");
+  const isSecret = /^sb_secret_.+$/.test(key);
+  const isLegacyJwt = /^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/.test(key);
+  if (!isSecret && !isLegacyJwt) throw new Error("Supabase server key is malformed.");
+  const headers: Record<string, string> = { apikey: key, "Content-Type": "application/json", ...extra };
+  if (isLegacyJwt) headers.Authorization = `Bearer ${key}`;
+  return headers;
 }
 
 export async function createServerSupabase() {
