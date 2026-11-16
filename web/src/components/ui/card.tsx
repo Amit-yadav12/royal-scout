@@ -3,7 +3,7 @@ import { cn } from "@/lib/cn";
 
 export function Card({ className, children }: { className?: string; children: React.ReactNode }) {
   return (
-    <section className={cn("rounded-lg border border-surface-line bg-surface shadow-card", className)}>
+    <section className={cn("card-lift overflow-hidden rounded-xl border border-surface-line bg-surface shadow-card", className)}>
       {children}
     </section>
   );
@@ -56,8 +56,13 @@ export function Stat({
           : tone === "warning"
             ? "text-amber-700"
             : "text-ink";
+  const accentClass =
+    tone === "pink" ? "before:bg-royal-pink" :
+    tone === "gold" ? "before:bg-royal-gold" :
+    tone === "positive" ? "before:bg-emerald-600" :
+    tone === "warning" ? "before:bg-amber-500" : "before:bg-navy-700/25";
   return (
-    <div className="rounded-lg border border-surface-line bg-surface px-4 py-3.5 shadow-card">
+    <div className={cn("card-lift relative overflow-hidden rounded-xl border border-surface-line bg-surface px-4 py-3.5 shadow-card before:absolute before:inset-x-0 before:top-0 before:h-[2px]", accentClass)}>
       <p className="text-2xs font-medium tracking-[0.09em] text-ink-faint uppercase">{label}</p>
       <p className={cn("mt-1.5 font-mono text-2xl leading-none font-semibold tabular-nums", toneClass)}>{value}</p>
       {hint ? <p className="mt-1.5 text-2xs leading-relaxed text-ink-faint">{hint}</p> : null}

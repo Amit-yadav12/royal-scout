@@ -1,52 +1,51 @@
 import Link from "next/link";
 import { Suspense } from "react";
-import {
-  Activity, BarChart3, Brain, Database, Download, FileSearch, Gauge, GitCompareArrows, LayoutDashboard,
-  ListOrdered, ShieldAlert, Sliders, Target, TrendingUp, UploadCloud, Users,
-  ShieldCheck,
-} from "lucide-react";
+import { BarChart3, Download, FileSearch } from "lucide-react";
 import { hasBundle, scopeOptions, datasetBadge } from "@/lib/bundle";
 import { loadDashboardDataset } from "@/lib/server-dataset";
 import { DatasetSelector } from "./dataset-selector";
 import { ScopeSelect } from "./scope-select";
 import { Badge } from "./ui/badge";
 import { SignOutButton } from "./sign-out-button";
+import { BrandLockup } from "./brand-mark";
+import { ThemeToggle } from "./theme-provider";
+import { ActiveNavLink, type NavIconName } from "./active-nav-link";
 
-const NAV_GROUPS: { label: string; items: { href: string; label: string; icon: any }[] }[] = [
+const NAV_GROUPS: { label: string; items: { href: string; label: string; icon: NavIconName }[] }[] = [
   {
     label: "Command",
     items: [
-      { href: "/", label: "Overview", icon: LayoutDashboard },
-      { href: "/data-center", label: "Data Center", icon: Database },
-      { href: "/ingestion", label: "Data Ingestion", icon: UploadCloud },
-      { href: "/data-audit", label: "Data Audit", icon: ShieldAlert },
+      { href: "/", label: "Overview", icon: "LayoutDashboard" },
+      { href: "/data-center", label: "Data Center", icon: "Database" },
+      { href: "/ingestion", label: "Data Ingestion", icon: "UploadCloud" },
+      { href: "/data-audit", label: "Data Audit", icon: "ShieldAlert" },
     ],
   },
   {
     label: "Analytics",
     items: [
-      { href: "/batting", label: "Batting Analytics", icon: TrendingUp },
-      { href: "/bowling", label: "Bowling Analytics", icon: Target },
-      { href: "/pressure", label: "Pressure Analytics", icon: Gauge },
-      { href: "/pressure-audit", label: "Pressure Ranking (audited)", icon: ShieldCheck },
-      { href: "/statistical", label: "Statistical Intelligence", icon: Brain },
+      { href: "/batting", label: "Batting Analytics", icon: "TrendingUp" },
+      { href: "/bowling", label: "Bowling Analytics", icon: "Target" },
+      { href: "/pressure", label: "Pressure Analytics", icon: "Gauge" },
+      { href: "/pressure-audit", label: "Pressure Ranking (audited)", icon: "ShieldCheck" },
+      { href: "/statistical", label: "Statistical Intelligence", icon: "Brain" },
     ],
   },
   {
     label: "Rankings",
     items: [
-      { href: "/top-batters", label: "Top 30 Batters", icon: ListOrdered },
-      { href: "/top-bowlers", label: "Top 30 Bowlers", icon: ListOrdered },
-      { href: "/stability", label: "Ranking Stability", icon: Activity },
+      { href: "/top-batters", label: "Top 30 Batters", icon: "ListOrdered" },
+      { href: "/top-bowlers", label: "Top 30 Bowlers", icon: "ListOrdered" },
+      { href: "/stability", label: "Ranking Stability", icon: "Activity" },
     ],
   },
   {
     label: "Scouting",
     items: [
-      { href: "/players", label: "Player Explorer", icon: Users },
-      { href: "/compare", label: "Player Comparison", icon: GitCompareArrows },
-      { href: "/exports", label: "Export Center", icon: Download },
-      { href: "/methodology", label: "Methodology & Settings", icon: Sliders },
+      { href: "/players", label: "Player Explorer", icon: "Users" },
+      { href: "/compare", label: "Player Comparison", icon: "GitCompareArrows" },
+      { href: "/exports", label: "Export Center", icon: "Download" },
+      { href: "/methodology", label: "Methodology & Settings", icon: "Sliders" },
     ],
   },
 ];
@@ -77,14 +76,8 @@ export async function Shell({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-screen">
       <aside className="fixed inset-y-0 left-0 z-30 hidden w-60 flex-col border-r border-navy-800 bg-navy-900 text-white lg:flex">
-        <div className="flex items-center gap-2.5 border-b border-white/10 px-4 py-4">
-          <div className="flex h-8 w-8 items-center justify-center rounded bg-royal-pink">
-            <span className="font-mono text-sm font-bold">RS</span>
-          </div>
-          <div className="leading-tight">
-            <p className="text-[0.81rem] font-semibold tracking-wide">ROYAL SCOUT</p>
-            <p className="text-2xs tracking-[0.14em] text-white/45 uppercase">Intelligence Hub</p>
-          </div>
+        <div className="border-b border-white/10 px-4 py-4">
+          <BrandLockup />
         </div>
         <nav className="flex-1 overflow-y-auto px-2 py-3">
           {NAV_GROUPS.map((group) => (
@@ -95,13 +88,7 @@ export async function Shell({ children }: { children: React.ReactNode }) {
               <ul className="space-y-0.5">
                 {group.items.map((item) => (
                   <li key={item.href}>
-                    <Link
-                      href={item.href}
-                      className="group flex items-center gap-2 rounded px-2 py-1.5 text-[0.79rem] text-white/70 transition-colors hover:bg-white/8 hover:text-white"
-                    >
-                      <item.icon className="h-3.5 w-3.5 shrink-0 text-white/40 group-hover:text-royal-pink" />
-                      <span className="truncate">{item.label}</span>
-                    </Link>
+                    <ActiveNavLink href={item.href} label={item.label} iconName={item.icon} />
                   </li>
                 ))}
               </ul>
@@ -119,7 +106,7 @@ export async function Shell({ children }: { children: React.ReactNode }) {
           <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-2.5 sm:px-6">
             <div className="min-w-0">
               <div className="flex items-center gap-2">
-                <h1 className="truncate text-sm font-semibold text-ink">Royal Scout Intelligence Hub</h1>
+                <h1 className="truncate text-sm font-semibold text-ink">Royal Scout Intelligence OS</h1>
                 {datasetContext.localSnapshot ? (
                   <Badge tone="warning">LOCAL BUILD SNAPSHOT</Badge>
                 ) : isFixture ? (
@@ -142,14 +129,13 @@ export async function Shell({ children }: { children: React.ReactNode }) {
               <Link href="/exports" className="btn hidden sm:inline-flex">
                 <Download className="h-3.5 w-3.5" /> Exports
               </Link>
+              <ThemeToggle />
               <SignOutButton />
             </div>
           </div>
           <nav aria-label="Dashboard navigation" className="flex gap-1 overflow-x-auto border-t border-surface-line px-3 py-2 lg:hidden">
             {NAV_GROUPS.flatMap((group) => group.items).map((item) => (
-              <Link key={item.href} href={item.href} className="shrink-0 rounded-md px-2.5 py-1.5 text-xs text-ink-soft hover:bg-surface-muted hover:text-ink">
-                {item.label}
-              </Link>
+              <ActiveNavLink key={item.href} href={item.href} label={item.label} mobile />
             ))}
           </nav>
           {datasetContext.localSnapshot ? (
@@ -170,7 +156,7 @@ export async function Shell({ children }: { children: React.ReactNode }) {
             </div>
           ) : null}
         </header>
-        <main className="min-w-0 flex-1 px-4 py-5 sm:px-6 lg:px-8">{children}</main>
+        <main className="min-w-0 flex-1 px-4 py-5 motion-enter sm:px-6 lg:px-8">{children}</main>
         <footer className="border-t border-surface-line px-4 py-3 text-2xs text-ink-faint sm:px-6 lg:px-8">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <span>
@@ -208,7 +194,7 @@ export function PageHeader({
   return (
     <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
       <div className="flex items-start gap-2.5">
-        <div className="mt-0.5 flex h-8 w-8 items-center justify-center rounded bg-navy-900 text-white">
+        <div className="mt-0.5 flex h-8 w-8 items-center justify-center rounded-lg bg-navy-900 text-white shadow-sm ring-1 ring-white/10">
           <Icon className="h-4 w-4" />
         </div>
         <div>

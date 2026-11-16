@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { createBrowserClient } from "@supabase/ssr";
 import { CircleAlert, KeyRound, LogIn, Mail, ShieldCheck } from "lucide-react";
 import { safeRedirectTarget } from "@/lib/safe-redirect";
+import { BrandLockup } from "@/components/brand-mark";
 
 function LoginForm() {
   const router = useRouter();
@@ -83,9 +84,8 @@ function LoginForm() {
   return (
     <main className="min-h-screen bg-surface-muted px-4 py-10 sm:py-16">
       <div className="mx-auto max-w-md">
-        <div className="mb-5 text-center">
-          <div className="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-xl bg-royal-pink text-sm font-bold text-white shadow-card">RS</div>
-          <p className="text-2xs font-semibold tracking-[0.18em] text-ink-faint uppercase">Royal Scout · Intelligence Hub</p>
+        <div className="mb-5 flex justify-center">
+          <div className="rounded-xl bg-navy-900 px-4 py-3 shadow-card"><BrandLockup /></div>
         </div>
         <section className="rounded-xl border border-surface-line bg-surface p-6 shadow-card sm:p-8" aria-labelledby="login-title">
           <div className="mb-5 flex items-start gap-3">

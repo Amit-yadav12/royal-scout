@@ -5,10 +5,19 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        navy: { 950: "#050D1B", 900: "#0B1B33", 800: "#102A54", 700: "#173C74", 600: "#1F5296" },
-        royal: { pink: "#E8117F", pinkDark: "#B70D64", gold: "#C9A227", blue: "#1B4B8F" },
-        surface: { DEFAULT: "#FFFFFF", muted: "#F7F8FA", line: "#E4E8EF", deep: "#EEF1F6" },
-        ink: { DEFAULT: "#0B1B33", soft: "#4A5768", faint: "#7A8699" },
+        navy: { 950: "#080E1D", 900: "#101B34", 800: "#182746", 700: "#23416F", 600: "#315384" },
+        royal: { pink: "#D72D79", pinkDark: "#B51F62", gold: "#C9A45C", blue: "#254B84" },
+        surface: {
+          DEFAULT: "rgb(var(--rs-surface) / <alpha-value>)",
+          muted: "rgb(var(--rs-surface-muted) / <alpha-value>)",
+          line: "rgb(var(--rs-surface-line) / <alpha-value>)",
+          deep: "rgb(var(--rs-surface-deep) / <alpha-value>)",
+        },
+        ink: {
+          DEFAULT: "rgb(var(--rs-ink) / <alpha-value>)",
+          soft: "rgb(var(--rs-ink-soft) / <alpha-value>)",
+          faint: "rgb(var(--rs-ink-faint) / <alpha-value>)",
+        },
       },
       fontFamily: {
         sans: ["var(--font-sans)", "ui-sans-serif", "system-ui", "sans-serif"],
