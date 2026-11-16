@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createServerSupabase } from "@/lib/supabase";
+import { mayManageIngestion } from "@/lib/staff-access";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -18,6 +19,9 @@ export async function POST(_request: Request, { params }: { params: Promise<{ id
   if (!session) return NextResponse.json({ error: "Supabase authentication is not configured." }, { status: 503 });
   const { data, error } = await session.auth.getUser();
   if (error || !data.user) return NextResponse.json({ error: "Sign in to retry processing." }, { status: 401 });
+  if (!(await mayManageIngestion(session, data.user.id))) {
+    return NextResponse.json({ error: "Only authorised analysts, scouts, or admins may retry jobs." }, { status: 403 });
+  }
 
   try {
     const base = workerUrl.replace(/\/$/, "");

@@ -15,28 +15,29 @@ export function hasBundle(b: Bundle | null = bundle): b is Bundle {
   return Boolean(b && b.meta && b.leaderboards && b.counts);
 }
 
-export function getScope(scopeLabel?: string | null): ScopePayload | null {
-  if (!hasBundle()) return null;
-  const scopes = bundle.leaderboards.scopes;
+export function getScope(scopeLabel?: string | null, data: Bundle | null = bundle): ScopePayload | null {
+  if (!hasBundle(data)) return null;
+  const active = data;
+  const scopes = active.leaderboards.scopes;
   if (!scopes?.length) return null;
   if (!scopeLabel || scopeLabel === "global") {
     const globalRow: ScopePayload = {
       scope: { type: "global", label: "All data", filter: {} },
-      batters: bundle.leaderboards.global.batters,
-      bowlers: bundle.leaderboards.global.bowlers,
-      batters_evaluated: bundle.leaderboards.global.batters_evaluated,
-      bowlers_evaluated: bundle.leaderboards.global.bowlers_evaluated,
-      batters_eligible: bundle.leaderboards.global.batters_eligible,
-      bowlers_eligible: bundle.leaderboards.global.bowlers_eligible,
+      batters: active.leaderboards.global.batters,
+      bowlers: active.leaderboards.global.bowlers,
+      batters_evaluated: active.leaderboards.global.batters_evaluated,
+      bowlers_evaluated: active.leaderboards.global.bowlers_evaluated,
+      batters_eligible: active.leaderboards.global.batters_eligible,
+      bowlers_eligible: active.leaderboards.global.bowlers_eligible,
     };
     return globalRow;
   }
   return scopes.find((s) => s.scope.label === scopeLabel) ?? scopes[0];
 }
 
-export function scopeOptions(): { label: string; type: string; count: number }[] {
-  if (!hasBundle()) return [];
-  return bundle.leaderboards.scopes.map((s) => ({
+export function scopeOptions(data: Bundle | null = bundle): { label: string; type: string; count: number }[] {
+  if (!hasBundle(data)) return [];
+  return data.leaderboards.scopes.map((s) => ({
     label: s.scope.label,
     type: s.scope.type,
     count: Math.max(s.batters_eligible, s.bowlers_eligible),
@@ -64,19 +65,20 @@ export function allPlayers(): string[] {
 export function leaderboardFor(
   discipline: "batting" | "bowling",
   scopeLabel?: string | null,
+  data: Bundle | null = bundle,
 ): PlayerRow[] {
-  const scope = getScope(scopeLabel);
+  const scope = getScope(scopeLabel, data);
   if (!scope) return [];
   return discipline === "batting" ? scope.batters : scope.bowlers;
 }
 
-export function datasetBadge(): string {
-  if (!hasBundle()) return "No dataset";
-  const version = bundle.meta.dataset_version ?? 1;
-  return `${bundle.meta.name} · v${version}`;
+export function datasetBadge(data: Bundle | null = bundle): string {
+  if (!hasBundle(data)) return "No dataset";
+  const version = data.meta.dataset_version ?? 1;
+  return `${data.meta.name} · v${version}`;
 }
 
-export function limitations(): string[] {
-  if (!hasBundle()) return ["No analytical bundle has been generated yet."];
-  return bundle.meta.limitations ?? [];
+export function limitations(data: Bundle | null = bundle): string[] {
+  if (!hasBundle(data)) return ["No analytical bundle has been generated yet."];
+  return data.meta.limitations ?? [];
 }

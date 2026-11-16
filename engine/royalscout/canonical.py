@@ -465,7 +465,8 @@ BALL_EVENT_SCHEMA = {
     "over_number": pl.Int32, "ball_number": pl.Int32, "batter_runs": pl.Int32,
     "extras": pl.Int32, "is_wicket": pl.Boolean, "wicket_type": pl.Utf8,
     "target": pl.Int32, "source_file": pl.Utf8, "source_row": pl.Int32,
-    "phase": pl.Utf8, "legal_delivery": pl.Boolean,
+    "phase": pl.Utf8, "legal_delivery": pl.Boolean, "batter_ball": pl.Boolean,
+    "bowler_runs": pl.Int32, "bowler_wicket": pl.Boolean,
 }
 
 
@@ -486,8 +487,38 @@ def extract_ball_events(t: RawTable, p: TableProfile, reg: PlayerRegistry) -> pl
         batter_runs = to_int(_cell(row, _first(f, "batter_runs")))
         runs_total = to_int(_cell(row, _first(f, "runs")))
         extras = to_int(_cell(row, _first(f, "extras")))
+        extras = extras or 0
         if batter_runs is None and runs_total is not None:
-            batter_runs = max(0, runs_total - (extras or 0))
+            batter_runs = max(0, runs_total - extras)
+        raw_extra_type = _str_or_none(_cell(row, _first(f, "extras_type")))
+        extra_type = re.sub(r"[^a-z]+", " ", (raw_extra_type or "").lower()).strip()
+        wide_count = to_int(_cell(row, _first(f, "wides")))
+        no_ball_count = to_int(_cell(row, _first(f, "no_balls")))
+        is_wide = bool((wide_count or 0) > 0 or "wide" in extra_type.split())
+        is_no_ball = bool((no_ball_count or 0) > 0 or "no ball" in extra_type)
+        known_legal_extra = any(token in extra_type for token in ("bye", "leg bye", "penalty"))
+        if is_wide or is_no_ball:
+            legal_delivery: bool | None = False
+        elif extras == 0 or known_legal_extra:
+            legal_delivery = True
+        else:
+            # A numeric extras total cannot distinguish byes from wides/no-balls.
+            legal_delivery = None
+        batter_ball: bool | None = False if is_wide else (True if legal_delivery is not None else None)
+        bowler_runs: int | None = (int(batter_runs or 0) + extras
+                                   if is_wide or is_no_ball else
+                                   int(batter_runs or 0) if extras == 0 or known_legal_extra else None)
+        wicket_type = _str_or_none(_cell(row, _first(f, "wicket_type")))
+        dismissed = bool(_is_not_out_flag(_cell(row, _first(f, "is_wicket"))) or wicket_type)
+        wicket_key = re.sub(r"[^a-z]+", " ", (wicket_type or "").lower()).strip()
+        uncredited = ("run out" in wicket_key or "retired hurt" in wicket_key
+                      or "retired out" in wicket_key or "timed out" in wicket_key
+                      or "obstructing the field" in wicket_key or "handled the ball" in wicket_key)
+        credited_types = ("bowled", "caught", "lbw", "stumped", "hit wicket",
+                          "hit the ball twice", "hit ball twice")
+        bowler_wicket: bool | None = (not uncredited if uncredited else
+                                      True if any(token in wicket_key for token in credited_types) else
+                                      None if dismissed else False)
         rows.append({
             "batter": batter, "bowler": bowler,
             "team_batting": _str_or_none(_cell(row, _first(f, "team"))),
@@ -506,8 +537,8 @@ def extract_ball_events(t: RawTable, p: TableProfile, reg: PlayerRegistry) -> pl
             "target": to_int(_cell(row, _first(f, "target"))),
             "source_file": t.source_path,
             "source_row": t.header_row + 2 + ri,
-            "legal_delivery": not (extras and ("wide" in str(_cell(row, _first(f, "extras"))) if
-                                               _cell(row, _first(f, "extras")) else False)),
+            "legal_delivery": legal_delivery, "batter_ball": batter_ball,
+            "bowler_runs": bowler_runs, "bowler_wicket": bowler_wicket,
         })
     if not rows:
         return None
@@ -527,6 +558,7 @@ def reduce_ball_events_to_innings(events: pl.DataFrame) -> tuple[list[dict[str, 
     # credited to the bowler" (run-outs are not). Fall back to the single flag.
     ball_col = "batter_ball" if "batter_ball" in events.columns else "legal_delivery"
     wkt_col = "batter_dismissed" if "batter_dismissed" in events.columns else "is_wicket"
+    bowler_wkt_col = "bowler_wicket" if "bowler_wicket" in events.columns else "is_wicket"
     bat = (
         events.group_by(["match_id", "innings_number", "batter", "team_batting", "competition", "season"])
         .agg([
@@ -565,9 +597,12 @@ def reduce_ball_events_to_innings(events: pl.DataFrame) -> tuple[list[dict[str, 
         .agg([
             pl.col("legal_delivery").sum().alias("legal_balls") if "legal_delivery" in events.columns
             else pl.col("batter_ball").sum().alias("legal_balls"),
-            pl.col("batter_runs").sum().alias("runs_conceded"),
-            pl.col("extras").sum().alias("_extras"),
-            pl.col("is_wicket").sum().alias("wickets"),
+            pl.col("legal_delivery").is_not_null().all().alias("_legal_known")
+            if "legal_delivery" in events.columns else pl.col("batter_ball").is_not_null().all().alias("_legal_known"),
+            pl.col("bowler_runs").sum().alias("runs_conceded"),
+            pl.col("bowler_runs").is_not_null().all().alias("_runs_known"),
+            pl.col(bowler_wkt_col).sum().alias("wickets"),
+            pl.col(bowler_wkt_col).is_not_null().all().alias("_wickets_known"),
             ((pl.col("batter_runs") == 0) & (pl.col("extras") == 0)).sum().alias("dot_balls"),
             pl.col("over_number").max().alias("_max_over"),
         ])
@@ -578,9 +613,11 @@ def reduce_ball_events_to_innings(events: pl.DataFrame) -> tuple[list[dict[str, 
             "player": r["bowler"], "team": r["team_bowling"], "opposition": None,
             "competition": r["competition"], "season": r["season"], "match_id": r["match_id"],
             "venue": None, "innings_number": r["innings_number"],
-            "wickets": int(r["wickets"]), "runs_conceded": int(r["runs_conceded"] + r["_extras"]),
+            "wickets": int(r["wickets"] or 0) if r["_wickets_known"] else None,
+            "runs_conceded": int(r["runs_conceded"]) if r["_runs_known"] else None,
             "maidens": None, "dot_balls": int(r["dot_balls"]), "wides": None, "no_balls": None,
-            "best_bowling": None, "legal_balls": int(r["legal_balls"]),
+            "best_bowling": None,
+            "legal_balls": int(r["legal_balls"]) if r["_legal_known"] else None,
             "overs_value": None, "balls_derived": False, "granularity": GRANULARITY_INNINGS,
             "innings_count": 1, "flags": ["derived_from_ball_by_ball"],
             "source_file": "derived:ball_events", "worksheet": "derived", "source_row": None,

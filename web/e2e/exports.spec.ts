@@ -39,14 +39,12 @@ test("health endpoint reports worker configuration honestly", async ({ request }
   expect(["ok", "unavailable", "not_configured"]).toContain(json.worker);
 });
 
-test("ingestion endpoint refuses to pretend when the worker is absent", async ({ request }) => {
+test("legacy ingestion endpoint rejects proxied uploads", async ({ request }) => {
   const response = await request.post("/api/ingest");
-  if (response.status() === 503) {
-    const json = await response.json();
-    expect(json.error).toMatch(/WORKER_API_URL|not configured/i);
-  } else {
-    expect([202, 400]).toContain(response.status());
-  }
+  expect(response.status()).toBe(410);
+  const json = await response.json();
+  expect(json.error).toMatch(/retired/i);
+  expect(json.hint).toMatch(/direct-to-storage/i);
 });
 
 test("export centre lists real artefacts with real sizes", async ({ page }) => {

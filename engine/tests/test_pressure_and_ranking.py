@@ -9,8 +9,10 @@ import pytest
 
 from royalscout.config import Config, DEFAULT_CONFIG
 from royalscout.db import JOB_QUEUED, JOB_RUNNING, LocalQueue, new_job
-from royalscout.ingest import profile_table, read_file
-from royalscout.canonical import build_canonical
+from royalscout.ingest import RawTable, profile_table, read_file
+from royalscout.bowling import compute_bowling_raw
+from royalscout.canonical import (build_canonical, extract_ball_events, build_player_registry,
+                                  reduce_ball_events_to_innings)
 from royalscout.pipeline import analyse_scope, run_pipeline
 from royalscout.pressure import (phase_aggregates, pressure_batting_metrics,
                                  pressure_proxy_from_records, scenario_table, tag_ball_events)
@@ -28,6 +30,65 @@ def _events() -> pl.DataFrame:
     cd = build_canonical(tables, profiles)
     assert cd.ball_events is not None
     return cd.ball_events
+
+
+def test_ball_event_attribution_uses_extra_and_dismissal_types() -> None:
+    header = ["Match ID", "Innings", "Over", "Ball", "Batter", "Bowler", "Team",
+              "Opposition", "Competition", "Season", "Batter Runs", "Extras",
+              "Extras Type", "Wicket", "Wicket Type"]
+    rows = [
+        ["X", 1, 1, 1, "Fixture Batter", "Fixture Bowler", "Fixture A", "Fixture B",
+         "Fixture Cup", 2026, 0, 1, "bye", 0, ""],
+        ["X", 1, 1, 2, "Fixture Batter", "Fixture Bowler", "Fixture A", "Fixture B",
+         "Fixture Cup", 2026, 0, 1, "wide", 0, ""],
+        ["X", 1, 1, 3, "Fixture Batter", "Fixture Bowler", "Fixture A", "Fixture B",
+         "Fixture Cup", 2026, 0, 1, "no ball", 0, ""],
+        ["X", 1, 1, 4, "Fixture Batter", "Fixture Bowler", "Fixture A", "Fixture B",
+         "Fixture Cup", 2026, 0, 0, "", 1, "run out"],
+        ["X", 1, 1, 5, "Fixture Batter", "Fixture Bowler", "Fixture A", "Fixture B",
+         "Fixture Cup", 2026, 0, 0, "", 1, "caught"],
+        ["X", 1, 1, 6, "Fixture Batter", "Fixture Bowler", "Fixture A", "Fixture B",
+         "Fixture Cup", 2026, 0, 1, "unclassified", 0, ""],
+        ["X", 1, 1, 7, "Fixture Batter", "Fixture Bowler", "Fixture A", "Fixture B",
+         "Fixture Cup", 2026, 0, 0, "", 1, "unclassified dismissal"],
+    ]
+    table = RawTable("synthetic.csv", "csv", "events", [header, *rows])
+    profile = profile_table(table)
+    registry = build_player_registry([("Fixture Batter", "Fixture A"),
+                                      ("Fixture Bowler", "Fixture B")])
+    events = extract_ball_events(table, profile, registry)
+    assert events is not None
+    records = events.select(["legal_delivery", "batter_ball", "bowler_runs",
+                             "is_wicket", "bowler_wicket"]).to_dicts()
+    assert records[0] == {"legal_delivery": True, "batter_ball": True, "bowler_runs": 0,
+                          "is_wicket": False, "bowler_wicket": False}
+    assert records[1]["legal_delivery"] is False and records[1]["batter_ball"] is False
+    assert records[1]["bowler_runs"] == 1
+    assert records[2]["legal_delivery"] is False and records[2]["batter_ball"] is True
+    assert records[2]["bowler_runs"] == 1
+    assert records[3]["is_wicket"] is True and records[3]["bowler_wicket"] is False
+    assert records[4]["bowler_wicket"] is True
+    # Numeric extras alone do not identify legality or bowler attribution.
+    assert records[5]["legal_delivery"] is None and records[5]["bowler_runs"] is None
+
+    known_events = events.head(5)
+    batting, bowling = reduce_ball_events_to_innings(known_events)
+    assert batting[0]["balls_faced"] == 4  # a wide is not faced; a no-ball is
+    assert bowling[0]["legal_balls"] == 3  # bye, run-out ball, caught ball
+    assert bowling[0]["runs_conceded"] == 2  # wide + no-ball; bye is not charged
+    assert bowling[0]["wickets"] == 1  # run out is not a bowler wicket
+    phase = phase_aggregates(tag_ball_events(known_events, DEFAULT_CONFIG))
+    phase_bowl = phase["bowling"]["Fixture Bowler"]["powerplay"]
+    assert phase_bowl["runs_conceded"] == 2
+    assert phase_bowl["balls"] == 3
+    assert phase_bowl["wickets"] == 1
+
+    # Unknown dismissal types must not become a fabricated zero-wicket line.
+    unknown_wicket_events = events.head(5).vstack(events.tail(1))
+    _, unknown_wicket_bowling = reduce_ball_events_to_innings(unknown_wicket_events)
+    raw_bowler = compute_bowling_raw(unknown_wicket_bowling)["Fixture Bowler"]
+    assert not raw_bowler.wickets_known
+    assert raw_bowler.average is None and raw_bowler.strike_rate is None
 
 
 def test_ball_events_are_detected_and_derived_into_innings() -> None:

@@ -18,7 +18,9 @@ export async function middleware(request: NextRequest) {
 
   const isPublic =
     pathname === "/login" ||
+    pathname === "/auth/callback" ||
     pathname.startsWith("/api/health") ||
+    pathname === "/api/ingest" ||
     pathname.startsWith("/_next/") ||
     pathname === "/favicon.ico";
 

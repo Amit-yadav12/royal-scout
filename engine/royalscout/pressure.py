@@ -65,11 +65,20 @@ def tag_ball_events(events: pl.DataFrame, cfg: Config) -> pl.DataFrame:
         pl.col("wicket_i").rolling_sum(window_size=sc.collapse_window_balls, min_samples=1)
         .over(["match_id", "innings_number"]).fill_null(0).alias("recent_wkts"),
     ])
-    total_per_innings = df.group_by(["match_id", "innings_number"]).agg(
-        pl.col("ball_seq").max().alias("innings_balls"))
+    if "legal_delivery" not in df.columns:
+        df = df.with_columns(pl.lit(True).alias("legal_delivery"))
+    total_per_innings = df.group_by(["match_id", "innings_number"]).agg([
+        pl.col("legal_delivery").cast(pl.Int32).sum().alias("innings_balls"),
+        pl.col("legal_delivery").is_not_null().all().alias("legal_balls_known"),
+    ])
     df = df.join(total_per_innings, on=["match_id", "innings_number"], how="left")
+    df = df.with_columns(
+        pl.col("legal_delivery").cast(pl.Int32).cum_sum()
+        .over(["match_id", "innings_number"]).alias("legal_ball_seq")
+    )
     df = df.with_columns([
-        (pl.col("innings_balls") - pl.col("ball_seq")).alias("balls_left"),
+        pl.when(pl.col("legal_balls_known"))
+        .then(pl.col("innings_balls") - pl.col("legal_ball_seq")).otherwise(None).alias("balls_left"),
         (10 - pl.col("wkts_fallen")).alias("wkts_left"),
     ])
     # first-innings total per match => defending scenarios
@@ -87,8 +96,8 @@ def tag_ball_events(events: pl.DataFrame, cfg: Config) -> pl.DataFrame:
     df = df.with_columns([
         pl.when((pl.col("innings_number") == 2) & (pl.col("balls_left") > 0))
         .then(pl.col("runs_required") * 6.0 / pl.col("balls_left")).otherwise(None).alias("rrr"),
-        pl.when(pl.col("ball_seq") > 0)
-        .then(pl.col("score") * 6.0 / pl.col("ball_seq")).otherwise(None).alias("crr"),
+        pl.when(pl.col("legal_ball_seq") > 0)
+        .then(pl.col("score") * 6.0 / pl.col("legal_ball_seq")).otherwise(None).alias("crr"),
     ])
 
     # ---- scenario flags ----
@@ -166,46 +175,63 @@ def scenario_table(cfg: Config) -> list[dict[str, Any]]:
 # Phase aggregates (available whenever ball-by-ball exists)
 # ---------------------------------------------------------------------------
 def phase_aggregates(events: pl.DataFrame) -> dict[str, Any]:
+    batter_ball_col = "batter_ball" if "batter_ball" in events.columns else "legal_delivery"
+    bowler_runs_col = "bowler_runs" if "bowler_runs" in events.columns else "batter_runs"
+    bowler_wicket_col = "bowler_wicket" if "bowler_wicket" in events.columns else "is_wicket"
     bat = events.group_by(["batter", "phase"]).agg([
         pl.col("batter_runs").sum().alias("runs"),
-        pl.len().alias("balls"),
+        pl.col(batter_ball_col).cast(pl.Int32).sum().alias("balls"),
+        pl.col(batter_ball_col).is_not_null().all().alias("balls_known"),
         (pl.col("batter_runs") == 4).sum().alias("fours"),
         (pl.col("batter_runs") == 6).sum().alias("sixes"),
-        ((pl.col("batter_runs") == 0) & (~pl.col("is_wicket"))).sum().alias("dots"),
+        ((pl.col("batter_runs") == 0) & pl.col(batter_ball_col) & (~pl.col("is_wicket")))
+        .sum().alias("dots"),
     ])
     bowl = events.group_by(["bowler", "phase"]).agg([
-        pl.col("batter_runs").sum().alias("runs"),
-        pl.col("extras").sum().alias("extras"),
-        pl.len().alias("balls"),
-        pl.col("is_wicket").sum().alias("wickets"),
-        ((pl.col("batter_runs") == 0) & (pl.col("extras") == 0)).sum().alias("dots"),
+        pl.col(bowler_runs_col).sum().alias("runs"),
+        pl.col(bowler_runs_col).is_not_null().all().alias("runs_known"),
+        pl.col("legal_delivery").cast(pl.Int32).sum().alias("balls"),
+        pl.col("legal_delivery").is_not_null().all().alias("balls_known"),
+        pl.col(bowler_wicket_col).sum().alias("wickets"),
+        pl.col(bowler_wicket_col).is_not_null().all().alias("wickets_known"),
+        ((pl.col("batter_runs") == 0) & (pl.col("extras") == 0) & pl.col("legal_delivery"))
+        .sum().alias("dots"),
     ])
     batting: dict[str, dict[str, Any]] = {}
     for r in bat.to_dicts():
         d = batting.setdefault(r["batter"], {})
         d[r["phase"]] = {
-            "runs": r["runs"], "balls": r["balls"],
-            "strike_rate": round(100 * r["runs"] / r["balls"], 2) if r["balls"] else None,
+            "runs": r["runs"], "balls": r["balls"] if r["balls_known"] else None,
+            "strike_rate": round(100 * r["runs"] / r["balls"], 2)
+            if r["balls_known"] and r["balls"] else None,
             "fours": r["fours"], "sixes": r["sixes"],
             "boundary_pct": round(100 * (4 * r["fours"] + 6 * r["sixes"]) / r["runs"], 2) if r["runs"] else None,
-            "dot_pct": round(100 * r["dots"] / r["balls"], 2) if r["balls"] else None,
+            "dot_pct": round(100 * r["dots"] / r["balls"], 2)
+            if r["balls_known"] and r["balls"] else None,
         }
     bowling: dict[str, dict[str, Any]] = {}
     for r in bowl.to_dicts():
         d = bowling.setdefault(r["bowler"], {})
-        runs = r["runs"] + r["extras"]
+        runs = r["runs"] if r["runs_known"] else None
+        balls = r["balls"] if r["balls_known"] else None
+        wickets = r["wickets"] if r["wickets_known"] else None
         d[r["phase"]] = {
-            "runs_conceded": runs, "balls": r["balls"], "wickets": r["wickets"],
-            "economy": round(runs * 6 / r["balls"], 2) if r["balls"] else None,
-            "dot_pct": round(100 * r["dots"] / r["balls"], 2) if r["balls"] else None,
-            "bowling_strike_rate": round(r["balls"] / r["wickets"], 2) if r["wickets"] else None,
+            "runs_conceded": runs, "balls": balls, "wickets": wickets,
+            "economy": round(runs * 6 / balls, 2) if runs is not None and balls else None,
+            "dot_pct": round(100 * r["dots"] / balls, 2) if balls else None,
+            "bowling_strike_rate": round(balls / wickets, 2)
+            if balls and wickets is not None and wickets else None,
         }
-    for pid, d in batting.items():
-        total = sum(v["balls"] for v in d.values()) or 1
-        d["phase_ball_shares"] = {k: round(v["balls"] / total, 3) for k, v in d.items() if k != "phase_ball_shares"}
-    for pid, d in bowling.items():
-        total = sum(v["balls"] for v in d.values()) or 1
-        d["phase_ball_shares"] = {k: round(v["balls"] / total, 3) for k, v in d.items() if k != "phase_ball_shares"}
+    for d in batting.values():
+        known = all(v["balls"] is not None for v in d.values())
+        total = sum(v["balls"] for v in d.values() if v["balls"] is not None)
+        d["phase_ball_shares"] = ({k: round(v["balls"] / total, 3) for k, v in d.items()}
+                                   if known and total else {})
+    for d in bowling.values():
+        known = all(v["balls"] is not None for v in d.values())
+        total = sum(v["balls"] for v in d.values() if v["balls"] is not None)
+        d["phase_ball_shares"] = ({k: round(v["balls"] / total, 3) for k, v in d.items()}
+                                   if known and total else {})
     return {"batting": batting, "bowling": bowling, "available": True}
 
 

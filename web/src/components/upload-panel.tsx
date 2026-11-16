@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { CircleAlert, CircleCheck, Loader2, UploadCloud } from "lucide-react";
 import { bytes } from "@/lib/format";
 import { Badge } from "./ui/badge";
@@ -134,6 +135,7 @@ async function uploadSignedFile(file: File, signed: SignedFile, onProgress: (loa
 }
 
 export function UploadPanel() {
+  const router = useRouter();
   const [files, setFiles] = useState<File[]>([]);
   const [name, setName] = useState("Scouting dataset");
   const [job, setJob] = useState<JobState | null>(null);
@@ -180,6 +182,21 @@ export function UploadPanel() {
           }
         }
         setJob(data);
+        if (data.status === "succeeded") {
+          if (data.dataset_id) {
+            try {
+              const activate = await fetch("/api/datasets/active", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ dataset_id: data.dataset_id }),
+              });
+              if (!activate.ok) setHint("Processing succeeded, but the active dataset could not be switched. Use the dataset selector to choose it; the existing selection was kept.");
+            } catch {
+              setHint("Processing succeeded, but the active dataset could not be switched. Use the dataset selector to choose it; the existing selection was kept.");
+            }
+          }
+          router.refresh();
+        }
         if (data.status && TERMINAL.has(data.status)) return;
       } catch (e) {
         setError(e instanceof Error ? e.message : String(e));
@@ -382,7 +399,7 @@ export function UploadPanel() {
               {job.status === "succeeded" ? (
                 <div className="mt-2 border-t border-surface-line pt-2">
                   <p className="text-ink-soft">
-                    Dataset processing is complete. The new bundle is stored under its dataset ID. To publish it as the dashboard snapshot, follow the dataset-publishing steps in docs/DEPLOYMENT.md and redeploy the Vercel project.
+                    Dataset processing is complete. The new private bundle is now selected across the dashboard at request time; no Vercel rebuild is needed.
                   </p>
                   {job.artifacts?.length ? (
                     <div className="mt-2 space-y-1.5">

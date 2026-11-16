@@ -2,8 +2,10 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-  // The analytical bundle is imported statically, so make sure it is traced into
-  // the server build on Vercel as well as served locally.
+  // Arena's development preview is proxied from per-session *.e2b.app origins.
+  allowedDevOrigins: ["**.e2b.app"],
+  // Include the explicitly labelled local-development snapshot and dataset-specific
+  // audited report artefacts in the server trace; production analytics load from private Storage.
   outputFileTracingIncludes: { "/**/*": ["./src/data/**"] },
   serverExternalPackages: [],
   async headers() {
