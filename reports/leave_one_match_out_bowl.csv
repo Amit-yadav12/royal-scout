@@ -1,0 +1,16 @@
+player_id,dropped_match,rank_full,rank_without_best_match,rank_change,still_top10,player_name
+2490,20879,1,1,0,true,Mohammad Nawaz
+6628,31247,2,2,0,true,Gerald Coetzee
+5979,42744,3,3,0,true,Abrar Ahmed
+2933,14107,4,4,0,true,Jasprit Bumrah
+2382,45490,5,4,-1,true,Jamie Overton
+781,20236,6,6,0,true,Sunil Narine
+34485,37355,7,6,-1,true,Sufiyan Muqeem
+8661,30342,8,7,-1,true,Matheesha Pathirana
+4926,16665,9,9,0,true,Shadab Khan
+35318,50366,10,7,-3,true,Sakib Hussain
+3644,14108,11,11,0,false,Kuldeep Yadav
+4101,14131,12,12,0,false,Mitchell Santner
+2681,15547,13,14,1,false,Taskin Ahmed
+39657,55079,14,14,0,false,Eshan Malinga
+2417,13522,15,15,0,false,Akeal Hosein

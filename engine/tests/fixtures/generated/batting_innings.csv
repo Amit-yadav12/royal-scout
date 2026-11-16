@@ -1,0 +1,19 @@
+Player,State Team,Competition,Season,Match ID,Opposition,Innings,Runs,Balls,4s,6s,Not Out,Dismissal,Venue
+Fixture Opener,Fixture State A,Fixture Trophy,2024,M1,Fixture State B,1,50,40,6,1,No,Caught,Fixture Ground 1
+Fixture Opener,Fixture State A,Fixture Trophy,2024,M2,Fixture State C,2,30,20,2,2,Yes,Not Out,Fixture Ground 2
+Fixture Opener,Fixture State A,Fixture Trophy,2024,M3,Fixture State B,1,0,2,0,0,No,Bowled,Fixture Ground 1
+Fixture Opener,Fixture State A,Fixture Trophy,2025,M4,Fixture State C,1,45,35,5,1,No,LBW,Fixture Ground 3
+Fixture Opener,Fixture State A,Fixture Trophy,2025,M5,Fixture State B,2,60,40,7,2,No,Caught,Fixture Ground 2
+Fixture Opener,Fixture State A,Fixture Trophy,2025,M6,Fixture State C,2,22,15,1,1,Yes,Not Out,Fixture Ground 3
+Fixture Anchor,Fixture State B,Fixture Trophy,2024,M1,Fixture State A,2,60,50,5,0,No,LBW,Fixture Ground 1
+Fixture Anchor,Fixture State B,Fixture Trophy,2024,M4,Fixture State C,1,40,45,3,0,No,Caught,Fixture Ground 3
+Fixture Anchor,Fixture State B,Fixture Trophy,2024,M7,Fixture State A,2,35,40,2,0,Yes,Not Out,Fixture Ground 1
+Fixture Anchor,Fixture State B,Fixture Trophy,2025,M8,Fixture State C,1,28,30,2,0,No,Bowled,Fixture Ground 3
+Fixture Anchor,Fixture State B,Fixture Trophy,2025,M9,Fixture State A,2,55,50,4,1,No,Caught,Fixture Ground 2
+Fixture Finisher,Fixture State C,Fixture Trophy,2024,M2,Fixture State A,1,20,8,1,2,No,Caught,Fixture Ground 2
+Fixture Finisher,Fixture State C,Fixture Trophy,2024,M3,Fixture State B,2,15,6,0,2,Yes,Not Out,Fixture Ground 1
+Fixture Finisher,Fixture State C,Fixture Trophy,2025,M5,Fixture State A,2,25,10,2,2,No,Run Out,Fixture Ground 2
+Fixture Finisher,Fixture State C,Fixture Trophy,2025,M10,Fixture State B,1,30,12,1,3,Yes,Not Out,Fixture Ground 1
+Fixture Finisher,Fixture State C,Fixture Trophy,2025,M11,Fixture State A,1,12,5,0,1,No,Caught,Fixture Ground 3
+Fixture Finisher,Fixture State C,Fixture Trophy,2025,M12,Fixture State B,2,40,18,3,3,Yes,Not Out,Fixture Ground 2
+Fixture Rookie,Fixture State C,Fixture Trophy,2025,M13,Fixture State A,1,10,8,1,0,No,Bowled,Fixture Ground 3

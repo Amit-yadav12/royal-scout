@@ -1,0 +1,54 @@
+# ---- secrets (never commit) ----
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# ---- python ----
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+
+# ---- node / next ----
+node_modules/
+.next/
+out/
+dist/
+build/
+coverage/
+*.tsbuildinfo
+next-env.d.ts.bak
+web/.tsbuildinfo
+
+# ---- local runtime artefacts ----
+storage/
+engine/storage/
+data/generated/
+*.log
+
+# ---- playwright ----
+web/test-results/
+web/playwright-report/
+web/.shots/
+web/shot*.mjs
+
+# ---- os ----
+.DS_Store
+Thumbs.db
+
+# Proprietary competition source material: keep local; upload through the authenticated app.
+/data/real/
+/data/private/
+
+# Redundant generated snapshots; bundle.json is the sole dashboard build input.
+/web/src/data/bundle_real.json
+/web/src/data/bundle_live.json
+
+# Worker-generated reports must stay in private Storage, not public/
+web/public/exports/

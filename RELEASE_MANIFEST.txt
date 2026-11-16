@@ -1,0 +1,24 @@
+ROYAL SCOUT — GITHUB / VERCEL RELEASE PACKAGE
+Prepared: 2026-11-16
+
+This archive contains the corrected project source, Vercel frontend, Python
+analytics worker, Supabase migrations, documentation, current analytical
+snapshot/reports and synthetic test fixtures. The proprietary source ZIP is supplied separately, not inside the GitHub release archive.
+
+IMPORTANT:
+- Keep the GitHub repository PRIVATE. The current bundle and derived reports
+  contain proprietary competition data.
+- data/private/ and data/real/ are ignored by Git. The source archive is distributed separately; do not force-add these folders.
+- Vercel Root Directory: web
+- Node.js runtime: 22.x
+- Production access is locked until Supabase Auth is configured.
+- Upload/processing also requires Supabase private Storage and the separate
+  Railway/Render worker. Vercel alone is not the complete data-processing stack.
+- Newly processed datasets are private artifacts; review/publish the approved
+  bundle and redeploy to refresh the dashboard snapshot.
+- The official competition dropdown/candidate list was not included in the
+  source pack. Import it and verify auction eligibility before final 10+10 picks.
+
+See GITHUB_AND_VERCEL_QUICKSTART.md, docs/DEPLOYMENT.md and RELEASE_NOTES.md.
+- Local runtime job queues and worker output directories are excluded and are recreated at runtime.
+- Unused duplicate fixture dashboard snapshot removed; test fixtures remain in data/demo/.

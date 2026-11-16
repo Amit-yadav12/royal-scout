@@ -1,0 +1,374 @@
+[
+  {
+    "code": "matches_without_ball_data",
+    "description": "Every match without deliveries is an abandoned match (no coverage gap)",
+    "severity": "high",
+    "status": "pass",
+    "detail": "16 of 883 matches have no deliveries; 16 are recorded as abandoned, 0 unexplained",
+    "values": {
+      "matches_total": 883,
+      "with_ball_data": 867,
+      "missing": 16,
+      "abandoned": 16,
+      "unexplained": 0,
+      "orphan_ball_matches": 0
+    },
+    "examples": [
+      31281,
+      31284,
+      31288,
+      32610,
+      32612
+    ]
+  },
+  {
+    "code": "duplicate_deliveries",
+    "description": "Delivery key uniqueness (match, innings, over, ball)",
+    "severity": "critical",
+    "status": "pass",
+    "detail": "0 duplicated delivery key(s)",
+    "values": {
+      "duplicate_keys": 0
+    },
+    "examples": []
+  },
+  {
+    "code": "duplicate_innings_ball",
+    "description": "innings_ball_num is unique inside an innings",
+    "severity": "high",
+    "status": "pass",
+    "detail": "0 duplicated innings ball numbers",
+    "values": {
+      "duplicates": 0
+    },
+    "examples": []
+  },
+  {
+    "code": "super_overs",
+    "description": "Super overs identified and separable",
+    "severity": "info",
+    "status": "pass",
+    "detail": "6 match(es) contain 38 super-over deliveries; they are excluded from regulation analysis",
+    "values": {
+      "super_over_deliveries": 38,
+      "matches": 6
+    },
+    "examples": []
+  },
+  {
+    "code": "run_margin_matches_result",
+    "description": "Innings totals reproduce the 'won by N runs' margin in the result text",
+    "severity": "critical",
+    "status": "pass",
+    "detail": "395 run-margin matches verified, 0 mismatch(es); 13 rain-affected match(es) excluded because the target was revised \u2014 this is the proof that runs, extras and legality are accounted correctly",
+    "values": {
+      "checked": 395,
+      "failures": 0,
+      "dls_excluded": 13
+    },
+    "examples": []
+  },
+  {
+    "code": "wicket_margin_matches_result",
+    "description": "Wickets lost in the chase reproduce 'won by N wickets'",
+    "severity": "high",
+    "status": "fail",
+    "detail": "408 wicket-margin matches verified, 1 mismatch(es)",
+    "values": {
+      "checked": 408,
+      "failures": 1
+    },
+    "examples": [
+      {
+        "match_id": 20190,
+        "wickets": 5,
+        "result": "Lucknow Super Giants Won by 6 wickets",
+        "expected": 4
+      }
+    ]
+  },
+  {
+    "code": "legal_balls_within_innings_length",
+    "description": "Legal deliveries per innings never exceed the innings length (120, or revised overs)",
+    "severity": "high",
+    "status": "pass",
+    "detail": "0 innings exceed their allotted legal deliveries",
+    "values": {
+      "innings_checked": 1724,
+      "violations": 0
+    },
+    "examples": []
+  },
+  {
+    "code": "wide_has_no_bat_runs",
+    "description": "A wide never records bat runs or a boundary",
+    "severity": "high",
+    "status": "pass",
+    "detail": "0 wide(s) carry bat runs",
+    "values": {
+      "violations": 0
+    },
+    "examples": []
+  },
+  {
+    "code": "boundary_flags_consistent",
+    "description": "is_four/is_six agree with bat runs (4/6)",
+    "severity": "warning",
+    "status": "pass",
+    "detail": "0 four(s) and 0 six(es) inconsistent",
+    "values": {
+      "bad_fours": 0,
+      "bad_sixes": 0
+    },
+    "examples": []
+  },
+  {
+    "code": "non_negative_runs",
+    "description": "No negative run values",
+    "severity": "critical",
+    "status": "pass",
+    "detail": "0 negative run value(s)",
+    "values": {
+      "violations": 0
+    },
+    "examples": []
+  },
+  {
+    "code": "implausible_ball_runs",
+    "description": "No delivery awards more than 7 runs",
+    "severity": "warning",
+    "status": "pass",
+    "detail": "0 delivery(ies) award more than 7 runs",
+    "values": {
+      "violations": 0
+    },
+    "examples": []
+  },
+  {
+    "code": "wickets_within_ten",
+    "description": "No innings loses more than 10 wickets",
+    "severity": "high",
+    "status": "pass",
+    "detail": "0 innings record more than 10 dismissals (max 10); retired-out and obstruction are counted as dismissals",
+    "values": {
+      "violations": 0,
+      "max_wickets": 10
+    },
+    "examples": []
+  },
+  {
+    "code": "completed_chases_reach_target",
+    "description": "A completed chase has runs >= target",
+    "severity": "high",
+    "status": "pass",
+    "detail": "0 completed chase(s) below target",
+    "values": {
+      "violations": 0
+    },
+    "examples": []
+  },
+  {
+    "code": "id_to_name_conflicts",
+    "description": "Each player_id maps to exactly one spelling",
+    "severity": "warning",
+    "status": "pass",
+    "detail": "0 player id(s) appear under more than one name",
+    "values": {
+      "conflicts": 0
+    },
+    "examples": []
+  },
+  {
+    "code": "name_to_id_conflicts",
+    "description": "Each player name maps to exactly one player_id (duplicate-player probe)",
+    "severity": "warning",
+    "status": "fail",
+    "detail": "2 name(s) map to multiple ids",
+    "values": {
+      "conflicts": 2
+    },
+    "examples": [
+      {
+        "name": "Abdul Samad",
+        "n": 2,
+        "ids": [
+          7446,
+          6922
+        ]
+      },
+      {
+        "name": "Haider Ali",
+        "n": 2,
+        "ids": [
+          28756,
+          7338
+        ]
+      }
+    ]
+  },
+  {
+    "code": "roster_name_mismatch",
+    "description": "Ball-by-ball names agree with the competition roster file",
+    "severity": "info",
+    "status": "pass",
+    "detail": "1 id(s) have a different spelling in the roster (kept as an alias, not a separate player)",
+    "values": {
+      "mismatches": 1
+    },
+    "examples": [
+      {
+        "pid": 4458,
+        "name": "Aneurin Donald",
+        "name_map": "AHT Donald"
+      }
+    ]
+  },
+  {
+    "code": "competition_mix",
+    "description": "Competition mix resolved (IPL / T20I / other T20)",
+    "severity": "info",
+    "status": "pass",
+    "detail": "T20I=482, IPL=371, Other T20=30",
+    "values": {
+      "kinds": {
+        "T20I": 482,
+        "IPL": 371,
+        "Other T20": 30
+      }
+    },
+    "examples": []
+  },
+  {
+    "code": "unmapped_competitions",
+    "description": "Every match maps to a known competition",
+    "severity": "high",
+    "status": "pass",
+    "detail": "0 match(es) without a competition row",
+    "values": {
+      "unmapped": 0
+    },
+    "examples": []
+  },
+  {
+    "code": "match_date_within_season",
+    "description": "Match dates fall inside the stated competition season",
+    "severity": "warning",
+    "status": "pass",
+    "detail": "0 match(es) dated outside their season label",
+    "values": {
+      "mismatches": 0
+    },
+    "examples": []
+  },
+  {
+    "code": "players_appear_in_xi",
+    "description": "Every batter/bowler appearing in a match is in that match's playing XI",
+    "severity": "warning",
+    "status": "fail",
+    "detail": "3 player-match appearances missing from playing_eleven",
+    "values": {
+      "missing_appearances": 3
+    },
+    "examples": [
+      {
+        "match_id": 37087,
+        "player_id": 36153,
+        "in_xi": null
+      },
+      {
+        "match_id": 37095,
+        "player_id": 36153,
+        "in_xi": null
+      },
+      {
+        "match_id": 37092,
+        "player_id": 36153,
+        "in_xi": null
+      }
+    ]
+  },
+  {
+    "code": "no_future_matches",
+    "description": "No match is dated after the analysis date",
+    "severity": "info",
+    "status": "pass",
+    "detail": "0 match(es) dated in the future",
+    "values": {
+      "future_matches": 0
+    },
+    "examples": []
+  },
+  {
+    "code": "row_count",
+    "description": "Loaded row count equals the raw file's data rows",
+    "severity": "critical",
+    "status": "pass",
+    "detail": "raw=200999 loaded=200999",
+    "values": {
+      "raw": 200999,
+      "loaded": 200999
+    },
+    "examples": []
+  },
+  {
+    "code": "run_total",
+    "description": "Total runs recomputed row-by-row equals the pipeline's total",
+    "severity": "critical",
+    "status": "pass",
+    "detail": "naive=284257 pipeline=284257",
+    "values": {
+      "naive": 284257,
+      "pipeline": 284257
+    },
+    "examples": []
+  },
+  {
+    "code": "run_conservation",
+    "description": "Bat runs + extras equal total runs (no run is double counted or lost)",
+    "severity": "critical",
+    "status": "pass",
+    "detail": "bat=269550 extras=14707 total=284257",
+    "values": {
+      "bat": 269550,
+      "extras": 14707,
+      "total": 284257
+    },
+    "examples": []
+  },
+  {
+    "code": "legal_ball_count",
+    "description": "Legal deliveries recomputed row-by-row match",
+    "severity": "high",
+    "status": "pass",
+    "detail": "naive=192444 pipeline=192444",
+    "values": {
+      "naive": 192444,
+      "pipeline": 192444
+    },
+    "examples": []
+  },
+  {
+    "code": "dismissal_conservation",
+    "description": "Dismissals credited to bowlers plus non-bowler dismissals equal all wickets",
+    "severity": "high",
+    "status": "pass",
+    "detail": "bowler=10272 other=609 total=10881",
+    "values": {
+      "bowler": 10272,
+      "total": 10881
+    },
+    "examples": []
+  },
+  {
+    "code": "player_aggregate_agreement",
+    "description": "Per-player bat runs and balls reproduce for the sampled players",
+    "severity": "critical",
+    "status": "pass",
+    "detail": "25 players sampled, 0 mismatched",
+    "values": {
+      "sampled": 25,
+      "mismatches": 0
+    },
+    "examples": []
+  }
+]

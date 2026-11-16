@@ -1,0 +1,18 @@
+variant,eligible,top10_overlap,spearman_vs_primary,jaccard_top10,note
+primary,91,10,1.0,1.0,""
+loose_thresholds,147,7,0.999,0.538,""
+tight_thresholds,55,5,0.999,0.333,""
+no_shrinkage,91,9,0.996,0.818,""
+equal_weights,91,9,0.949,0.818,""
+lift_heavy,91,7,0.948,0.538,""
+level_heavy,91,9,0.97,0.818,""
+level_only,91,7,0.87,0.538,""
+lift_only,91,5,0.869,0.333,""
+raw_pressure_level,91,6,0.682,0.429,""
+ipl_only,77,3,0.818,0.176,""
+t20i_only,88,6,0.735,0.429,""
+knockouts_only,1,0,NaN,0.0,only 1 eligible players
+include_other_t20,91,9,0.998,0.818,""
+pressure_v2_wide,116,8,0.924,0.667,""
+pressure_v3_rate_gap,99,7,0.86,0.538,""
+knockouts_only,0,0,NaN,0.0,only 1 eligible players

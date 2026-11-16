@@ -1,0 +1,24 @@
+{
+  "season_aggregates": [
+    {
+      "player": "Fixture Opener",
+      "runs": 80,
+      "balls": 62,
+      "season": 2024,
+      "team": "Fixture State A",
+      "competition": "Fixture Trophy",
+      "innings": 3,
+      "not_outs": 1
+    },
+    {
+      "player": "Fixture Anchor",
+      "runs": 100,
+      "balls": 95,
+      "season": 2024,
+      "team": "Fixture State B",
+      "competition": "Fixture Trophy",
+      "innings": 2,
+      "not_outs": 0
+    }
+  ]
+}

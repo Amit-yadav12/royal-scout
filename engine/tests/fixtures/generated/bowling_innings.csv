@@ -1,0 +1,13 @@
+Player,State Team,Competition,Season,Match ID,Opposition,Innings,Overs,Maidens,Runs Conceded,Wickets,Dot Balls,Best Bowling
+Fixture Pacer,Fixture State A,Fixture Trophy,2024,M1,Fixture State B,1,4,0,28,2,10,3/33
+Fixture Pacer,Fixture State A,Fixture Trophy,2024,M2,Fixture State C,1,4,0,20,1,12,3/33
+Fixture Pacer,Fixture State A,Fixture Trophy,2024,M3,Fixture State B,2,4,0,40,0,6,3/33
+Fixture Pacer,Fixture State A,Fixture Trophy,2025,M4,Fixture State C,1,4,0,30,2,8,3/33
+Fixture Pacer,Fixture State A,Fixture Trophy,2025,M5,Fixture State B,2,4,0,25,1,11,3/33
+Fixture Pacer,Fixture State A,Fixture Trophy,2025,M6,Fixture State C,2,4,0,33,3,9,3/33
+Fixture Spinner,Fixture State B,Fixture Trophy,2024,M1,Fixture State A,2,4,1,20,3,14,3/18
+Fixture Spinner,Fixture State B,Fixture Trophy,2024,M7,Fixture State C,1,4,0,25,1,11,3/18
+Fixture Spinner,Fixture State B,Fixture Trophy,2025,M8,Fixture State A,2,4,0,30,2,9,3/18
+Fixture Spinner,Fixture State B,Fixture Trophy,2025,M9,Fixture State C,1,4,1,22,3,15,3/18
+Fixture Spinner,Fixture State B,Fixture Trophy,2025,M10,Fixture State A,1,4,0,18,1,13,3/18
+Fixture Rookie,Fixture State C,Fixture Trophy,2025,M13,Fixture State A,1,2,0,30,0,2,0/30

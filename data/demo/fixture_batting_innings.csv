@@ -1,0 +1,656 @@
+Player,State Team,Role,Competition,Season,Match ID,Opposition,Venue,Innings,Batting Position,Runs,Balls Faced,4s,6s,Not Out,Dismissal,Dot Balls
+Fixture Lakhan Rathore,Rajasthan,batter,Fixture State League,2022,M0001,Gujarat,"M. Chinnaswamy Stadium, Bengaluru",2,6,2,1,0,0,No,Run Out,0
+Fixture Lakhan Rathore,Rajasthan,batter,Fixture State League,2022,M0002,Mumbai,"Sawai Mansingh Stadium, Jaipur",2,5,28,21,2,1,No,Bowled,9
+Fixture Lakhan Rathore,Rajasthan,batter,Fixture State League,2024,M0003,Delhi,"Wankhede Stadium, Mumbai",1,6,7,4,0,0,Yes,Not Out,1
+Fixture Lakhan Rathore,Rajasthan,batter,Fixture State League,2022,M0004,Mumbai,"Eden Gardens, Kolkata",2,3,29,20,2,1,No,LBW,5
+Fixture Lakhan Rathore,Rajasthan,batter,Fixture State League,2023,M0005,Delhi,"Sawai Mansingh Stadium, Jaipur",2,2,29,28,2,1,No,Run Out,12
+Fixture Aarav Qureshi,Delhi,batter,Fixture Elite Cup,2025,M0006,Rajasthan,"Eden Gardens, Kolkata",2,4,45,29,4,2,Yes,Not Out,9
+Fixture Aarav Qureshi,Delhi,batter,Fixture Elite Cup,2025,M0007,Punjab,"Narendra Modi Stadium, Ahmedabad",2,3,43,28,3,2,Yes,Not Out,14
+Fixture Aarav Qureshi,Delhi,batter,Fixture Elite Cup,2023,M0008,Gujarat,"Eden Gardens, Kolkata",1,6,24,15,2,1,Yes,Not Out,5
+Fixture Aarav Qureshi,Delhi,batter,Fixture Elite Cup,2024,M0009,Rajasthan,"Wankhede Stadium, Mumbai",1,2,61,47,5,2,No,Caught & Bowled,15
+Fixture Aarav Qureshi,Delhi,batter,Fixture Elite Cup,2023,M0010,Gujarat,"Eden Gardens, Kolkata",1,1,44,25,3,2,No,Stumped,10
+Fixture Aarav Qureshi,Delhi,batter,Fixture Elite Cup,2025,M0011,Rajasthan,"Sawai Mansingh Stadium, Jaipur",1,5,41,31,3,2,No,Run Out,10
+Fixture Aarav Qureshi,Delhi,batter,Fixture Emerging Trophy,2025,M0012,Gujarat,"Wankhede Stadium, Mumbai",1,3,58,31,5,2,No,Caught & Bowled,4
+Fixture Aarav Qureshi,Delhi,batter,Fixture Emerging Trophy,2024,M0013,Tamil Nadu,"Eden Gardens, Kolkata",1,5,64,36,5,3,No,Caught & Bowled,11
+Fixture Aarav Qureshi,Delhi,batter,Fixture Emerging Trophy,2025,M0014,Gujarat,"Wankhede Stadium, Mumbai",2,5,31,23,2,1,No,Stumped,7
+Fixture Aarav Qureshi,Delhi,batter,Fixture Emerging Trophy,2024,M0015,Bengal,"Narendra Modi Stadium, Ahmedabad",1,2,44,26,3,2,No,Bowled,14
+Fixture Aarav Qureshi,Delhi,batter,Fixture Emerging Trophy,2025,M0016,Karnataka,"Sawai Mansingh Stadium, Jaipur",2,3,37,25,3,1,Yes,Not Out,11
+Fixture Aarav Qureshi,Delhi,batter,Fixture Emerging Trophy,2025,M0017,Bengal,"Arun Jaitley Stadium, Delhi",1,6,27,13,2,1,No,LBW,5
+Fixture Chirag Fazal,Karnataka,bowler,Fixture Elite Cup,2023,M0018,Mumbai,"Eden Gardens, Kolkata",1,4,37,23,3,1,No,Run Out,4
+Fixture Chirag Fazal,Karnataka,bowler,Fixture Elite Cup,2024,M0019,Tamil Nadu,"Sawai Mansingh Stadium, Jaipur",2,1,32,19,2,1,Yes,Not Out,5
+Fixture Chirag Fazal,Karnataka,bowler,Fixture Elite Cup,2025,M0020,Bengal,"Narendra Modi Stadium, Ahmedabad",1,3,38,25,3,2,No,Run Out,6
+Fixture Chirag Fazal,Karnataka,bowler,Fixture Elite Cup,2024,M0021,Tamil Nadu,"M. Chinnaswamy Stadium, Bengaluru",1,1,42,22,3,2,No,Caught,5
+Fixture Chirag Fazal,Karnataka,bowler,Fixture Elite Cup,2024,M0022,Mumbai,"Narendra Modi Stadium, Ahmedabad",2,7,22,11,1,1,No,LBW,4
+Fixture Chirag Fazal,Karnataka,bowler,Fixture Elite Cup,2025,M0023,Gujarat,"Arun Jaitley Stadium, Delhi",2,5,62,33,5,3,No,Bowled,7
+Fixture Chirag Fazal,Karnataka,bowler,Fixture State League,2022,M0024,Gujarat,"Wankhede Stadium, Mumbai",2,3,64,35,5,3,No,Stumped,9
+Fixture Chirag Fazal,Karnataka,bowler,Fixture State League,2022,M0025,Tamil Nadu,"M. Chinnaswamy Stadium, Bengaluru",1,2,49,35,4,2,No,Bowled,7
+Fixture Chirag Fazal,Karnataka,bowler,Fixture State League,2023,M0026,Punjab,"Narendra Modi Stadium, Ahmedabad",1,1,38,26,3,2,No,Caught,7
+Fixture Chirag Fazal,Karnataka,bowler,Fixture State League,2023,M0027,Rajasthan,"Arun Jaitley Stadium, Delhi",1,1,60,32,5,3,No,Caught,6
+Fixture Chirag Fazal,Karnataka,bowler,Fixture State League,2022,M0028,Rajasthan,"M. Chinnaswamy Stadium, Bengaluru",2,2,35,24,3,1,No,LBW,4
+Fixture Chirag Fazal,Karnataka,bowler,Fixture State League,2024,M0029,Punjab,"Arun Jaitley Stadium, Delhi",2,7,36,17,3,1,No,Caught & Bowled,5
+Fixture Chirag Fazal,Karnataka,bowler,Fixture Emerging Trophy,2024,M0030,Punjab,"Narendra Modi Stadium, Ahmedabad",2,5,61,40,5,3,Yes,Not Out,13
+Fixture Chirag Fazal,Karnataka,bowler,Fixture Emerging Trophy,2024,M0031,Gujarat,"Eden Gardens, Kolkata",1,5,49,33,4,2,No,Caught & Bowled,7
+Fixture Chirag Fazal,Karnataka,bowler,Fixture Emerging Trophy,2025,M0032,Rajasthan,"M. Chinnaswamy Stadium, Bengaluru",1,2,40,24,3,2,No,LBW,2
+Fixture Chirag Fazal,Karnataka,bowler,Fixture Emerging Trophy,2025,M0033,Rajasthan,"Narendra Modi Stadium, Ahmedabad",2,5,64,35,5,3,No,LBW,9
+Fixture Chirag Fazal,Karnataka,bowler,Fixture Emerging Trophy,2025,M0034,Delhi,"Arun Jaitley Stadium, Delhi",2,6,13,8,1,0,No,Stumped,4
+Fixture Chirag Fazal,Karnataka,bowler,Fixture Emerging Trophy,2025,M0035,Delhi,"Wankhede Stadium, Mumbai",2,1,57,33,5,3,No,LBW,8
+Fixture Rehan Rathore,Bengal,all rounder,Fixture Elite Cup,2023,M0036,Delhi,"Eden Gardens, Kolkata",2,7,34,16,3,2,Yes,Not Out,4
+Fixture Rehan Rathore,Bengal,all rounder,Fixture Elite Cup,2024,M0037,Karnataka,"Eden Gardens, Kolkata",2,5,59,35,5,3,No,Bowled,8
+Fixture Rehan Rathore,Bengal,all rounder,Fixture Elite Cup,2025,M0038,Karnataka,"Wankhede Stadium, Mumbai",1,5,61,32,5,3,No,Stumped,4
+Fixture Rehan Rathore,Bengal,all rounder,Fixture Elite Cup,2024,M0039,Rajasthan,"Sawai Mansingh Stadium, Jaipur",1,3,67,35,6,3,Yes,Not Out,6
+Fixture Rehan Rathore,Bengal,all rounder,Fixture Elite Cup,2023,M0040,Punjab,"Arun Jaitley Stadium, Delhi",2,7,38,19,3,2,No,Stumped,2
+Fixture Rehan Rathore,Bengal,all rounder,Fixture Elite Cup,2023,M0041,Mumbai,"Sawai Mansingh Stadium, Jaipur",1,4,81,43,7,4,Yes,Not Out,9
+Fixture Rehan Rathore,Bengal,all rounder,Fixture State League,2024,M0042,Karnataka,"M. Chinnaswamy Stadium, Bengaluru",2,3,55,31,4,3,Yes,Not Out,4
+Fixture Rehan Rathore,Bengal,all rounder,Fixture State League,2023,M0043,Mumbai,"Eden Gardens, Kolkata",2,7,36,18,3,2,No,Caught & Bowled,4
+Fixture Rehan Rathore,Bengal,all rounder,Fixture State League,2022,M0044,Mumbai,"Wankhede Stadium, Mumbai",2,4,74,38,6,4,No,Stumped,8
+Fixture Rehan Rathore,Bengal,all rounder,Fixture State League,2023,M0045,Mumbai,"Arun Jaitley Stadium, Delhi",1,1,73,40,6,4,Yes,Not Out,9
+Fixture Rehan Rathore,Bengal,all rounder,Fixture State League,2022,M0046,Delhi,"Sawai Mansingh Stadium, Jaipur",1,5,39,21,3,2,Yes,Not Out,5
+Fixture Rehan Rathore,Bengal,all rounder,Fixture State League,2022,M0047,Punjab,"Eden Gardens, Kolkata",1,3,55,29,4,3,No,Run Out,6
+Fixture Rehan Rathore,Bengal,all rounder,Fixture Emerging Trophy,2024,M0048,Mumbai,"Sawai Mansingh Stadium, Jaipur",2,5,66,30,5,3,Yes,Not Out,7
+Fixture Rehan Rathore,Bengal,all rounder,Fixture Emerging Trophy,2024,M0049,Karnataka,"M. Chinnaswamy Stadium, Bengaluru",1,3,60,29,5,3,Yes,Not Out,6
+Fixture Rehan Rathore,Bengal,all rounder,Fixture Emerging Trophy,2024,M0050,Gujarat,"Narendra Modi Stadium, Ahmedabad",1,3,30,17,2,1,No,Stumped,3
+Fixture Rehan Rathore,Bengal,all rounder,Fixture Emerging Trophy,2025,M0051,Delhi,"Arun Jaitley Stadium, Delhi",1,1,71,39,6,4,No,Caught,10
+Fixture Rehan Rathore,Bengal,all rounder,Fixture Emerging Trophy,2024,M0052,Tamil Nadu,"Eden Gardens, Kolkata",1,1,34,18,3,2,No,LBW,4
+Fixture Rehan Rathore,Bengal,all rounder,Fixture Emerging Trophy,2025,M0053,Gujarat,"Eden Gardens, Kolkata",1,5,73,43,6,4,No,Run Out,7
+Fixture Eshan Wangdu,Punjab,wicket keeper,Fixture Elite Cup,2023,M0054,Rajasthan,"Wankhede Stadium, Mumbai",1,2,24,27,2,1,Yes,Not Out,11
+Fixture Eshan Wangdu,Punjab,wicket keeper,Fixture Elite Cup,2025,M0055,Delhi,"M. Chinnaswamy Stadium, Bengaluru",1,3,25,19,2,1,No,Stumped,11
+Fixture Eshan Wangdu,Punjab,wicket keeper,Fixture Elite Cup,2023,M0056,Tamil Nadu,"Eden Gardens, Kolkata",2,2,31,23,2,1,No,LBW,6
+Fixture Eshan Wangdu,Punjab,wicket keeper,Fixture Elite Cup,2024,M0057,Karnataka,"Wankhede Stadium, Mumbai",2,5,22,24,1,0,No,Caught,8
+Fixture Eshan Wangdu,Punjab,wicket keeper,Fixture State League,2024,M0058,Bengal,"M. Chinnaswamy Stadium, Bengaluru",2,1,32,26,2,1,No,Run Out,10
+Fixture Eshan Wangdu,Punjab,wicket keeper,Fixture State League,2023,M0059,Bengal,"Eden Gardens, Kolkata",1,3,27,23,2,1,Yes,Not Out,11
+Fixture Eshan Wangdu,Punjab,wicket keeper,Fixture State League,2024,M0060,Bengal,"Wankhede Stadium, Mumbai",2,7,15,12,1,0,Yes,Not Out,4
+Fixture Eshan Wangdu,Punjab,wicket keeper,Fixture State League,2024,M0061,Tamil Nadu,"Arun Jaitley Stadium, Delhi",1,5,23,21,2,0,No,Caught & Bowled,7
+Fixture Eshan Wangdu,Punjab,wicket keeper,Fixture Emerging Trophy,2024,M0062,Gujarat,"Arun Jaitley Stadium, Delhi",1,3,34,24,3,1,No,Caught & Bowled,13
+Fixture Eshan Wangdu,Punjab,wicket keeper,Fixture Emerging Trophy,2024,M0063,Delhi,"Eden Gardens, Kolkata",2,1,25,19,2,1,No,Bowled,7
+Fixture Eshan Wangdu,Punjab,wicket keeper,Fixture Emerging Trophy,2025,M0064,Gujarat,"Sawai Mansingh Stadium, Jaipur",2,6,17,11,1,0,Yes,Not Out,2
+Fixture Eshan Wangdu,Punjab,wicket keeper,Fixture Emerging Trophy,2025,M0065,Mumbai,"Eden Gardens, Kolkata",2,6,22,13,1,0,No,Caught,3
+Fixture Ishan Yash,Gujarat,batter,Fixture Elite Cup,2025,M0066,Punjab,"Arun Jaitley Stadium, Delhi",1,5,47,33,4,2,No,Bowled,9
+Fixture Ishan Yash,Gujarat,batter,Fixture Elite Cup,2023,M0067,Punjab,"Sawai Mansingh Stadium, Jaipur",2,3,44,27,3,2,No,Stumped,13
+Fixture Ishan Yash,Gujarat,batter,Fixture Elite Cup,2025,M0068,Tamil Nadu,"M. Chinnaswamy Stadium, Bengaluru",2,2,15,11,1,0,No,Caught & Bowled,4
+Fixture Ishan Yash,Gujarat,batter,Fixture Elite Cup,2023,M0069,Tamil Nadu,"Wankhede Stadium, Mumbai",2,6,12,8,1,0,No,Stumped,0
+Fixture Ishan Yash,Gujarat,batter,Fixture Elite Cup,2025,M0070,Rajasthan,"Narendra Modi Stadium, Ahmedabad",1,2,24,13,2,1,No,Stumped,1
+Fixture Ishan Yash,Gujarat,batter,Fixture Elite Cup,2023,M0071,Rajasthan,"Wankhede Stadium, Mumbai",1,4,21,15,1,0,No,Stumped,3
+Fixture Ishan Yash,Gujarat,batter,Fixture State League,2024,M0072,Delhi,"Arun Jaitley Stadium, Delhi",2,2,24,18,2,1,No,Caught & Bowled,8
+Fixture Ishan Yash,Gujarat,batter,Fixture State League,2023,M0073,Tamil Nadu,"M. Chinnaswamy Stadium, Bengaluru",2,3,40,29,3,1,No,Bowled,11
+Fixture Ishan Yash,Gujarat,batter,Fixture State League,2022,M0074,Bengal,"Arun Jaitley Stadium, Delhi",2,2,16,12,1,0,No,Caught,6
+Fixture Ishan Yash,Gujarat,batter,Fixture State League,2022,M0075,Tamil Nadu,"Eden Gardens, Kolkata",2,7,21,13,1,0,Yes,Not Out,5
+Fixture Ishan Yash,Gujarat,batter,Fixture State League,2023,M0076,Bengal,"Sawai Mansingh Stadium, Jaipur",2,5,39,28,3,1,No,Stumped,11
+Fixture Ishan Yash,Gujarat,batter,Fixture State League,2022,M0077,Rajasthan,"Arun Jaitley Stadium, Delhi",2,3,44,31,3,2,No,Bowled,15
+Fixture Ishan Yash,Gujarat,batter,Fixture Emerging Trophy,2024,M0078,Bengal,"Sawai Mansingh Stadium, Jaipur",1,1,25,17,2,1,No,Stumped,4
+Fixture Ishan Yash,Gujarat,batter,Fixture Emerging Trophy,2025,M0079,Tamil Nadu,"Sawai Mansingh Stadium, Jaipur",1,3,30,20,2,1,Yes,Not Out,5
+Fixture Ishan Yash,Gujarat,batter,Fixture Emerging Trophy,2024,M0080,Mumbai,"Arun Jaitley Stadium, Delhi",1,5,36,26,3,1,No,Caught,12
+Fixture Ishan Yash,Gujarat,batter,Fixture Emerging Trophy,2024,M0081,Mumbai,"Narendra Modi Stadium, Ahmedabad",2,4,59,36,5,2,No,Caught,11
+Fixture Ishan Yash,Gujarat,batter,Fixture Emerging Trophy,2024,M0082,Mumbai,"Eden Gardens, Kolkata",2,5,37,25,3,1,No,Caught,9
+Fixture Ishan Yash,Gujarat,batter,Fixture Emerging Trophy,2025,M0083,Punjab,"Narendra Modi Stadium, Ahmedabad",1,5,33,24,2,1,No,Caught & Bowled,9
+Fixture Chirag Nair,Rajasthan,batter,Fixture Elite Cup,2025,M0084,Karnataka,"Eden Gardens, Kolkata",1,3,90,47,8,5,No,Caught & Bowled,8
+Fixture Chirag Nair,Rajasthan,batter,Fixture Elite Cup,2023,M0085,Gujarat,"Eden Gardens, Kolkata",2,7,20,10,1,1,Yes,Not Out,3
+Fixture Chirag Nair,Rajasthan,batter,Fixture Elite Cup,2025,M0086,Karnataka,"M. Chinnaswamy Stadium, Bengaluru",2,2,43,22,3,2,No,Caught & Bowled,2
+Fixture Chirag Nair,Rajasthan,batter,Fixture Elite Cup,2023,M0087,Gujarat,"Eden Gardens, Kolkata",2,4,57,29,5,3,No,Run Out,7
+Fixture Chirag Nair,Rajasthan,batter,Fixture State League,2023,M0088,Punjab,"Sawai Mansingh Stadium, Jaipur",2,3,55,34,4,3,No,Run Out,9
+Fixture Chirag Nair,Rajasthan,batter,Fixture State League,2022,M0089,Tamil Nadu,"M. Chinnaswamy Stadium, Bengaluru",2,3,40,22,3,2,No,Stumped,3
+Fixture Chirag Nair,Rajasthan,batter,Fixture State League,2023,M0090,Delhi,"Arun Jaitley Stadium, Delhi",2,3,28,14,2,1,No,Bowled,3
+Fixture Chirag Nair,Rajasthan,batter,Fixture State League,2023,M0091,Punjab,"Wankhede Stadium, Mumbai",2,6,44,20,3,2,Yes,Not Out,6
+Fixture Chirag Nair,Rajasthan,batter,Fixture Emerging Trophy,2024,M0092,Punjab,"M. Chinnaswamy Stadium, Bengaluru",2,5,85,46,7,5,Yes,Not Out,10
+Fixture Chirag Nair,Rajasthan,batter,Fixture Emerging Trophy,2024,M0093,Bengal,"M. Chinnaswamy Stadium, Bengaluru",1,1,54,29,4,3,No,Stumped,4
+Fixture Chirag Nair,Rajasthan,batter,Fixture Emerging Trophy,2025,M0094,Karnataka,"Arun Jaitley Stadium, Delhi",2,3,47,26,4,2,No,Caught & Bowled,5
+Fixture Chirag Nair,Rajasthan,batter,Fixture Emerging Trophy,2024,M0095,Gujarat,"Sawai Mansingh Stadium, Jaipur",1,1,81,42,7,4,No,Caught & Bowled,13
+Fixture Varun Fazal,Delhi,bowler,Fixture Elite Cup,2025,M0096,Tamil Nadu,"M. Chinnaswamy Stadium, Bengaluru",1,3,35,24,3,1,Yes,Not Out,5
+Fixture Varun Fazal,Delhi,bowler,Fixture Elite Cup,2024,M0097,Rajasthan,"Sawai Mansingh Stadium, Jaipur",2,7,30,17,2,1,No,Run Out,5
+Fixture Varun Fazal,Delhi,bowler,Fixture Elite Cup,2024,M0098,Gujarat,"Eden Gardens, Kolkata",2,5,42,27,3,2,No,LBW,9
+Fixture Varun Fazal,Delhi,bowler,Fixture Elite Cup,2025,M0099,Tamil Nadu,"Sawai Mansingh Stadium, Jaipur",2,1,47,29,4,2,No,Run Out,8
+Fixture Varun Fazal,Delhi,bowler,Fixture Elite Cup,2024,M0100,Punjab,"Sawai Mansingh Stadium, Jaipur",1,4,57,33,5,2,No,Stumped,10
+Fixture Varun Fazal,Delhi,bowler,Fixture State League,2024,M0101,Mumbai,"M. Chinnaswamy Stadium, Bengaluru",2,3,36,22,3,1,Yes,Not Out,5
+Fixture Varun Fazal,Delhi,bowler,Fixture State League,2024,M0102,Gujarat,"Narendra Modi Stadium, Ahmedabad",1,1,47,36,4,2,Yes,Not Out,11
+Fixture Varun Fazal,Delhi,bowler,Fixture State League,2023,M0103,Karnataka,"Wankhede Stadium, Mumbai",1,3,58,37,5,2,No,Run Out,13
+Fixture Varun Fazal,Delhi,bowler,Fixture State League,2022,M0104,Gujarat,"Arun Jaitley Stadium, Delhi",1,2,36,25,3,1,No,Stumped,6
+Fixture Varun Fazal,Delhi,bowler,Fixture State League,2023,M0105,Mumbai,"Sawai Mansingh Stadium, Jaipur",2,3,23,14,2,1,No,LBW,7
+Fixture Varun Fazal,Delhi,bowler,Fixture Emerging Trophy,2024,M0106,Punjab,"Narendra Modi Stadium, Ahmedabad",2,2,45,26,4,2,Yes,Not Out,8
+Fixture Varun Fazal,Delhi,bowler,Fixture Emerging Trophy,2024,M0107,Bengal,"Eden Gardens, Kolkata",2,1,39,24,3,2,No,Caught,7
+Fixture Varun Fazal,Delhi,bowler,Fixture Emerging Trophy,2024,M0108,Karnataka,"M. Chinnaswamy Stadium, Bengaluru",2,6,16,8,1,0,No,Caught,0
+Fixture Varun Fazal,Delhi,bowler,Fixture Emerging Trophy,2025,M0109,Tamil Nadu,"Arun Jaitley Stadium, Delhi",1,1,48,27,4,2,No,Stumped,10
+Fixture Varun Fazal,Delhi,bowler,Fixture Emerging Trophy,2025,M0110,Rajasthan,"M. Chinnaswamy Stadium, Bengaluru",1,7,19,11,1,0,No,Run Out,6
+Fixture Rehan Pandey,Mumbai,bowler,Fixture Elite Cup,2023,M0111,Karnataka,"Eden Gardens, Kolkata",2,5,32,22,2,1,No,Caught & Bowled,6
+Fixture Rehan Pandey,Mumbai,bowler,Fixture Elite Cup,2024,M0112,Delhi,"Eden Gardens, Kolkata",1,5,30,22,2,1,No,LBW,7
+Fixture Rehan Pandey,Mumbai,bowler,Fixture Elite Cup,2024,M0113,Gujarat,"Sawai Mansingh Stadium, Jaipur",2,2,41,29,3,1,Yes,Not Out,10
+Fixture Rehan Pandey,Mumbai,bowler,Fixture Elite Cup,2025,M0114,Karnataka,"Wankhede Stadium, Mumbai",1,3,42,30,3,1,No,Stumped,13
+Fixture Rehan Pandey,Mumbai,bowler,Fixture Elite Cup,2025,M0115,Punjab,"Narendra Modi Stadium, Ahmedabad",1,3,40,26,3,1,No,Caught,5
+Fixture Rehan Pandey,Mumbai,bowler,Fixture State League,2024,M0116,Bengal,"M. Chinnaswamy Stadium, Bengaluru",1,3,29,24,2,1,No,LBW,8
+Fixture Rehan Pandey,Mumbai,bowler,Fixture State League,2022,M0117,Punjab,"Sawai Mansingh Stadium, Jaipur",2,5,10,8,0,0,No,Stumped,3
+Fixture Rehan Pandey,Mumbai,bowler,Fixture State League,2023,M0118,Bengal,"Arun Jaitley Stadium, Delhi",1,3,32,23,2,1,No,Caught & Bowled,6
+Fixture Rehan Pandey,Mumbai,bowler,Fixture State League,2023,M0119,Gujarat,"Arun Jaitley Stadium, Delhi",2,3,39,25,3,1,No,Stumped,9
+Fixture Rehan Pandey,Mumbai,bowler,Fixture State League,2023,M0120,Karnataka,"Narendra Modi Stadium, Ahmedabad",1,6,11,7,0,0,No,Bowled,3
+Fixture Rehan Pandey,Mumbai,bowler,Fixture Emerging Trophy,2025,M0121,Karnataka,"Arun Jaitley Stadium, Delhi",2,2,32,18,2,1,No,Stumped,1
+Fixture Rehan Pandey,Mumbai,bowler,Fixture Emerging Trophy,2024,M0122,Bengal,"M. Chinnaswamy Stadium, Bengaluru",1,5,37,29,3,1,Yes,Not Out,12
+Fixture Rehan Pandey,Mumbai,bowler,Fixture Emerging Trophy,2024,M0123,Tamil Nadu,"Eden Gardens, Kolkata",1,3,31,22,2,1,No,Stumped,4
+Fixture Rehan Pandey,Mumbai,bowler,Fixture Emerging Trophy,2024,M0124,Bengal,"Sawai Mansingh Stadium, Jaipur",1,1,17,13,1,0,No,Caught,4
+Fixture Rehan Pandey,Mumbai,bowler,Fixture Emerging Trophy,2025,M0125,Tamil Nadu,"Wankhede Stadium, Mumbai",2,4,28,21,2,1,No,LBW,8
+Fixture Aditya Bishnoi,Karnataka,bowler,Fixture Elite Cup,2024,M0126,Delhi,"Arun Jaitley Stadium, Delhi",2,7,23,19,2,0,No,Caught & Bowled,7
+Fixture Aditya Bishnoi,Karnataka,bowler,Fixture Elite Cup,2023,M0127,Delhi,"Narendra Modi Stadium, Ahmedabad",1,6,8,5,0,0,No,Caught & Bowled,2
+Fixture Aditya Bishnoi,Karnataka,bowler,Fixture Elite Cup,2024,M0128,Tamil Nadu,"Wankhede Stadium, Mumbai",1,7,12,8,1,0,No,LBW,2
+Fixture Aditya Bishnoi,Karnataka,bowler,Fixture Elite Cup,2023,M0129,Delhi,"Sawai Mansingh Stadium, Jaipur",2,5,23,20,2,0,No,Bowled,8
+Fixture Aditya Bishnoi,Karnataka,bowler,Fixture Elite Cup,2025,M0130,Rajasthan,"Wankhede Stadium, Mumbai",1,2,23,20,2,0,No,Bowled,11
+Fixture Aditya Bishnoi,Karnataka,bowler,Fixture Elite Cup,2025,M0131,Bengal,"Arun Jaitley Stadium, Delhi",2,3,17,14,1,0,No,Bowled,4
+Fixture Aditya Bishnoi,Karnataka,bowler,Fixture State League,2022,M0132,Rajasthan,"Eden Gardens, Kolkata",2,5,36,26,3,1,Yes,Not Out,5
+Fixture Aditya Bishnoi,Karnataka,bowler,Fixture State League,2024,M0133,Tamil Nadu,"Eden Gardens, Kolkata",2,2,25,21,2,1,No,LBW,11
+Fixture Aditya Bishnoi,Karnataka,bowler,Fixture State League,2022,M0134,Bengal,"Eden Gardens, Kolkata",1,6,27,15,2,1,No,Caught & Bowled,9
+Fixture Aditya Bishnoi,Karnataka,bowler,Fixture State League,2023,M0135,Punjab,"Arun Jaitley Stadium, Delhi",2,6,16,10,1,0,Yes,Not Out,4
+Fixture Aditya Bishnoi,Karnataka,bowler,Fixture State League,2024,M0136,Tamil Nadu,"Sawai Mansingh Stadium, Jaipur",1,3,26,21,2,1,No,Caught,6
+Fixture Aditya Bishnoi,Karnataka,bowler,Fixture State League,2024,M0137,Punjab,"Wankhede Stadium, Mumbai",2,5,37,27,3,1,No,Caught,13
+Fixture Aditya Bishnoi,Karnataka,bowler,Fixture Emerging Trophy,2024,M0138,Punjab,"Arun Jaitley Stadium, Delhi",2,5,25,18,2,1,No,LBW,6
+Fixture Aditya Bishnoi,Karnataka,bowler,Fixture Emerging Trophy,2025,M0139,Bengal,"Sawai Mansingh Stadium, Jaipur",1,6,10,6,0,0,Yes,Not Out,3
+Fixture Aditya Bishnoi,Karnataka,bowler,Fixture Emerging Trophy,2025,M0140,Rajasthan,"Narendra Modi Stadium, Ahmedabad",1,6,21,11,1,0,No,Caught,3
+Fixture Aditya Bishnoi,Karnataka,bowler,Fixture Emerging Trophy,2024,M0141,Delhi,"Narendra Modi Stadium, Ahmedabad",2,1,39,30,3,1,Yes,Not Out,12
+Fixture Aditya Bishnoi,Karnataka,bowler,Fixture Emerging Trophy,2024,M0142,Rajasthan,"Wankhede Stadium, Mumbai",1,6,16,12,1,0,No,LBW,4
+Fixture Aditya Bishnoi,Karnataka,bowler,Fixture Emerging Trophy,2025,M0143,Mumbai,"M. Chinnaswamy Stadium, Bengaluru",1,6,7,5,0,0,No,Caught,0
+Fixture Nikhil Nair,Tamil Nadu,all rounder,Fixture Elite Cup,2025,M0144,Mumbai,"Narendra Modi Stadium, Ahmedabad",2,6,15,10,1,0,No,LBW,4
+Fixture Nikhil Nair,Tamil Nadu,all rounder,Fixture Elite Cup,2024,M0145,Bengal,"Narendra Modi Stadium, Ahmedabad",2,7,15,9,1,0,No,Run Out,4
+Fixture Nikhil Nair,Tamil Nadu,all rounder,Fixture Elite Cup,2023,M0146,Delhi,"M. Chinnaswamy Stadium, Bengaluru",1,3,1,1,0,0,No,Bowled,1
+Fixture Nikhil Nair,Tamil Nadu,all rounder,Fixture Elite Cup,2025,M0147,Delhi,"Narendra Modi Stadium, Ahmedabad",2,1,9,7,0,0,No,Caught,0
+Fixture Nikhil Nair,Tamil Nadu,all rounder,Fixture Elite Cup,2025,M0148,Delhi,"M. Chinnaswamy Stadium, Bengaluru",2,3,41,28,3,1,No,LBW,12
+Fixture Nikhil Nair,Tamil Nadu,all rounder,Fixture Elite Cup,2023,M0149,Gujarat,"Sawai Mansingh Stadium, Jaipur",1,1,10,7,0,0,No,Caught,0
+Fixture Nikhil Nair,Tamil Nadu,all rounder,Fixture Emerging Trophy,2025,M0150,Gujarat,"Arun Jaitley Stadium, Delhi",2,1,19,12,1,0,No,LBW,2
+Fixture Nikhil Nair,Tamil Nadu,all rounder,Fixture Emerging Trophy,2024,M0151,Rajasthan,"M. Chinnaswamy Stadium, Bengaluru",2,5,18,12,1,0,No,LBW,8
+Fixture Nikhil Nair,Tamil Nadu,all rounder,Fixture Emerging Trophy,2025,M0152,Karnataka,"Sawai Mansingh Stadium, Jaipur",1,4,31,23,2,1,No,Run Out,12
+Fixture Nikhil Nair,Tamil Nadu,all rounder,Fixture Emerging Trophy,2025,M0153,Karnataka,"Arun Jaitley Stadium, Delhi",1,3,27,21,2,1,Yes,Not Out,8
+Fixture Nikhil Nair,Tamil Nadu,all rounder,Fixture Emerging Trophy,2024,M0154,Karnataka,"Eden Gardens, Kolkata",1,2,20,17,1,0,No,Stumped,5
+Fixture Nikhil Nair,Tamil Nadu,all rounder,Fixture Emerging Trophy,2025,M0155,Punjab,"Sawai Mansingh Stadium, Jaipur",1,1,33,29,2,1,No,Stumped,12
+Fixture Sahil Patel,Bengal,wicket keeper,Fixture Elite Cup,2025,M0156,Delhi,"Wankhede Stadium, Mumbai",2,1,61,39,5,3,No,Bowled,9
+Fixture Sahil Patel,Bengal,wicket keeper,Fixture Elite Cup,2025,M0157,Gujarat,"Eden Gardens, Kolkata",1,5,63,32,5,3,Yes,Not Out,6
+Fixture Sahil Patel,Bengal,wicket keeper,Fixture Elite Cup,2024,M0158,Punjab,"Sawai Mansingh Stadium, Jaipur",1,5,69,31,6,3,No,Run Out,4
+Fixture Sahil Patel,Bengal,wicket keeper,Fixture Elite Cup,2025,M0159,Mumbai,"Narendra Modi Stadium, Ahmedabad",2,7,12,6,1,0,No,Caught & Bowled,1
+Fixture Chetan Nagar,Punjab,batter,Fixture Elite Cup,2023,M0160,Tamil Nadu,"M. Chinnaswamy Stadium, Bengaluru",2,2,40,25,3,2,Yes,Not Out,6
+Fixture Chetan Nagar,Punjab,batter,Fixture Elite Cup,2023,M0161,Gujarat,"Wankhede Stadium, Mumbai",2,7,33,17,2,1,No,Bowled,6
+Fixture Chetan Nagar,Punjab,batter,Fixture Elite Cup,2024,M0162,Gujarat,"Sawai Mansingh Stadium, Jaipur",2,7,24,11,2,1,No,LBW,0
+Fixture Chetan Nagar,Punjab,batter,Fixture Elite Cup,2024,M0163,Bengal,"Eden Gardens, Kolkata",2,4,45,25,4,2,No,Bowled,4
+Fixture Chetan Nagar,Punjab,batter,Fixture Elite Cup,2023,M0164,Tamil Nadu,"Wankhede Stadium, Mumbai",2,5,31,17,2,1,Yes,Not Out,4
+Fixture Chetan Nagar,Punjab,batter,Fixture Elite Cup,2025,M0165,Gujarat,"Arun Jaitley Stadium, Delhi",2,3,67,33,6,3,No,Caught,6
+Fixture Chetan Nagar,Punjab,batter,Fixture State League,2024,M0166,Delhi,"M. Chinnaswamy Stadium, Bengaluru",2,2,69,38,6,3,No,Caught,9
+Fixture Chetan Nagar,Punjab,batter,Fixture State League,2022,M0167,Mumbai,"Arun Jaitley Stadium, Delhi",2,3,48,28,4,2,No,Caught & Bowled,5
+Fixture Chetan Nagar,Punjab,batter,Fixture State League,2022,M0168,Mumbai,"Wankhede Stadium, Mumbai",2,2,58,31,5,3,Yes,Not Out,6
+Fixture Chetan Nagar,Punjab,batter,Fixture State League,2024,M0169,Delhi,"Arun Jaitley Stadium, Delhi",1,1,94,51,8,5,Yes,Not Out,13
+Fixture Chetan Nagar,Punjab,batter,Fixture State League,2022,M0170,Mumbai,"Sawai Mansingh Stadium, Jaipur",2,5,50,26,4,2,No,LBW,7
+Fixture Chetan Nagar,Punjab,batter,Fixture State League,2023,M0171,Bengal,"M. Chinnaswamy Stadium, Bengaluru",2,7,33,16,2,1,No,LBW,4
+Fixture Chetan Nagar,Punjab,batter,Fixture Emerging Trophy,2025,M0172,Delhi,"M. Chinnaswamy Stadium, Bengaluru",2,2,67,36,6,3,Yes,Not Out,7
+Fixture Chetan Nagar,Punjab,batter,Fixture Emerging Trophy,2024,M0173,Bengal,"Wankhede Stadium, Mumbai",1,1,66,38,5,3,No,Bowled,6
+Fixture Chetan Nagar,Punjab,batter,Fixture Emerging Trophy,2025,M0174,Rajasthan,"M. Chinnaswamy Stadium, Bengaluru",2,3,43,27,3,2,No,Run Out,6
+Fixture Chetan Nagar,Punjab,batter,Fixture Emerging Trophy,2025,M0175,Karnataka,"Narendra Modi Stadium, Ahmedabad",1,4,36,22,3,2,No,Run Out,6
+Fixture Chetan Nagar,Punjab,batter,Fixture Emerging Trophy,2025,M0176,Tamil Nadu,"Narendra Modi Stadium, Ahmedabad",1,5,61,40,5,3,No,Caught & Bowled,8
+Fixture Chetan Nagar,Punjab,batter,Fixture Emerging Trophy,2025,M0177,Gujarat,"Arun Jaitley Stadium, Delhi",1,2,51,33,4,2,Yes,Not Out,5
+Fixture Tanmay Verma,Gujarat,batter,Fixture Elite Cup,2023,M0178,Tamil Nadu,"Narendra Modi Stadium, Ahmedabad",2,5,28,21,2,1,No,Bowled,11
+Fixture Tanmay Verma,Gujarat,batter,Fixture Elite Cup,2025,M0179,Punjab,"Arun Jaitley Stadium, Delhi",1,3,28,24,2,1,No,Stumped,10
+Fixture Tanmay Verma,Gujarat,batter,Fixture Elite Cup,2025,M0180,Karnataka,"Narendra Modi Stadium, Ahmedabad",2,3,51,28,4,2,No,Caught & Bowled,11
+Fixture Tanmay Verma,Gujarat,batter,Fixture Elite Cup,2025,M0181,Tamil Nadu,"Eden Gardens, Kolkata",2,4,38,30,3,1,No,LBW,13
+Fixture Tanmay Verma,Gujarat,batter,Fixture State League,2024,M0182,Punjab,"Narendra Modi Stadium, Ahmedabad",2,6,24,14,2,1,No,Run Out,4
+Fixture Tanmay Verma,Gujarat,batter,Fixture State League,2023,M0183,Punjab,"Arun Jaitley Stadium, Delhi",1,4,38,26,3,1,No,Stumped,8
+Fixture Tanmay Verma,Gujarat,batter,Fixture State League,2024,M0184,Bengal,"M. Chinnaswamy Stadium, Bengaluru",1,2,68,42,6,2,No,LBW,20
+Fixture Tanmay Verma,Gujarat,batter,Fixture State League,2023,M0185,Karnataka,"Wankhede Stadium, Mumbai",2,2,19,16,1,0,No,Caught,6
+Fixture Tanmay Verma,Gujarat,batter,Fixture Emerging Trophy,2024,M0186,Bengal,"Arun Jaitley Stadium, Delhi",1,5,33,24,2,1,No,Caught,7
+Fixture Tanmay Verma,Gujarat,batter,Fixture Emerging Trophy,2024,M0187,Punjab,"Sawai Mansingh Stadium, Jaipur",2,3,39,28,3,1,No,Caught,9
+Fixture Tanmay Verma,Gujarat,batter,Fixture Emerging Trophy,2025,M0188,Punjab,"Narendra Modi Stadium, Ahmedabad",1,5,30,22,2,1,No,Caught,9
+Fixture Tanmay Verma,Gujarat,batter,Fixture Emerging Trophy,2024,M0189,Punjab,"M. Chinnaswamy Stadium, Bengaluru",2,1,21,17,1,0,Yes,Not Out,5
+Fixture Karan Bishnoi,Karnataka,all rounder,Fixture Elite Cup,2025,M0190,Punjab,"Eden Gardens, Kolkata",1,1,70,40,6,4,No,Bowled,5
+Fixture Karan Bishnoi,Karnataka,all rounder,Fixture Elite Cup,2023,M0191,Delhi,"Wankhede Stadium, Mumbai",1,6,25,11,2,1,No,Bowled,0
+Fixture Karan Bishnoi,Karnataka,all rounder,Fixture Elite Cup,2024,M0192,Rajasthan,"Narendra Modi Stadium, Ahmedabad",1,3,58,30,5,3,No,LBW,6
+Fixture Karan Bishnoi,Karnataka,all rounder,Fixture Elite Cup,2023,M0193,Delhi,"M. Chinnaswamy Stadium, Bengaluru",2,5,69,39,6,4,No,Caught & Bowled,7
+Fixture Karan Bishnoi,Karnataka,all rounder,Fixture State League,2024,M0194,Rajasthan,"Eden Gardens, Kolkata",2,1,63,34,5,3,No,Run Out,6
+Fixture Karan Bishnoi,Karnataka,all rounder,Fixture State League,2024,M0195,Mumbai,"Arun Jaitley Stadium, Delhi",2,3,71,39,6,4,No,Stumped,9
+Fixture Karan Bishnoi,Karnataka,all rounder,Fixture State League,2022,M0196,Delhi,"M. Chinnaswamy Stadium, Bengaluru",1,3,38,20,3,2,Yes,Not Out,5
+Fixture Karan Bishnoi,Karnataka,all rounder,Fixture State League,2023,M0197,Tamil Nadu,"Arun Jaitley Stadium, Delhi",2,7,37,19,3,2,Yes,Not Out,4
+Fixture Karan Bishnoi,Karnataka,all rounder,Fixture Emerging Trophy,2025,M0198,Bengal,"Narendra Modi Stadium, Ahmedabad",1,3,47,27,4,2,No,Caught & Bowled,6
+Fixture Karan Bishnoi,Karnataka,all rounder,Fixture Emerging Trophy,2025,M0199,Delhi,"Sawai Mansingh Stadium, Jaipur",1,7,42,19,3,2,Yes,Not Out,4
+Fixture Karan Bishnoi,Karnataka,all rounder,Fixture Emerging Trophy,2025,M0200,Bengal,"Wankhede Stadium, Mumbai",2,1,27,15,2,1,Yes,Not Out,0
+Fixture Karan Bishnoi,Karnataka,all rounder,Fixture Emerging Trophy,2025,M0201,Tamil Nadu,"Arun Jaitley Stadium, Delhi",2,1,51,32,4,3,Yes,Not Out,5
+Fixture Yash Yadav,Tamil Nadu,wicket keeper,Fixture Elite Cup,2023,M0202,Gujarat,"Sawai Mansingh Stadium, Jaipur",2,2,28,26,2,1,No,Caught,13
+Fixture Yash Yadav,Tamil Nadu,wicket keeper,Fixture Elite Cup,2025,M0203,Karnataka,"Eden Gardens, Kolkata",1,6,15,8,1,0,No,LBW,0
+Fixture Yash Yadav,Tamil Nadu,wicket keeper,Fixture Elite Cup,2025,M0204,Punjab,"Wankhede Stadium, Mumbai",2,2,17,13,1,0,No,Caught & Bowled,7
+Fixture Yash Yadav,Tamil Nadu,wicket keeper,Fixture Elite Cup,2025,M0205,Karnataka,"Narendra Modi Stadium, Ahmedabad",2,4,19,17,1,0,No,Caught,6
+Fixture Yash Yadav,Tamil Nadu,wicket keeper,Fixture Elite Cup,2024,M0206,Rajasthan,"Eden Gardens, Kolkata",2,2,25,20,2,1,No,Caught,7
+Fixture Yash Yadav,Tamil Nadu,wicket keeper,Fixture Elite Cup,2025,M0207,Delhi,"Narendra Modi Stadium, Ahmedabad",1,2,41,30,3,1,No,Stumped,9
+Fixture Yash Yadav,Tamil Nadu,wicket keeper,Fixture State League,2022,M0208,Mumbai,"M. Chinnaswamy Stadium, Bengaluru",2,4,25,21,2,1,No,Caught & Bowled,8
+Fixture Yash Yadav,Tamil Nadu,wicket keeper,Fixture State League,2024,M0209,Punjab,"Eden Gardens, Kolkata",2,2,7,6,0,0,No,Caught,1
+Fixture Yash Yadav,Tamil Nadu,wicket keeper,Fixture State League,2023,M0210,Rajasthan,"Eden Gardens, Kolkata",2,3,34,24,3,1,No,Run Out,8
+Fixture Yash Yadav,Tamil Nadu,wicket keeper,Fixture State League,2023,M0211,Delhi,"Sawai Mansingh Stadium, Jaipur",1,6,1,1,0,0,No,Stumped,1
+Fixture Yash Yadav,Tamil Nadu,wicket keeper,Fixture State League,2022,M0212,Gujarat,"Eden Gardens, Kolkata",2,4,36,34,3,1,Yes,Not Out,12
+Fixture Yash Yadav,Tamil Nadu,wicket keeper,Fixture State League,2022,M0213,Mumbai,"Narendra Modi Stadium, Ahmedabad",2,1,28,20,2,1,Yes,Not Out,5
+Fixture Yash Yadav,Tamil Nadu,wicket keeper,Fixture Emerging Trophy,2025,M0214,Rajasthan,"Eden Gardens, Kolkata",2,5,1,1,0,0,Yes,Not Out,0
+Fixture Yash Yadav,Tamil Nadu,wicket keeper,Fixture Emerging Trophy,2025,M0215,Mumbai,"Arun Jaitley Stadium, Delhi",2,5,30,21,2,1,Yes,Not Out,9
+Fixture Yash Yadav,Tamil Nadu,wicket keeper,Fixture Emerging Trophy,2025,M0216,Rajasthan,"Sawai Mansingh Stadium, Jaipur",1,4,34,18,3,1,No,Stumped,7
+Fixture Yash Yadav,Tamil Nadu,wicket keeper,Fixture Emerging Trophy,2025,M0217,Rajasthan,"Arun Jaitley Stadium, Delhi",2,2,42,31,3,1,No,Caught,10
+Fixture Yash Yadav,Tamil Nadu,wicket keeper,Fixture Emerging Trophy,2025,M0218,Karnataka,"Narendra Modi Stadium, Ahmedabad",2,3,21,15,1,0,Yes,Not Out,6
+Fixture Yash Yadav,Tamil Nadu,wicket keeper,Fixture Emerging Trophy,2025,M0219,Gujarat,"M. Chinnaswamy Stadium, Bengaluru",1,1,18,11,1,0,No,LBW,4
+Fixture Jatin Agarwal,Bengal,batter,Fixture Elite Cup,2024,M0220,Delhi,"M. Chinnaswamy Stadium, Bengaluru",1,3,60,36,5,3,Yes,Not Out,9
+Fixture Jatin Agarwal,Bengal,batter,Fixture Elite Cup,2025,M0221,Delhi,"Eden Gardens, Kolkata",2,3,45,29,4,2,Yes,Not Out,9
+Fixture Jatin Agarwal,Bengal,batter,Fixture Elite Cup,2023,M0222,Tamil Nadu,"M. Chinnaswamy Stadium, Bengaluru",2,7,22,13,1,1,No,Bowled,7
+Fixture Jatin Agarwal,Bengal,batter,Fixture Elite Cup,2024,M0223,Mumbai,"Eden Gardens, Kolkata",2,3,28,17,2,1,No,Stumped,3
+Fixture Jatin Agarwal,Bengal,batter,Fixture Elite Cup,2025,M0224,Mumbai,"Arun Jaitley Stadium, Delhi",1,2,31,19,2,1,No,Caught,4
+Fixture Jatin Agarwal,Bengal,batter,Fixture Emerging Trophy,2024,M0225,Gujarat,"Eden Gardens, Kolkata",2,5,50,33,4,2,No,Caught,7
+Fixture Jatin Agarwal,Bengal,batter,Fixture Emerging Trophy,2025,M0226,Rajasthan,"Eden Gardens, Kolkata",1,4,21,13,1,1,No,Run Out,2
+Fixture Jatin Agarwal,Bengal,batter,Fixture Emerging Trophy,2025,M0227,Karnataka,"Sawai Mansingh Stadium, Jaipur",2,3,24,14,2,1,No,LBW,6
+Fixture Jatin Agarwal,Bengal,batter,Fixture Emerging Trophy,2024,M0228,Delhi,"Narendra Modi Stadium, Ahmedabad",1,5,74,40,6,3,No,Stumped,10
+Fixture Jatin Agarwal,Bengal,batter,Fixture Emerging Trophy,2025,M0229,Delhi,"Arun Jaitley Stadium, Delhi",1,5,38,24,3,2,No,LBW,5
+Fixture Jatin Vasudev,Punjab,batter,Fixture Elite Cup,2024,M0230,Bengal,"M. Chinnaswamy Stadium, Bengaluru",2,1,38,23,3,1,No,Caught,12
+Fixture Jatin Vasudev,Punjab,batter,Fixture Elite Cup,2024,M0231,Rajasthan,"M. Chinnaswamy Stadium, Bengaluru",1,7,3,2,0,0,No,Stumped,0
+Fixture Jatin Vasudev,Punjab,batter,Fixture Elite Cup,2023,M0232,Karnataka,"Arun Jaitley Stadium, Delhi",2,5,42,32,3,1,No,Caught,13
+Fixture Jatin Vasudev,Punjab,batter,Fixture Elite Cup,2024,M0233,Mumbai,"Narendra Modi Stadium, Ahmedabad",2,3,26,19,2,1,No,Stumped,8
+Fixture Jatin Vasudev,Punjab,batter,Fixture State League,2022,M0234,Bengal,"M. Chinnaswamy Stadium, Bengaluru",2,5,24,14,2,1,No,Run Out,6
+Fixture Jatin Vasudev,Punjab,batter,Fixture State League,2022,M0235,Bengal,"Eden Gardens, Kolkata",1,1,43,27,3,1,No,LBW,9
+Fixture Jatin Vasudev,Punjab,batter,Fixture State League,2022,M0236,Tamil Nadu,"Eden Gardens, Kolkata",1,1,17,11,1,0,No,Stumped,3
+Fixture Jatin Vasudev,Punjab,batter,Fixture State League,2024,M0237,Gujarat,"Narendra Modi Stadium, Ahmedabad",2,5,63,40,5,2,No,Caught,13
+Fixture Jatin Vasudev,Punjab,batter,Fixture Emerging Trophy,2025,M0238,Delhi,"Eden Gardens, Kolkata",1,4,19,11,1,0,Yes,Not Out,6
+Fixture Jatin Vasudev,Punjab,batter,Fixture Emerging Trophy,2025,M0239,Tamil Nadu,"Arun Jaitley Stadium, Delhi",1,4,28,26,2,1,No,Bowled,8
+Fixture Jatin Vasudev,Punjab,batter,Fixture Emerging Trophy,2025,M0240,Mumbai,"Wankhede Stadium, Mumbai",1,1,14,16,1,0,Yes,Not Out,6
+Fixture Jatin Vasudev,Punjab,batter,Fixture Emerging Trophy,2025,M0241,Delhi,"M. Chinnaswamy Stadium, Bengaluru",2,2,41,26,3,1,No,LBW,10
+Fixture Tanmay Zope,Gujarat,bowler,Fixture Elite Cup,2025,M0242,Karnataka,"Sawai Mansingh Stadium, Jaipur",1,5,38,28,3,1,No,Bowled,12
+Fixture Tanmay Zope,Gujarat,bowler,Fixture Elite Cup,2025,M0243,Delhi,"M. Chinnaswamy Stadium, Bengaluru",1,1,12,13,1,0,No,Caught,7
+Fixture Tanmay Zope,Gujarat,bowler,Fixture Elite Cup,2025,M0244,Karnataka,"Narendra Modi Stadium, Ahmedabad",2,3,40,26,3,1,No,Caught,11
+Fixture Tanmay Zope,Gujarat,bowler,Fixture Elite Cup,2024,M0245,Tamil Nadu,"Narendra Modi Stadium, Ahmedabad",2,2,33,23,2,1,No,Stumped,6
+Fixture Tanmay Zope,Gujarat,bowler,Fixture Elite Cup,2025,M0246,Delhi,"Wankhede Stadium, Mumbai",2,5,12,9,1,0,No,Stumped,1
+Fixture Tanmay Zope,Gujarat,bowler,Fixture Elite Cup,2025,M0247,Karnataka,"Narendra Modi Stadium, Ahmedabad",1,5,25,22,2,0,No,Bowled,8
+Fixture Tanmay Zope,Gujarat,bowler,Fixture State League,2024,M0248,Delhi,"Sawai Mansingh Stadium, Jaipur",1,5,49,36,4,1,No,Run Out,18
+Fixture Tanmay Zope,Gujarat,bowler,Fixture State League,2022,M0249,Mumbai,"Narendra Modi Stadium, Ahmedabad",2,7,12,8,1,0,No,Run Out,2
+Fixture Tanmay Zope,Gujarat,bowler,Fixture State League,2022,M0250,Tamil Nadu,"Wankhede Stadium, Mumbai",2,2,21,16,1,0,No,Caught & Bowled,4
+Fixture Tanmay Zope,Gujarat,bowler,Fixture State League,2024,M0251,Tamil Nadu,"Arun Jaitley Stadium, Delhi",1,1,33,26,2,1,Yes,Not Out,10
+Fixture Tanmay Zope,Gujarat,bowler,Fixture State League,2022,M0252,Punjab,"Eden Gardens, Kolkata",1,5,21,22,1,0,No,Caught,9
+Fixture Tanmay Zope,Gujarat,bowler,Fixture State League,2022,M0253,Karnataka,"M. Chinnaswamy Stadium, Bengaluru",1,4,58,40,5,2,No,LBW,17
+Fixture Tanmay Zope,Gujarat,bowler,Fixture Emerging Trophy,2024,M0254,Delhi,"Wankhede Stadium, Mumbai",2,5,12,12,1,0,No,Stumped,2
+Fixture Tanmay Zope,Gujarat,bowler,Fixture Emerging Trophy,2025,M0255,Mumbai,"Wankhede Stadium, Mumbai",2,6,13,10,1,0,No,Stumped,8
+Fixture Tanmay Zope,Gujarat,bowler,Fixture Emerging Trophy,2025,M0256,Tamil Nadu,"Sawai Mansingh Stadium, Jaipur",2,1,48,28,4,1,Yes,Not Out,11
+Fixture Tanmay Zope,Gujarat,bowler,Fixture Emerging Trophy,2025,M0257,Punjab,"Eden Gardens, Kolkata",1,3,20,26,1,0,No,Bowled,10
+Fixture Tanmay Zope,Gujarat,bowler,Fixture Emerging Trophy,2025,M0258,Tamil Nadu,"Arun Jaitley Stadium, Delhi",1,3,12,10,1,0,No,Stumped,5
+Fixture Tanmay Zope,Gujarat,bowler,Fixture Emerging Trophy,2025,M0259,Mumbai,"Narendra Modi Stadium, Ahmedabad",1,5,31,31,2,1,No,Bowled,14
+Fixture Umesh Nair,Rajasthan,bowler,Fixture Elite Cup,2024,M0260,Mumbai,"Arun Jaitley Stadium, Delhi",1,2,35,22,3,1,Yes,Not Out,5
+Fixture Umesh Nair,Rajasthan,bowler,Fixture Elite Cup,2025,M0261,Mumbai,"Eden Gardens, Kolkata",2,5,33,22,2,1,No,Stumped,5
+Fixture Umesh Nair,Rajasthan,bowler,Fixture Elite Cup,2024,M0262,Tamil Nadu,"Narendra Modi Stadium, Ahmedabad",2,1,35,26,3,1,No,Caught & Bowled,7
+Fixture Umesh Nair,Rajasthan,bowler,Fixture Elite Cup,2023,M0263,Tamil Nadu,"Sawai Mansingh Stadium, Jaipur",2,2,61,39,5,2,No,Run Out,11
+Fixture Karan Qureshi,Delhi,bowler,Fixture Elite Cup,2023,M0264,Tamil Nadu,"M. Chinnaswamy Stadium, Bengaluru",1,1,27,19,2,1,No,Stumped,7
+Fixture Karan Qureshi,Delhi,bowler,Fixture Elite Cup,2024,M0265,Bengal,"Narendra Modi Stadium, Ahmedabad",1,3,39,26,3,1,No,LBW,5
+Fixture Karan Qureshi,Delhi,bowler,Fixture Elite Cup,2024,M0266,Tamil Nadu,"Wankhede Stadium, Mumbai",2,2,67,41,6,3,No,Bowled,10
+Fixture Karan Qureshi,Delhi,bowler,Fixture Elite Cup,2025,M0267,Punjab,"Wankhede Stadium, Mumbai",2,1,25,20,2,1,Yes,Not Out,5
+Fixture Karan Qureshi,Delhi,bowler,Fixture Elite Cup,2025,M0268,Tamil Nadu,"Arun Jaitley Stadium, Delhi",1,7,26,12,2,1,No,Run Out,3
+Fixture Karan Qureshi,Delhi,bowler,Fixture State League,2022,M0269,Bengal,"Arun Jaitley Stadium, Delhi",2,2,43,29,3,2,No,Bowled,6
+Fixture Karan Qureshi,Delhi,bowler,Fixture State League,2024,M0270,Mumbai,"Narendra Modi Stadium, Ahmedabad",2,2,52,28,4,2,No,LBW,7
+Fixture Karan Qureshi,Delhi,bowler,Fixture State League,2024,M0271,Karnataka,"Sawai Mansingh Stadium, Jaipur",1,5,16,12,1,0,No,Bowled,3
+Fixture Karan Qureshi,Delhi,bowler,Fixture State League,2023,M0272,Karnataka,"M. Chinnaswamy Stadium, Bengaluru",1,4,38,25,3,1,No,Caught,6
+Fixture Karan Qureshi,Delhi,bowler,Fixture State League,2022,M0273,Rajasthan,"Narendra Modi Stadium, Ahmedabad",1,2,46,29,4,2,No,LBW,9
+Fixture Karan Qureshi,Delhi,bowler,Fixture Emerging Trophy,2024,M0274,Bengal,"Narendra Modi Stadium, Ahmedabad",2,4,45,28,4,2,No,LBW,11
+Fixture Karan Qureshi,Delhi,bowler,Fixture Emerging Trophy,2024,M0275,Punjab,"M. Chinnaswamy Stadium, Bengaluru",2,4,39,25,3,1,No,Stumped,8
+Fixture Karan Qureshi,Delhi,bowler,Fixture Emerging Trophy,2024,M0276,Mumbai,"Eden Gardens, Kolkata",1,2,32,20,2,1,No,Caught,9
+Fixture Karan Qureshi,Delhi,bowler,Fixture Emerging Trophy,2024,M0277,Rajasthan,"Arun Jaitley Stadium, Delhi",2,2,32,20,2,1,Yes,Not Out,2
+Fixture Karan Qureshi,Delhi,bowler,Fixture Emerging Trophy,2025,M0278,Rajasthan,"Arun Jaitley Stadium, Delhi",1,1,18,10,1,0,Yes,Not Out,2
+Fixture Pranav Kohli,Mumbai,all rounder,Fixture Elite Cup,2024,M0279,Gujarat,"Eden Gardens, Kolkata",2,7,29,15,2,1,No,Caught & Bowled,2
+Fixture Pranav Kohli,Mumbai,all rounder,Fixture Elite Cup,2023,M0280,Tamil Nadu,"Sawai Mansingh Stadium, Jaipur",1,7,12,8,1,0,Yes,Not Out,1
+Fixture Pranav Kohli,Mumbai,all rounder,Fixture Elite Cup,2025,M0281,Delhi,"Wankhede Stadium, Mumbai",2,7,12,6,1,0,No,Stumped,1
+Fixture Pranav Kohli,Mumbai,all rounder,Fixture Elite Cup,2025,M0282,Bengal,"Eden Gardens, Kolkata",1,5,26,19,2,1,No,LBW,7
+Fixture Pranav Kohli,Mumbai,all rounder,Fixture Elite Cup,2025,M0283,Bengal,"M. Chinnaswamy Stadium, Bengaluru",2,7,22,12,1,0,No,Run Out,5
+Fixture Pranav Kohli,Mumbai,all rounder,Fixture State League,2023,M0284,Rajasthan,"Wankhede Stadium, Mumbai",1,5,20,16,1,0,Yes,Not Out,6
+Fixture Pranav Kohli,Mumbai,all rounder,Fixture State League,2024,M0285,Rajasthan,"Sawai Mansingh Stadium, Jaipur",2,4,18,13,1,0,Yes,Not Out,5
+Fixture Pranav Kohli,Mumbai,all rounder,Fixture State League,2024,M0286,Karnataka,"Wankhede Stadium, Mumbai",1,2,17,14,1,0,Yes,Not Out,6
+Fixture Pranav Kohli,Mumbai,all rounder,Fixture State League,2023,M0287,Rajasthan,"Eden Gardens, Kolkata",1,1,25,20,2,1,No,Run Out,8
+Fixture Pranav Kohli,Mumbai,all rounder,Fixture State League,2024,M0288,Bengal,"Narendra Modi Stadium, Ahmedabad",2,3,15,12,1,0,No,LBW,4
+Fixture Pranav Kohli,Mumbai,all rounder,Fixture Emerging Trophy,2025,M0289,Tamil Nadu,"Narendra Modi Stadium, Ahmedabad",1,3,31,25,2,1,No,Run Out,9
+Fixture Pranav Kohli,Mumbai,all rounder,Fixture Emerging Trophy,2024,M0290,Delhi,"Narendra Modi Stadium, Ahmedabad",2,2,28,22,2,1,No,LBW,9
+Fixture Pranav Kohli,Mumbai,all rounder,Fixture Emerging Trophy,2024,M0291,Punjab,"Sawai Mansingh Stadium, Jaipur",1,3,42,29,3,1,Yes,Not Out,10
+Fixture Pranav Kohli,Mumbai,all rounder,Fixture Emerging Trophy,2024,M0292,Punjab,"Sawai Mansingh Stadium, Jaipur",1,1,42,25,3,1,No,Run Out,7
+Fixture Pranav Kohli,Mumbai,all rounder,Fixture Emerging Trophy,2024,M0293,Gujarat,"Eden Gardens, Kolkata",1,4,26,14,2,1,Yes,Not Out,4
+Fixture Tanmay Walia,Karnataka,wicket keeper,Fixture State League,2024,M0294,Delhi,"Wankhede Stadium, Mumbai",2,1,23,12,2,1,Yes,Not Out,0
+Fixture Tanmay Walia,Karnataka,wicket keeper,Fixture State League,2023,M0295,Punjab,"Eden Gardens, Kolkata",1,1,41,25,3,2,Yes,Not Out,3
+Fixture Tanmay Walia,Karnataka,wicket keeper,Fixture State League,2024,M0296,Gujarat,"Arun Jaitley Stadium, Delhi",2,3,49,26,4,2,No,Caught & Bowled,5
+Fixture Tanmay Walia,Karnataka,wicket keeper,Fixture State League,2022,M0297,Tamil Nadu,"Wankhede Stadium, Mumbai",2,6,18,10,1,0,No,LBW,3
+Fixture Tanmay Walia,Karnataka,wicket keeper,Fixture State League,2023,M0298,Delhi,"Sawai Mansingh Stadium, Jaipur",1,3,38,23,3,2,No,Caught,4
+Fixture Tanmay Walia,Karnataka,wicket keeper,Fixture State League,2022,M0299,Mumbai,"Wankhede Stadium, Mumbai",2,6,44,19,3,2,No,Caught & Bowled,6
+Fixture Tanmay Walia,Karnataka,wicket keeper,Fixture Emerging Trophy,2024,M0300,Mumbai,"M. Chinnaswamy Stadium, Bengaluru",2,2,48,29,4,2,No,LBW,7
+Fixture Tanmay Walia,Karnataka,wicket keeper,Fixture Emerging Trophy,2025,M0301,Mumbai,"M. Chinnaswamy Stadium, Bengaluru",2,4,81,40,7,4,No,Run Out,12
+Fixture Tanmay Walia,Karnataka,wicket keeper,Fixture Emerging Trophy,2025,M0302,Mumbai,"M. Chinnaswamy Stadium, Bengaluru",1,2,21,13,1,1,No,LBW,1
+Fixture Tanmay Walia,Karnataka,wicket keeper,Fixture Emerging Trophy,2024,M0303,Rajasthan,"Arun Jaitley Stadium, Delhi",1,6,25,13,2,1,No,LBW,5
+Fixture Tanmay Walia,Karnataka,wicket keeper,Fixture Emerging Trophy,2024,M0304,Gujarat,"Sawai Mansingh Stadium, Jaipur",1,1,58,30,5,3,No,LBW,8
+Fixture Tanmay Walia,Karnataka,wicket keeper,Fixture Emerging Trophy,2024,M0305,Tamil Nadu,"Eden Gardens, Kolkata",2,1,42,23,3,2,No,Caught & Bowled,5
+Fixture Tanmay Lakra,Tamil Nadu,batter,Fixture Elite Cup,2025,M0306,Rajasthan,"Narendra Modi Stadium, Ahmedabad",2,1,51,28,4,2,No,Caught,6
+Fixture Tanmay Lakra,Tamil Nadu,batter,Fixture Elite Cup,2023,M0307,Punjab,"Wankhede Stadium, Mumbai",2,1,50,27,4,2,Yes,Not Out,3
+Fixture Tanmay Lakra,Tamil Nadu,batter,Fixture Elite Cup,2023,M0308,Bengal,"Wankhede Stadium, Mumbai",2,1,54,27,4,3,No,Bowled,5
+Fixture Tanmay Lakra,Tamil Nadu,batter,Fixture Elite Cup,2024,M0309,Punjab,"Narendra Modi Stadium, Ahmedabad",1,3,82,42,7,4,Yes,Not Out,11
+Fixture Tanmay Lakra,Tamil Nadu,batter,Fixture Elite Cup,2025,M0310,Bengal,"Arun Jaitley Stadium, Delhi",1,6,39,16,3,2,No,LBW,5
+Fixture Tanmay Lakra,Tamil Nadu,batter,Fixture Elite Cup,2025,M0311,Gujarat,"Eden Gardens, Kolkata",2,3,33,17,2,1,No,Stumped,0
+Fixture Tanmay Lakra,Tamil Nadu,batter,Fixture State League,2024,M0312,Mumbai,"Eden Gardens, Kolkata",1,2,38,20,3,2,No,Caught,2
+Fixture Tanmay Lakra,Tamil Nadu,batter,Fixture State League,2024,M0313,Gujarat,"Wankhede Stadium, Mumbai",2,5,43,24,3,2,Yes,Not Out,5
+Fixture Tanmay Lakra,Tamil Nadu,batter,Fixture State League,2023,M0314,Mumbai,"M. Chinnaswamy Stadium, Bengaluru",1,7,21,9,1,1,No,LBW,1
+Fixture Tanmay Lakra,Tamil Nadu,batter,Fixture State League,2023,M0315,Mumbai,"Eden Gardens, Kolkata",2,2,59,30,5,3,Yes,Not Out,7
+Fixture Tanmay Lakra,Tamil Nadu,batter,Fixture State League,2024,M0316,Delhi,"Eden Gardens, Kolkata",2,5,49,30,4,2,No,Caught,7
+Fixture Tanmay Lakra,Tamil Nadu,batter,Fixture State League,2024,M0317,Mumbai,"Wankhede Stadium, Mumbai",2,1,57,31,5,3,Yes,Not Out,6
+Fixture Tanmay Lakra,Tamil Nadu,batter,Fixture Emerging Trophy,2024,M0318,Mumbai,"M. Chinnaswamy Stadium, Bengaluru",1,7,24,12,2,1,No,Stumped,5
+Fixture Tanmay Lakra,Tamil Nadu,batter,Fixture Emerging Trophy,2024,M0319,Mumbai,"Wankhede Stadium, Mumbai",1,3,33,18,2,1,No,Bowled,2
+Fixture Tanmay Lakra,Tamil Nadu,batter,Fixture Emerging Trophy,2024,M0320,Gujarat,"Arun Jaitley Stadium, Delhi",2,5,39,24,3,2,No,Run Out,5
+Fixture Tanmay Lakra,Tamil Nadu,batter,Fixture Emerging Trophy,2024,M0321,Gujarat,"Wankhede Stadium, Mumbai",1,4,114,53,10,6,Yes,Not Out,13
+Fixture Tanmay Lakra,Tamil Nadu,batter,Fixture Emerging Trophy,2025,M0322,Delhi,"Eden Gardens, Kolkata",1,3,49,29,4,2,Yes,Not Out,11
+Fixture Tanmay Lakra,Tamil Nadu,batter,Fixture Emerging Trophy,2024,M0323,Karnataka,"Wankhede Stadium, Mumbai",2,7,27,14,2,1,No,Caught,3
+Fixture Sahil Iqbal,Bengal,batter,Fixture State League,2024,M0324,Gujarat,"Arun Jaitley Stadium, Delhi",1,1,56,36,5,3,Yes,Not Out,8
+Fixture Sahil Iqbal,Bengal,batter,Fixture State League,2024,M0325,Gujarat,"Narendra Modi Stadium, Ahmedabad",1,2,53,32,4,2,Yes,Not Out,7
+Fixture Sahil Iqbal,Bengal,batter,Fixture State League,2024,M0326,Rajasthan,"Arun Jaitley Stadium, Delhi",2,3,37,22,3,2,No,Bowled,5
+Fixture Sahil Iqbal,Bengal,batter,Fixture State League,2023,M0327,Gujarat,"Narendra Modi Stadium, Ahmedabad",2,2,26,16,2,1,No,Caught,2
+Fixture Sahil Iqbal,Bengal,batter,Fixture Emerging Trophy,2025,M0328,Punjab,"Eden Gardens, Kolkata",2,2,56,34,5,3,Yes,Not Out,8
+Fixture Sahil Iqbal,Bengal,batter,Fixture Emerging Trophy,2025,M0329,Delhi,"M. Chinnaswamy Stadium, Bengaluru",2,1,35,22,3,1,No,Caught,5
+Fixture Sahil Iqbal,Bengal,batter,Fixture Emerging Trophy,2025,M0330,Punjab,"M. Chinnaswamy Stadium, Bengaluru",2,6,17,9,1,0,No,Stumped,0
+Fixture Sahil Iqbal,Bengal,batter,Fixture Emerging Trophy,2024,M0331,Gujarat,"Narendra Modi Stadium, Ahmedabad",1,2,67,37,6,3,No,Caught & Bowled,8
+Fixture Chetan Patel,Punjab,bowler,Fixture Elite Cup,2025,M0332,Mumbai,"Narendra Modi Stadium, Ahmedabad",2,4,49,28,4,2,Yes,Not Out,9
+Fixture Chetan Patel,Punjab,bowler,Fixture Elite Cup,2025,M0333,Karnataka,"M. Chinnaswamy Stadium, Bengaluru",2,5,56,32,5,2,Yes,Not Out,12
+Fixture Chetan Patel,Punjab,bowler,Fixture Elite Cup,2025,M0334,Karnataka,"Wankhede Stadium, Mumbai",1,7,44,22,3,2,No,Run Out,7
+Fixture Chetan Patel,Punjab,bowler,Fixture Elite Cup,2024,M0335,Mumbai,"M. Chinnaswamy Stadium, Bengaluru",1,1,53,30,4,2,Yes,Not Out,9
+Fixture Chetan Patel,Punjab,bowler,Fixture State League,2023,M0336,Tamil Nadu,"Wankhede Stadium, Mumbai",1,3,37,30,3,1,No,Caught & Bowled,8
+Fixture Chetan Patel,Punjab,bowler,Fixture State League,2024,M0337,Bengal,"Arun Jaitley Stadium, Delhi",2,1,51,29,4,2,No,Stumped,10
+Fixture Chetan Patel,Punjab,bowler,Fixture State League,2024,M0338,Gujarat,"M. Chinnaswamy Stadium, Bengaluru",2,5,54,38,4,2,No,Caught,12
+Fixture Chetan Patel,Punjab,bowler,Fixture State League,2024,M0339,Delhi,"Arun Jaitley Stadium, Delhi",1,3,61,35,5,3,No,LBW,10
+Fixture Chetan Patel,Punjab,bowler,Fixture Emerging Trophy,2025,M0340,Tamil Nadu,"M. Chinnaswamy Stadium, Bengaluru",2,1,50,27,4,2,No,Bowled,8
+Fixture Chetan Patel,Punjab,bowler,Fixture Emerging Trophy,2025,M0341,Mumbai,"Eden Gardens, Kolkata",1,7,17,9,1,0,Yes,Not Out,3
+Fixture Chetan Patel,Punjab,bowler,Fixture Emerging Trophy,2025,M0342,Karnataka,"Wankhede Stadium, Mumbai",1,3,44,30,3,2,No,Run Out,9
+Fixture Chetan Patel,Punjab,bowler,Fixture Emerging Trophy,2024,M0343,Delhi,"Eden Gardens, Kolkata",1,5,35,23,3,1,No,Caught & Bowled,7
+Fixture Ishan Patel,Gujarat,bowler,Fixture Elite Cup,2024,M0344,Delhi,"Wankhede Stadium, Mumbai",2,2,55,34,4,3,No,LBW,9
+Fixture Ishan Patel,Gujarat,bowler,Fixture Elite Cup,2023,M0345,Tamil Nadu,"Sawai Mansingh Stadium, Jaipur",2,1,39,19,3,2,Yes,Not Out,5
+Fixture Ishan Patel,Gujarat,bowler,Fixture Elite Cup,2025,M0346,Karnataka,"M. Chinnaswamy Stadium, Bengaluru",1,3,32,18,2,1,Yes,Not Out,4
+Fixture Ishan Patel,Gujarat,bowler,Fixture Elite Cup,2025,M0347,Karnataka,"Sawai Mansingh Stadium, Jaipur",2,1,54,28,4,3,No,Bowled,7
+Fixture Ishan Patel,Gujarat,bowler,Fixture Elite Cup,2024,M0348,Bengal,"Sawai Mansingh Stadium, Jaipur",1,5,47,29,4,2,No,Caught,9
+Fixture Ishan Patel,Gujarat,bowler,Fixture Elite Cup,2024,M0349,Mumbai,"Narendra Modi Stadium, Ahmedabad",2,1,61,33,5,3,No,Bowled,4
+Fixture Lakhan Jadeja,Delhi,all rounder,Fixture Elite Cup,2025,M0350,Bengal,"Wankhede Stadium, Mumbai",2,5,24,13,2,1,No,Caught,3
+Fixture Lakhan Jadeja,Delhi,all rounder,Fixture Elite Cup,2023,M0351,Tamil Nadu,"Narendra Modi Stadium, Ahmedabad",2,3,64,40,5,3,Yes,Not Out,6
+Fixture Lakhan Jadeja,Delhi,all rounder,Fixture Elite Cup,2025,M0352,Mumbai,"Narendra Modi Stadium, Ahmedabad",2,2,61,31,5,3,No,Caught & Bowled,4
+Fixture Lakhan Jadeja,Delhi,all rounder,Fixture Elite Cup,2024,M0353,Bengal,"Eden Gardens, Kolkata",1,5,42,25,3,2,No,Bowled,2
+Fixture Lakhan Jadeja,Delhi,all rounder,Fixture Elite Cup,2024,M0354,Rajasthan,"Wankhede Stadium, Mumbai",2,2,48,29,4,2,Yes,Not Out,7
+Fixture Lakhan Jadeja,Delhi,all rounder,Fixture Elite Cup,2023,M0355,Tamil Nadu,"Eden Gardens, Kolkata",1,6,41,19,3,2,Yes,Not Out,4
+Fixture Lakhan Jadeja,Delhi,all rounder,Fixture State League,2024,M0356,Gujarat,"Sawai Mansingh Stadium, Jaipur",2,3,28,16,2,1,Yes,Not Out,1
+Fixture Lakhan Jadeja,Delhi,all rounder,Fixture State League,2023,M0357,Bengal,"M. Chinnaswamy Stadium, Bengaluru",1,3,71,36,6,4,Yes,Not Out,9
+Fixture Lakhan Jadeja,Delhi,all rounder,Fixture State League,2024,M0358,Bengal,"Eden Gardens, Kolkata",2,3,69,33,6,4,Yes,Not Out,7
+Fixture Lakhan Jadeja,Delhi,all rounder,Fixture State League,2024,M0359,Bengal,"Narendra Modi Stadium, Ahmedabad",2,3,60,29,5,3,No,Stumped,5
+Fixture Lakhan Jadeja,Delhi,all rounder,Fixture State League,2022,M0360,Mumbai,"Arun Jaitley Stadium, Delhi",1,1,92,47,8,5,No,LBW,12
+Fixture Lakhan Jadeja,Delhi,all rounder,Fixture State League,2022,M0361,Karnataka,"Wankhede Stadium, Mumbai",2,2,73,37,6,4,No,Bowled,8
+Fixture Lakhan Jadeja,Delhi,all rounder,Fixture Emerging Trophy,2025,M0362,Punjab,"Eden Gardens, Kolkata",1,7,31,17,2,1,No,Caught & Bowled,4
+Fixture Lakhan Jadeja,Delhi,all rounder,Fixture Emerging Trophy,2024,M0363,Karnataka,"Narendra Modi Stadium, Ahmedabad",1,7,30,14,2,1,No,Caught & Bowled,4
+Fixture Lakhan Jadeja,Delhi,all rounder,Fixture Emerging Trophy,2025,M0364,Bengal,"Narendra Modi Stadium, Ahmedabad",2,6,32,14,2,1,Yes,Not Out,3
+Fixture Lakhan Jadeja,Delhi,all rounder,Fixture Emerging Trophy,2025,M0365,Mumbai,"M. Chinnaswamy Stadium, Bengaluru",1,3,70,35,6,4,No,Run Out,5
+Fixture Lakhan Jadeja,Delhi,all rounder,Fixture Emerging Trophy,2024,M0366,Rajasthan,"Sawai Mansingh Stadium, Jaipur",1,1,44,21,3,2,No,Stumped,8
+Fixture Lakhan Jadeja,Delhi,all rounder,Fixture Emerging Trophy,2024,M0367,Bengal,"Sawai Mansingh Stadium, Jaipur",1,2,47,29,4,2,No,Bowled,6
+Fixture Zaid Kohli,Mumbai,wicket keeper,Fixture Elite Cup,2024,M0368,Punjab,"Wankhede Stadium, Mumbai",1,5,73,33,6,4,No,Bowled,6
+Fixture Zaid Kohli,Mumbai,wicket keeper,Fixture Elite Cup,2024,M0369,Tamil Nadu,"Arun Jaitley Stadium, Delhi",1,3,67,31,6,4,No,Run Out,7
+Fixture Zaid Kohli,Mumbai,wicket keeper,Fixture Elite Cup,2024,M0370,Karnataka,"Arun Jaitley Stadium, Delhi",2,1,73,42,6,4,No,Caught,9
+Fixture Zaid Kohli,Mumbai,wicket keeper,Fixture Elite Cup,2023,M0371,Tamil Nadu,"Eden Gardens, Kolkata",2,1,70,37,6,4,No,Bowled,5
+Fixture Zaid Kohli,Mumbai,wicket keeper,Fixture Elite Cup,2025,M0372,Rajasthan,"Arun Jaitley Stadium, Delhi",2,2,52,31,4,3,No,Bowled,8
+Fixture Zaid Kohli,Mumbai,wicket keeper,Fixture Elite Cup,2023,M0373,Gujarat,"Eden Gardens, Kolkata",2,2,50,25,4,2,No,Caught & Bowled,4
+Fixture Zaid Kohli,Mumbai,wicket keeper,Fixture State League,2023,M0374,Gujarat,"Narendra Modi Stadium, Ahmedabad",1,2,69,38,6,4,No,Run Out,7
+Fixture Zaid Kohli,Mumbai,wicket keeper,Fixture State League,2024,M0375,Gujarat,"Arun Jaitley Stadium, Delhi",2,2,71,37,6,4,No,Stumped,10
+Fixture Zaid Kohli,Mumbai,wicket keeper,Fixture State League,2023,M0376,Gujarat,"Narendra Modi Stadium, Ahmedabad",2,7,39,19,3,2,Yes,Not Out,1
+Fixture Zaid Kohli,Mumbai,wicket keeper,Fixture State League,2023,M0377,Bengal,"Arun Jaitley Stadium, Delhi",1,6,26,13,2,1,No,LBW,4
+Fixture Zaid Kohli,Mumbai,wicket keeper,Fixture State League,2024,M0378,Karnataka,"M. Chinnaswamy Stadium, Bengaluru",2,3,49,29,4,2,No,Stumped,5
+Fixture Zaid Kohli,Mumbai,wicket keeper,Fixture State League,2023,M0379,Rajasthan,"Eden Gardens, Kolkata",2,1,66,32,5,3,No,Caught,6
+Fixture Zaid Kohli,Mumbai,wicket keeper,Fixture Emerging Trophy,2025,M0380,Karnataka,"Sawai Mansingh Stadium, Jaipur",2,5,70,33,6,4,No,Run Out,8
+Fixture Zaid Kohli,Mumbai,wicket keeper,Fixture Emerging Trophy,2025,M0381,Rajasthan,"Eden Gardens, Kolkata",1,1,39,27,3,2,Yes,Not Out,3
+Fixture Zaid Kohli,Mumbai,wicket keeper,Fixture Emerging Trophy,2025,M0382,Karnataka,"Wankhede Stadium, Mumbai",1,3,45,27,4,2,No,Run Out,3
+Fixture Zaid Kohli,Mumbai,wicket keeper,Fixture Emerging Trophy,2024,M0383,Gujarat,"Narendra Modi Stadium, Ahmedabad",2,4,55,28,4,3,No,Caught & Bowled,6
+Fixture Zaid Kohli,Mumbai,wicket keeper,Fixture Emerging Trophy,2025,M0384,Punjab,"M. Chinnaswamy Stadium, Bengaluru",2,3,32,17,2,1,No,Bowled,0
+Fixture Zaid Kohli,Mumbai,wicket keeper,Fixture Emerging Trophy,2024,M0385,Rajasthan,"Eden Gardens, Kolkata",1,3,20,11,1,1,No,LBW,2
+Fixture Manav Chauhan,Karnataka,batter,Fixture Elite Cup,2025,M0386,Tamil Nadu,"Sawai Mansingh Stadium, Jaipur",1,3,64,38,5,3,Yes,Not Out,6
+Fixture Manav Chauhan,Karnataka,batter,Fixture Elite Cup,2025,M0387,Tamil Nadu,"Eden Gardens, Kolkata",1,4,56,26,5,3,Yes,Not Out,8
+Fixture Manav Chauhan,Karnataka,batter,Fixture Elite Cup,2024,M0388,Delhi,"Narendra Modi Stadium, Ahmedabad",2,7,34,18,3,1,No,LBW,5
+Fixture Manav Chauhan,Karnataka,batter,Fixture Elite Cup,2024,M0389,Punjab,"Narendra Modi Stadium, Ahmedabad",2,7,20,10,1,1,No,LBW,4
+Fixture Manav Chauhan,Karnataka,batter,Fixture Elite Cup,2023,M0390,Rajasthan,"M. Chinnaswamy Stadium, Bengaluru",2,4,27,17,2,1,Yes,Not Out,4
+Fixture Manav Chauhan,Karnataka,batter,Fixture Elite Cup,2024,M0391,Gujarat,"Narendra Modi Stadium, Ahmedabad",1,6,10,5,0,0,No,Bowled,0
+Fixture Manav Chauhan,Karnataka,batter,Fixture State League,2022,M0392,Punjab,"Arun Jaitley Stadium, Delhi",1,3,39,22,3,2,No,Stumped,9
+Fixture Manav Chauhan,Karnataka,batter,Fixture State League,2024,M0393,Tamil Nadu,"M. Chinnaswamy Stadium, Bengaluru",2,2,58,37,5,3,No,Stumped,11
+Fixture Manav Chauhan,Karnataka,batter,Fixture State League,2024,M0394,Punjab,"Eden Gardens, Kolkata",2,5,62,35,5,3,No,Caught,6
+Fixture Manav Chauhan,Karnataka,batter,Fixture State League,2023,M0395,Gujarat,"M. Chinnaswamy Stadium, Bengaluru",1,2,47,27,4,2,No,Bowled,6
+Fixture Manav Chauhan,Karnataka,batter,Fixture State League,2023,M0396,Tamil Nadu,"Wankhede Stadium, Mumbai",2,2,59,33,5,3,No,Bowled,10
+Fixture Manav Chauhan,Karnataka,batter,Fixture State League,2022,M0397,Gujarat,"Arun Jaitley Stadium, Delhi",1,5,39,25,3,2,Yes,Not Out,7
+Fixture Manav Chauhan,Karnataka,batter,Fixture Emerging Trophy,2025,M0398,Tamil Nadu,"Eden Gardens, Kolkata",1,6,43,23,3,2,No,LBW,2
+Fixture Manav Chauhan,Karnataka,batter,Fixture Emerging Trophy,2024,M0399,Rajasthan,"Sawai Mansingh Stadium, Jaipur",1,4,53,32,4,3,Yes,Not Out,8
+Fixture Manav Chauhan,Karnataka,batter,Fixture Emerging Trophy,2024,M0400,Gujarat,"Narendra Modi Stadium, Ahmedabad",2,2,61,39,5,3,No,Bowled,7
+Fixture Manav Chauhan,Karnataka,batter,Fixture Emerging Trophy,2025,M0401,Rajasthan,"Arun Jaitley Stadium, Delhi",1,3,52,32,4,2,No,Bowled,6
+Fixture Manav Chauhan,Karnataka,batter,Fixture Emerging Trophy,2024,M0402,Tamil Nadu,"Wankhede Stadium, Mumbai",2,4,87,45,7,4,No,LBW,6
+Fixture Manav Chauhan,Karnataka,batter,Fixture Emerging Trophy,2024,M0403,Delhi,"M. Chinnaswamy Stadium, Bengaluru",2,4,46,24,4,2,No,Stumped,4
+Fixture Aarav Kohli,Tamil Nadu,batter,Fixture Elite Cup,2023,M0404,Mumbai,"Narendra Modi Stadium, Ahmedabad",1,5,66,32,5,3,No,Bowled,5
+Fixture Aarav Kohli,Tamil Nadu,batter,Fixture Elite Cup,2024,M0405,Gujarat,"Sawai Mansingh Stadium, Jaipur",2,1,28,17,2,1,No,Caught & Bowled,4
+Fixture Aarav Kohli,Tamil Nadu,batter,Fixture Elite Cup,2025,M0406,Punjab,"Eden Gardens, Kolkata",2,2,21,12,1,1,No,Caught & Bowled,3
+Fixture Aarav Kohli,Tamil Nadu,batter,Fixture Elite Cup,2024,M0407,Bengal,"Eden Gardens, Kolkata",1,7,30,14,2,1,No,Caught,5
+Fixture Aarav Kohli,Tamil Nadu,batter,Fixture Emerging Trophy,2025,M0408,Punjab,"Sawai Mansingh Stadium, Jaipur",2,1,57,31,5,3,Yes,Not Out,4
+Fixture Aarav Kohli,Tamil Nadu,batter,Fixture Emerging Trophy,2025,M0409,Punjab,"M. Chinnaswamy Stadium, Bengaluru",1,4,67,34,6,3,No,Stumped,8
+Fixture Aarav Kohli,Tamil Nadu,batter,Fixture Emerging Trophy,2025,M0410,Karnataka,"Eden Gardens, Kolkata",1,1,13,7,1,0,No,LBW,3
+Fixture Aarav Kohli,Tamil Nadu,batter,Fixture Emerging Trophy,2024,M0411,Bengal,"Sawai Mansingh Stadium, Jaipur",2,3,55,32,4,3,No,LBW,8
+Fixture Dhruv Xavier,Bengal,bowler,Fixture Elite Cup,2025,M0412,Punjab,"Arun Jaitley Stadium, Delhi",2,2,24,22,2,0,Yes,Not Out,6
+Fixture Dhruv Xavier,Bengal,bowler,Fixture Elite Cup,2024,M0413,Karnataka,"Wankhede Stadium, Mumbai",1,4,4,3,0,0,No,Run Out,2
+Fixture Dhruv Xavier,Bengal,bowler,Fixture Elite Cup,2023,M0414,Punjab,"Eden Gardens, Kolkata",2,1,27,23,2,1,No,LBW,8
+Fixture Dhruv Xavier,Bengal,bowler,Fixture Elite Cup,2025,M0415,Gujarat,"Wankhede Stadium, Mumbai",1,5,40,28,3,1,No,Run Out,11
+Fixture Dhruv Xavier,Bengal,bowler,Fixture Elite Cup,2025,M0416,Rajasthan,"Sawai Mansingh Stadium, Jaipur",1,6,21,14,1,0,No,Caught,3
+Fixture Dhruv Xavier,Bengal,bowler,Fixture Elite Cup,2024,M0417,Tamil Nadu,"Sawai Mansingh Stadium, Jaipur",1,2,28,24,2,1,No,Caught,11
+Fixture Dhruv Xavier,Bengal,bowler,Fixture State League,2022,M0418,Gujarat,"Narendra Modi Stadium, Ahmedabad",1,1,36,28,3,1,No,Run Out,10
+Fixture Dhruv Xavier,Bengal,bowler,Fixture State League,2024,M0419,Tamil Nadu,"Wankhede Stadium, Mumbai",1,5,22,16,1,0,No,Bowled,6
+Fixture Dhruv Xavier,Bengal,bowler,Fixture State League,2024,M0420,Delhi,"Arun Jaitley Stadium, Delhi",2,2,15,9,1,0,No,Caught,2
+Fixture Dhruv Xavier,Bengal,bowler,Fixture State League,2023,M0421,Rajasthan,"Narendra Modi Stadium, Ahmedabad",1,1,12,8,1,0,Yes,Not Out,2
+Fixture Dhruv Xavier,Bengal,bowler,Fixture State League,2024,M0422,Punjab,"Sawai Mansingh Stadium, Jaipur",2,3,30,21,2,1,No,Caught & Bowled,8
+Fixture Dhruv Xavier,Bengal,bowler,Fixture State League,2023,M0423,Delhi,"Eden Gardens, Kolkata",2,3,27,30,2,1,No,LBW,13
+Fixture Dhruv Xavier,Bengal,bowler,Fixture Emerging Trophy,2024,M0424,Punjab,"Eden Gardens, Kolkata",2,2,15,14,1,0,No,LBW,4
+Fixture Dhruv Xavier,Bengal,bowler,Fixture Emerging Trophy,2025,M0425,Mumbai,"M. Chinnaswamy Stadium, Bengaluru",1,5,21,18,1,0,No,Caught & Bowled,6
+Fixture Dhruv Xavier,Bengal,bowler,Fixture Emerging Trophy,2024,M0426,Gujarat,"Sawai Mansingh Stadium, Jaipur",2,4,13,12,1,0,No,Caught,5
+Fixture Dhruv Xavier,Bengal,bowler,Fixture Emerging Trophy,2025,M0427,Tamil Nadu,"M. Chinnaswamy Stadium, Bengaluru",1,7,8,6,0,0,No,Caught,6
+Fixture Dhruv Xavier,Bengal,bowler,Fixture Emerging Trophy,2024,M0428,Tamil Nadu,"Eden Gardens, Kolkata",1,1,20,14,1,0,No,Caught & Bowled,5
+Fixture Dhruv Xavier,Bengal,bowler,Fixture Emerging Trophy,2025,M0429,Punjab,"Sawai Mansingh Stadium, Jaipur",2,3,37,28,3,1,Yes,Not Out,10
+Fixture Rehan Bishnoi,Punjab,bowler,Fixture State League,2024,M0430,Rajasthan,"Wankhede Stadium, Mumbai",1,7,23,11,2,1,Yes,Not Out,1
+Fixture Rehan Bishnoi,Punjab,bowler,Fixture State League,2024,M0431,Delhi,"Narendra Modi Stadium, Ahmedabad",2,1,58,29,5,3,No,Caught & Bowled,9
+Fixture Rehan Bishnoi,Punjab,bowler,Fixture State League,2024,M0432,Gujarat,"Sawai Mansingh Stadium, Jaipur",1,4,79,41,7,4,No,Run Out,10
+Fixture Rehan Bishnoi,Punjab,bowler,Fixture State League,2024,M0433,Tamil Nadu,"Sawai Mansingh Stadium, Jaipur",2,5,52,22,4,3,No,Bowled,6
+Fixture Rehan Bishnoi,Punjab,bowler,Fixture State League,2024,M0434,Rajasthan,"M. Chinnaswamy Stadium, Bengaluru",2,5,42,23,3,2,No,Caught,4
+Fixture Rehan Bishnoi,Punjab,bowler,Fixture State League,2023,M0435,Mumbai,"Arun Jaitley Stadium, Delhi",1,6,29,16,2,1,No,Run Out,4
+Fixture Rehan Bishnoi,Punjab,bowler,Fixture Emerging Trophy,2025,M0436,Tamil Nadu,"Wankhede Stadium, Mumbai",2,3,68,37,6,4,No,Caught & Bowled,7
+Fixture Rehan Bishnoi,Punjab,bowler,Fixture Emerging Trophy,2024,M0437,Karnataka,"Eden Gardens, Kolkata",2,5,53,26,4,3,No,Caught & Bowled,4
+Fixture Rehan Bishnoi,Punjab,bowler,Fixture Emerging Trophy,2024,M0438,Gujarat,"Wankhede Stadium, Mumbai",2,1,97,43,8,5,Yes,Not Out,8
+Fixture Rehan Bishnoi,Punjab,bowler,Fixture Emerging Trophy,2024,M0439,Tamil Nadu,"Wankhede Stadium, Mumbai",1,7,25,12,2,1,No,Caught & Bowled,3
+Fixture Rehan Bishnoi,Punjab,bowler,Fixture Emerging Trophy,2025,M0440,Karnataka,"Wankhede Stadium, Mumbai",2,3,69,32,6,4,No,Bowled,7
+Fixture Rehan Bishnoi,Punjab,bowler,Fixture Emerging Trophy,2025,M0441,Rajasthan,"Narendra Modi Stadium, Ahmedabad",2,3,22,12,1,1,No,Caught,1
+Fixture Rehan Chauhan,Gujarat,bowler,Fixture Elite Cup,2025,M0442,Mumbai,"Sawai Mansingh Stadium, Jaipur",2,3,53,27,4,2,No,LBW,10
+Fixture Rehan Chauhan,Gujarat,bowler,Fixture Elite Cup,2023,M0443,Punjab,"Eden Gardens, Kolkata",2,7,28,16,2,1,No,Stumped,7
+Fixture Rehan Chauhan,Gujarat,bowler,Fixture Elite Cup,2025,M0444,Punjab,"Sawai Mansingh Stadium, Jaipur",1,4,55,28,4,2,Yes,Not Out,7
+Fixture Rehan Chauhan,Gujarat,bowler,Fixture Elite Cup,2025,M0445,Rajasthan,"Sawai Mansingh Stadium, Jaipur",2,3,57,28,5,3,Yes,Not Out,8
+Fixture Rehan Chauhan,Gujarat,bowler,Fixture Elite Cup,2024,M0446,Tamil Nadu,"Wankhede Stadium, Mumbai",1,5,36,27,3,1,Yes,Not Out,9
+Fixture Rehan Chauhan,Gujarat,bowler,Fixture Elite Cup,2025,M0447,Mumbai,"Wankhede Stadium, Mumbai",1,3,34,24,3,1,No,LBW,4
+Fixture Rehan Chauhan,Gujarat,bowler,Fixture State League,2022,M0448,Rajasthan,"Eden Gardens, Kolkata",1,1,59,28,5,3,Yes,Not Out,4
+Fixture Rehan Chauhan,Gujarat,bowler,Fixture State League,2023,M0449,Rajasthan,"Eden Gardens, Kolkata",2,3,33,19,2,1,No,LBW,4
+Fixture Rehan Chauhan,Gujarat,bowler,Fixture State League,2024,M0450,Karnataka,"Eden Gardens, Kolkata",2,5,43,25,3,2,No,Caught,6
+Fixture Rehan Chauhan,Gujarat,bowler,Fixture State League,2022,M0451,Bengal,"Narendra Modi Stadium, Ahmedabad",2,7,19,9,1,1,Yes,Not Out,1
+Fixture Rehan Chauhan,Gujarat,bowler,Fixture State League,2024,M0452,Karnataka,"Eden Gardens, Kolkata",2,5,39,21,3,2,No,Caught,6
+Fixture Rehan Chauhan,Gujarat,bowler,Fixture State League,2022,M0453,Mumbai,"Sawai Mansingh Stadium, Jaipur",2,7,38,22,3,2,No,Bowled,4
+Fixture Rehan Chauhan,Gujarat,bowler,Fixture Emerging Trophy,2024,M0454,Rajasthan,"Eden Gardens, Kolkata",2,5,60,30,5,3,No,Stumped,5
+Fixture Rehan Chauhan,Gujarat,bowler,Fixture Emerging Trophy,2024,M0455,Rajasthan,"Arun Jaitley Stadium, Delhi",2,5,67,38,6,3,Yes,Not Out,7
+Fixture Rehan Chauhan,Gujarat,bowler,Fixture Emerging Trophy,2025,M0456,Delhi,"Eden Gardens, Kolkata",2,6,36,20,3,1,No,Caught,4
+Fixture Rehan Chauhan,Gujarat,bowler,Fixture Emerging Trophy,2025,M0457,Bengal,"Eden Gardens, Kolkata",1,2,48,36,4,2,No,Stumped,6
+Fixture Rehan Chauhan,Gujarat,bowler,Fixture Emerging Trophy,2025,M0458,Bengal,"Wankhede Stadium, Mumbai",1,7,33,14,2,1,No,Bowled,2
+Fixture Rehan Chauhan,Gujarat,bowler,Fixture Emerging Trophy,2024,M0459,Delhi,"Sawai Mansingh Stadium, Jaipur",1,4,78,47,7,4,No,Run Out,14
+Fixture Yash Shekhawat,Rajasthan,all rounder,Fixture Elite Cup,2023,M0460,Bengal,"Eden Gardens, Kolkata",2,3,55,30,4,3,No,Caught,9
+Fixture Yash Shekhawat,Rajasthan,all rounder,Fixture Elite Cup,2023,M0461,Punjab,"Wankhede Stadium, Mumbai",1,5,56,35,5,3,No,Caught & Bowled,10
+Fixture Yash Shekhawat,Rajasthan,all rounder,Fixture Elite Cup,2025,M0462,Tamil Nadu,"Sawai Mansingh Stadium, Jaipur",1,5,60,32,5,3,No,LBW,12
+Fixture Yash Shekhawat,Rajasthan,all rounder,Fixture Elite Cup,2025,M0463,Punjab,"Sawai Mansingh Stadium, Jaipur",1,4,54,27,4,3,No,Run Out,4
+Fixture Yash Shekhawat,Rajasthan,all rounder,Fixture State League,2023,M0464,Delhi,"Arun Jaitley Stadium, Delhi",1,5,81,42,7,4,No,Caught,9
+Fixture Yash Shekhawat,Rajasthan,all rounder,Fixture State League,2022,M0465,Bengal,"M. Chinnaswamy Stadium, Bengaluru",2,3,57,26,5,3,No,Stumped,7
+Fixture Yash Shekhawat,Rajasthan,all rounder,Fixture State League,2022,M0466,Gujarat,"Narendra Modi Stadium, Ahmedabad",1,2,93,43,8,5,No,Caught,10
+Fixture Yash Shekhawat,Rajasthan,all rounder,Fixture State League,2023,M0467,Gujarat,"Arun Jaitley Stadium, Delhi",2,1,59,30,5,3,No,Bowled,11
+Fixture Yash Shekhawat,Rajasthan,all rounder,Fixture Emerging Trophy,2025,M0468,Punjab,"Narendra Modi Stadium, Ahmedabad",2,2,55,31,4,3,No,Bowled,2
+Fixture Yash Shekhawat,Rajasthan,all rounder,Fixture Emerging Trophy,2025,M0469,Karnataka,"Narendra Modi Stadium, Ahmedabad",1,2,51,33,4,2,No,Caught & Bowled,6
+Fixture Yash Shekhawat,Rajasthan,all rounder,Fixture Emerging Trophy,2024,M0470,Mumbai,"Narendra Modi Stadium, Ahmedabad",1,3,68,44,6,3,Yes,Not Out,7
+Fixture Yash Shekhawat,Rajasthan,all rounder,Fixture Emerging Trophy,2025,M0471,Mumbai,"M. Chinnaswamy Stadium, Bengaluru",1,6,60,25,5,3,Yes,Not Out,6
+Fixture Dev Xavier,Delhi,wicket keeper,Fixture Elite Cup,2025,M0472,Punjab,"M. Chinnaswamy Stadium, Bengaluru",1,5,38,30,3,1,No,LBW,11
+Fixture Dev Xavier,Delhi,wicket keeper,Fixture Elite Cup,2023,M0473,Karnataka,"Arun Jaitley Stadium, Delhi",2,1,57,33,5,2,Yes,Not Out,10
+Fixture Dev Xavier,Delhi,wicket keeper,Fixture Elite Cup,2025,M0474,Bengal,"Wankhede Stadium, Mumbai",1,2,20,14,1,0,No,Bowled,5
+Fixture Dev Xavier,Delhi,wicket keeper,Fixture Elite Cup,2023,M0475,Bengal,"Eden Gardens, Kolkata",1,2,35,24,3,1,No,LBW,5
+Fixture Dev Xavier,Delhi,wicket keeper,Fixture State League,2024,M0476,Gujarat,"Sawai Mansingh Stadium, Jaipur",1,2,38,26,3,1,Yes,Not Out,5
+Fixture Dev Xavier,Delhi,wicket keeper,Fixture State League,2024,M0477,Karnataka,"Arun Jaitley Stadium, Delhi",1,5,26,19,2,1,No,Caught & Bowled,8
+Fixture Dev Xavier,Delhi,wicket keeper,Fixture State League,2022,M0478,Tamil Nadu,"Narendra Modi Stadium, Ahmedabad",2,5,10,7,0,0,Yes,Not Out,1
+Fixture Dev Xavier,Delhi,wicket keeper,Fixture State League,2023,M0479,Tamil Nadu,"M. Chinnaswamy Stadium, Bengaluru",1,1,12,8,1,0,No,Run Out,2
+Fixture Chetan Agarwal,Mumbai,batter,Fixture Elite Cup,2023,M0480,Rajasthan,"Arun Jaitley Stadium, Delhi",1,3,36,22,3,2,No,Bowled,6
+Fixture Chetan Agarwal,Mumbai,batter,Fixture Elite Cup,2025,M0481,Gujarat,"Narendra Modi Stadium, Ahmedabad",1,7,27,12,2,1,No,Caught,1
+Fixture Chetan Agarwal,Mumbai,batter,Fixture Elite Cup,2025,M0482,Tamil Nadu,"Wankhede Stadium, Mumbai",1,5,68,32,6,3,No,Bowled,7
+Fixture Chetan Agarwal,Mumbai,batter,Fixture Elite Cup,2025,M0483,Gujarat,"Arun Jaitley Stadium, Delhi",1,4,47,28,4,2,Yes,Not Out,7
+Fixture Chetan Agarwal,Mumbai,batter,Fixture Elite Cup,2023,M0484,Tamil Nadu,"M. Chinnaswamy Stadium, Bengaluru",2,4,31,19,2,1,No,Stumped,3
+Fixture Chetan Agarwal,Mumbai,batter,Fixture Elite Cup,2024,M0485,Rajasthan,"Sawai Mansingh Stadium, Jaipur",1,1,65,32,5,3,No,Stumped,6
+Fixture Chetan Agarwal,Mumbai,batter,Fixture State League,2022,M0486,Gujarat,"Eden Gardens, Kolkata",2,7,43,20,3,2,No,Stumped,5
+Fixture Chetan Agarwal,Mumbai,batter,Fixture State League,2024,M0487,Bengal,"Sawai Mansingh Stadium, Jaipur",1,5,43,26,3,2,No,Run Out,4
+Fixture Chetan Agarwal,Mumbai,batter,Fixture State League,2023,M0488,Punjab,"M. Chinnaswamy Stadium, Bengaluru",1,5,55,31,4,3,No,Run Out,7
+Fixture Chetan Agarwal,Mumbai,batter,Fixture State League,2023,M0489,Bengal,"M. Chinnaswamy Stadium, Bengaluru",2,3,48,29,4,2,No,Bowled,7
+Fixture Chetan Agarwal,Mumbai,batter,Fixture State League,2023,M0490,Delhi,"Narendra Modi Stadium, Ahmedabad",2,3,46,23,4,2,No,LBW,5
+Fixture Chetan Agarwal,Mumbai,batter,Fixture State League,2024,M0491,Gujarat,"Wankhede Stadium, Mumbai",1,2,53,34,4,3,Yes,Not Out,7
+Fixture Chetan Agarwal,Mumbai,batter,Fixture Emerging Trophy,2024,M0492,Punjab,"Eden Gardens, Kolkata",2,2,59,36,5,3,No,Run Out,6
+Fixture Chetan Agarwal,Mumbai,batter,Fixture Emerging Trophy,2024,M0493,Delhi,"Eden Gardens, Kolkata",1,5,62,39,5,3,No,LBW,9
+Fixture Chetan Agarwal,Mumbai,batter,Fixture Emerging Trophy,2025,M0494,Delhi,"M. Chinnaswamy Stadium, Bengaluru",1,3,69,34,6,4,No,Bowled,6
+Fixture Chetan Agarwal,Mumbai,batter,Fixture Emerging Trophy,2024,M0495,Karnataka,"Sawai Mansingh Stadium, Jaipur",2,1,25,13,2,1,Yes,Not Out,0
+Fixture Chetan Agarwal,Mumbai,batter,Fixture Emerging Trophy,2024,M0496,Gujarat,"M. Chinnaswamy Stadium, Bengaluru",2,3,30,14,2,1,Yes,Not Out,0
+Fixture Chetan Agarwal,Mumbai,batter,Fixture Emerging Trophy,2024,M0497,Punjab,"Sawai Mansingh Stadium, Jaipur",2,5,53,27,4,3,Yes,Not Out,4
+Fixture Bharat Iqbal,Karnataka,batter,Fixture Elite Cup,2023,M0498,Rajasthan,"Arun Jaitley Stadium, Delhi",2,7,23,11,2,1,No,Run Out,3
+Fixture Bharat Iqbal,Karnataka,batter,Fixture Elite Cup,2025,M0499,Gujarat,"Eden Gardens, Kolkata",1,1,14,9,1,0,No,Caught,3
+Fixture Bharat Iqbal,Karnataka,batter,Fixture Elite Cup,2025,M0500,Bengal,"Sawai Mansingh Stadium, Jaipur",2,3,52,31,4,2,Yes,Not Out,7
+Fixture Bharat Iqbal,Karnataka,batter,Fixture Elite Cup,2024,M0501,Punjab,"Arun Jaitley Stadium, Delhi",1,6,28,14,2,1,No,Run Out,6
+Fixture Bharat Iqbal,Karnataka,batter,Fixture Elite Cup,2025,M0502,Gujarat,"M. Chinnaswamy Stadium, Bengaluru",2,3,61,41,5,3,No,Bowled,14
+Fixture Bharat Iqbal,Karnataka,batter,Fixture Elite Cup,2025,M0503,Gujarat,"Sawai Mansingh Stadium, Jaipur",2,2,31,20,2,1,No,Run Out,5
+Fixture Bharat Iqbal,Karnataka,batter,Fixture State League,2024,M0504,Mumbai,"Arun Jaitley Stadium, Delhi",1,1,26,16,2,1,No,Run Out,4
+Fixture Bharat Iqbal,Karnataka,batter,Fixture State League,2024,M0505,Gujarat,"Sawai Mansingh Stadium, Jaipur",2,4,22,17,1,1,Yes,Not Out,6
+Fixture Bharat Iqbal,Karnataka,batter,Fixture State League,2023,M0506,Gujarat,"Narendra Modi Stadium, Ahmedabad",1,2,75,40,6,3,No,LBW,12
+Fixture Bharat Iqbal,Karnataka,batter,Fixture State League,2023,M0507,Delhi,"Wankhede Stadium, Mumbai",1,3,53,31,4,2,No,Caught,12
+Fixture Bharat Iqbal,Karnataka,batter,Fixture State League,2023,M0508,Rajasthan,"M. Chinnaswamy Stadium, Bengaluru",2,3,37,25,3,1,No,Run Out,9
+Fixture Bharat Iqbal,Karnataka,batter,Fixture State League,2024,M0509,Rajasthan,"Arun Jaitley Stadium, Delhi",2,7,20,11,1,1,Yes,Not Out,3
+Fixture Bharat Iqbal,Karnataka,batter,Fixture Emerging Trophy,2024,M0510,Rajasthan,"Sawai Mansingh Stadium, Jaipur",2,4,46,24,4,2,No,Caught,6
+Fixture Bharat Iqbal,Karnataka,batter,Fixture Emerging Trophy,2025,M0511,Delhi,"M. Chinnaswamy Stadium, Bengaluru",1,3,38,26,3,1,No,Caught,9
+Fixture Bharat Iqbal,Karnataka,batter,Fixture Emerging Trophy,2025,M0512,Punjab,"Narendra Modi Stadium, Ahmedabad",2,5,39,24,3,1,Yes,Not Out,9
+Fixture Bharat Iqbal,Karnataka,batter,Fixture Emerging Trophy,2024,M0513,Tamil Nadu,"Eden Gardens, Kolkata",1,3,27,20,2,1,No,Stumped,7
+Fixture Bharat Iqbal,Karnataka,batter,Fixture Emerging Trophy,2024,M0514,Punjab,"Arun Jaitley Stadium, Delhi",2,3,45,33,4,2,No,Stumped,10
+Fixture Bharat Iqbal,Karnataka,batter,Fixture Emerging Trophy,2024,M0515,Rajasthan,"Wankhede Stadium, Mumbai",2,3,66,40,5,3,No,Caught,10
+Fixture Aditya Zope,Bengal,bowler,Fixture Elite Cup,2024,M0516,Mumbai,"Wankhede Stadium, Mumbai",1,3,30,20,2,1,No,Caught & Bowled,4
+Fixture Aditya Zope,Bengal,bowler,Fixture Elite Cup,2024,M0517,Tamil Nadu,"Arun Jaitley Stadium, Delhi",1,4,60,34,5,3,No,Run Out,11
+Fixture Aditya Zope,Bengal,bowler,Fixture Elite Cup,2024,M0518,Tamil Nadu,"Arun Jaitley Stadium, Delhi",1,5,65,37,5,3,No,Stumped,7
+Fixture Aditya Zope,Bengal,bowler,Fixture Elite Cup,2025,M0519,Gujarat,"Narendra Modi Stadium, Ahmedabad",2,2,55,36,4,2,No,Caught & Bowled,9
+Fixture Aditya Zope,Bengal,bowler,Fixture State League,2022,M0520,Delhi,"Eden Gardens, Kolkata",1,7,13,7,1,0,No,Run Out,4
+Fixture Aditya Zope,Bengal,bowler,Fixture State League,2022,M0521,Mumbai,"Narendra Modi Stadium, Ahmedabad",1,5,57,32,5,2,No,Bowled,8
+Fixture Aditya Zope,Bengal,bowler,Fixture State League,2024,M0522,Rajasthan,"Narendra Modi Stadium, Ahmedabad",1,6,35,19,3,1,Yes,Not Out,7
+Fixture Aditya Zope,Bengal,bowler,Fixture State League,2023,M0523,Mumbai,"Eden Gardens, Kolkata",1,4,30,18,2,1,Yes,Not Out,4
+Fixture Bhavesh Sharma,Punjab,bowler,Fixture Elite Cup,2023,M0524,Gujarat,"M. Chinnaswamy Stadium, Bengaluru",2,1,25,16,2,1,No,Caught,3
+Fixture Bhavesh Sharma,Punjab,bowler,Fixture Elite Cup,2024,M0525,Tamil Nadu,"Sawai Mansingh Stadium, Jaipur",1,4,39,28,3,1,Yes,Not Out,8
+Fixture Bhavesh Sharma,Punjab,bowler,Fixture Elite Cup,2023,M0526,Delhi,"Arun Jaitley Stadium, Delhi",2,4,60,41,5,2,No,Caught & Bowled,11
+Fixture Bhavesh Sharma,Punjab,bowler,Fixture Elite Cup,2025,M0527,Bengal,"Eden Gardens, Kolkata",1,2,29,23,2,1,No,Bowled,3
+Fixture Bhavesh Sharma,Punjab,bowler,Fixture Elite Cup,2025,M0528,Karnataka,"Narendra Modi Stadium, Ahmedabad",2,2,55,40,4,2,No,Caught,14
+Fixture Bhavesh Sharma,Punjab,bowler,Fixture State League,2024,M0529,Karnataka,"Wankhede Stadium, Mumbai",2,7,22,11,1,1,No,LBW,5
+Fixture Bhavesh Sharma,Punjab,bowler,Fixture State League,2024,M0530,Karnataka,"Wankhede Stadium, Mumbai",1,2,28,17,2,1,No,LBW,5
+Fixture Bhavesh Sharma,Punjab,bowler,Fixture State League,2022,M0531,Mumbai,"Arun Jaitley Stadium, Delhi",1,1,53,31,4,2,No,Caught & Bowled,9
+Fixture Bhavesh Sharma,Punjab,bowler,Fixture State League,2024,M0532,Delhi,"Narendra Modi Stadium, Ahmedabad",2,1,33,22,2,1,No,Stumped,8
+Fixture Bhavesh Sharma,Punjab,bowler,Fixture State League,2022,M0533,Bengal,"M. Chinnaswamy Stadium, Bengaluru",2,3,29,22,2,1,Yes,Not Out,7
+Fixture Bhavesh Sharma,Punjab,bowler,Fixture Emerging Trophy,2024,M0534,Tamil Nadu,"Narendra Modi Stadium, Ahmedabad",1,7,42,26,3,2,Yes,Not Out,7
+Fixture Bhavesh Sharma,Punjab,bowler,Fixture Emerging Trophy,2025,M0535,Tamil Nadu,"Narendra Modi Stadium, Ahmedabad",2,6,9,6,0,0,Yes,Not Out,4
+Fixture Bhavesh Sharma,Punjab,bowler,Fixture Emerging Trophy,2025,M0536,Karnataka,"Sawai Mansingh Stadium, Jaipur",2,7,11,6,0,0,No,LBW,2
+Fixture Bhavesh Sharma,Punjab,bowler,Fixture Emerging Trophy,2025,M0537,Bengal,"M. Chinnaswamy Stadium, Bengaluru",2,2,60,34,5,2,No,Run Out,9
+Fixture Bhavesh Sharma,Punjab,bowler,Fixture Emerging Trophy,2025,M0538,Gujarat,"Eden Gardens, Kolkata",1,2,44,31,3,2,No,LBW,11
+Fixture Ekansh Kumar,Gujarat,all rounder,Fixture Elite Cup,2025,M0539,Rajasthan,"Narendra Modi Stadium, Ahmedabad",2,1,49,34,4,2,No,LBW,12
+Fixture Ekansh Kumar,Gujarat,all rounder,Fixture Elite Cup,2024,M0540,Karnataka,"Eden Gardens, Kolkata",2,2,60,40,5,2,Yes,Not Out,13
+Fixture Ekansh Kumar,Gujarat,all rounder,Fixture Elite Cup,2023,M0541,Tamil Nadu,"Sawai Mansingh Stadium, Jaipur",1,1,42,22,3,2,No,Caught,4
+Fixture Ekansh Kumar,Gujarat,all rounder,Fixture Elite Cup,2023,M0542,Delhi,"Sawai Mansingh Stadium, Jaipur",1,7,17,10,1,0,Yes,Not Out,0
+Fixture Ekansh Kumar,Gujarat,all rounder,Fixture Elite Cup,2025,M0543,Rajasthan,"Arun Jaitley Stadium, Delhi",2,5,29,24,2,1,No,Run Out,9
+Fixture Ekansh Kumar,Gujarat,all rounder,Fixture State League,2023,M0544,Bengal,"M. Chinnaswamy Stadium, Bengaluru",1,4,60,35,5,2,No,Caught,11
+Fixture Ekansh Kumar,Gujarat,all rounder,Fixture State League,2024,M0545,Bengal,"Narendra Modi Stadium, Ahmedabad",2,1,25,15,2,1,No,Caught & Bowled,7
+Fixture Ekansh Kumar,Gujarat,all rounder,Fixture State League,2023,M0546,Rajasthan,"Wankhede Stadium, Mumbai",1,1,34,21,3,1,No,LBW,6
+Fixture Ekansh Kumar,Gujarat,all rounder,Fixture State League,2024,M0547,Rajasthan,"Eden Gardens, Kolkata",2,1,44,30,3,2,No,Stumped,11
+Fixture Ekansh Kumar,Gujarat,all rounder,Fixture State League,2023,M0548,Rajasthan,"M. Chinnaswamy Stadium, Bengaluru",2,7,28,15,2,1,No,Caught & Bowled,6
+Fixture Ekansh Kumar,Gujarat,all rounder,Fixture Emerging Trophy,2025,M0549,Rajasthan,"Sawai Mansingh Stadium, Jaipur",2,7,19,10,1,0,No,Run Out,1
+Fixture Ekansh Kumar,Gujarat,all rounder,Fixture Emerging Trophy,2025,M0550,Delhi,"Eden Gardens, Kolkata",2,1,32,27,2,1,Yes,Not Out,10
+Fixture Ekansh Kumar,Gujarat,all rounder,Fixture Emerging Trophy,2024,M0551,Karnataka,"M. Chinnaswamy Stadium, Bengaluru",1,2,36,23,3,1,No,LBW,7
+Fixture Ekansh Kumar,Gujarat,all rounder,Fixture Emerging Trophy,2024,M0552,Punjab,"Eden Gardens, Kolkata",2,6,37,24,3,1,Yes,Not Out,4
+Fixture Ekansh Kumar,Gujarat,all rounder,Fixture Emerging Trophy,2024,M0553,Mumbai,"Wankhede Stadium, Mumbai",2,5,49,30,4,2,No,LBW,8
+Fixture Dev Kohli,Rajasthan,wicket keeper,Fixture Elite Cup,2023,M0554,Mumbai,"Eden Gardens, Kolkata",2,1,20,14,1,0,No,Stumped,5
+Fixture Dev Kohli,Rajasthan,wicket keeper,Fixture Elite Cup,2025,M0555,Karnataka,"Wankhede Stadium, Mumbai",2,5,32,26,2,1,No,Caught,9
+Fixture Dev Kohli,Rajasthan,wicket keeper,Fixture Elite Cup,2025,M0556,Punjab,"Narendra Modi Stadium, Ahmedabad",1,3,18,13,1,0,Yes,Not Out,7
+Fixture Dev Kohli,Rajasthan,wicket keeper,Fixture Elite Cup,2024,M0557,Karnataka,"Eden Gardens, Kolkata",1,1,24,15,2,1,No,Run Out,8
+Fixture Dev Kohli,Rajasthan,wicket keeper,Fixture Emerging Trophy,2025,M0558,Gujarat,"Eden Gardens, Kolkata",1,3,33,19,2,1,No,Caught,8
+Fixture Dev Kohli,Rajasthan,wicket keeper,Fixture Emerging Trophy,2024,M0559,Karnataka,"Sawai Mansingh Stadium, Jaipur",2,3,25,17,2,1,No,Caught,4
+Fixture Dev Kohli,Rajasthan,wicket keeper,Fixture Emerging Trophy,2024,M0560,Bengal,"Narendra Modi Stadium, Ahmedabad",1,5,34,21,3,1,Yes,Not Out,7
+Fixture Dev Kohli,Rajasthan,wicket keeper,Fixture Emerging Trophy,2025,M0561,Gujarat,"Wankhede Stadium, Mumbai",1,3,19,18,1,0,No,Bowled,7
+Fixture Ekansh Harpreet,Delhi,batter,Fixture State League,2022,M0562,Karnataka,"Narendra Modi Stadium, Ahmedabad",1,5,18,16,1,0,No,Bowled,6
+Fixture Ekansh Harpreet,Delhi,batter,Fixture State League,2023,M0563,Punjab,"M. Chinnaswamy Stadium, Bengaluru",2,7,14,10,1,0,No,LBW,1
+Fixture Ekansh Harpreet,Delhi,batter,Fixture State League,2022,M0564,Rajasthan,"Eden Gardens, Kolkata",2,2,25,24,2,0,Yes,Not Out,12
+Fixture Ekansh Harpreet,Delhi,batter,Fixture State League,2023,M0565,Punjab,"Sawai Mansingh Stadium, Jaipur",2,2,16,11,1,0,No,Run Out,4
+Fixture Ekansh Harpreet,Delhi,batter,Fixture Emerging Trophy,2025,M0566,Rajasthan,"Eden Gardens, Kolkata",2,2,21,15,1,0,No,Stumped,4
+Fixture Ekansh Harpreet,Delhi,batter,Fixture Emerging Trophy,2025,M0567,Rajasthan,"Narendra Modi Stadium, Ahmedabad",1,2,29,19,2,1,No,Stumped,1
+Fixture Ekansh Harpreet,Delhi,batter,Fixture Emerging Trophy,2024,M0568,Gujarat,"Sawai Mansingh Stadium, Jaipur",2,7,19,13,1,0,No,Run Out,6
+Fixture Ekansh Harpreet,Delhi,batter,Fixture Emerging Trophy,2025,M0569,Bengal,"Arun Jaitley Stadium, Delhi",1,3,16,13,1,0,Yes,Not Out,6
+Fixture Karan Oberoi,Mumbai,batter,Fixture Elite Cup,2024,M0570,Karnataka,"Eden Gardens, Kolkata",2,1,37,26,3,1,No,Run Out,6
+Fixture Karan Oberoi,Mumbai,batter,Fixture Elite Cup,2024,M0571,Punjab,"Narendra Modi Stadium, Ahmedabad",1,6,28,16,2,1,No,Caught,3
+Fixture Karan Oberoi,Mumbai,batter,Fixture Elite Cup,2023,M0572,Karnataka,"Sawai Mansingh Stadium, Jaipur",2,2,26,17,2,1,Yes,Not Out,4
+Fixture Karan Oberoi,Mumbai,batter,Fixture Elite Cup,2025,M0573,Gujarat,"Narendra Modi Stadium, Ahmedabad",1,3,14,9,1,0,No,Bowled,7
+Fixture Karan Oberoi,Mumbai,batter,Fixture Elite Cup,2024,M0574,Bengal,"Wankhede Stadium, Mumbai",2,6,35,22,3,1,No,Stumped,7
+Fixture Karan Oberoi,Mumbai,batter,Fixture Elite Cup,2024,M0575,Bengal,"Sawai Mansingh Stadium, Jaipur",2,5,47,30,4,2,Yes,Not Out,14
+Fixture Karan Oberoi,Mumbai,batter,Fixture State League,2022,M0576,Bengal,"M. Chinnaswamy Stadium, Bengaluru",1,2,33,20,2,1,Yes,Not Out,4
+Fixture Karan Oberoi,Mumbai,batter,Fixture State League,2023,M0577,Karnataka,"Wankhede Stadium, Mumbai",1,5,36,25,3,1,No,Caught,10
+Fixture Karan Oberoi,Mumbai,batter,Fixture State League,2024,M0578,Punjab,"Narendra Modi Stadium, Ahmedabad",1,1,56,31,5,2,Yes,Not Out,9
+Fixture Karan Oberoi,Mumbai,batter,Fixture State League,2022,M0579,Karnataka,"Eden Gardens, Kolkata",1,1,54,36,4,2,Yes,Not Out,12
+Fixture Karan Oberoi,Mumbai,batter,Fixture State League,2023,M0580,Delhi,"M. Chinnaswamy Stadium, Bengaluru",2,1,48,28,4,2,Yes,Not Out,6
+Fixture Karan Oberoi,Mumbai,batter,Fixture State League,2023,M0581,Bengal,"Wankhede Stadium, Mumbai",2,2,55,40,4,2,No,Caught & Bowled,15
+Fixture Tanmay Yash,Tamil Nadu,bowler,Fixture Elite Cup,2023,M0582,Gujarat,"Wankhede Stadium, Mumbai",1,6,9,7,0,0,No,LBW,3
+Fixture Tanmay Yash,Tamil Nadu,bowler,Fixture Elite Cup,2023,M0583,Rajasthan,"Arun Jaitley Stadium, Delhi",2,6,32,15,2,1,No,LBW,5
+Fixture Tanmay Yash,Tamil Nadu,bowler,Fixture Elite Cup,2025,M0584,Punjab,"Narendra Modi Stadium, Ahmedabad",1,5,36,23,3,1,Yes,Not Out,8
+Fixture Tanmay Yash,Tamil Nadu,bowler,Fixture Elite Cup,2025,M0585,Bengal,"Narendra Modi Stadium, Ahmedabad",1,5,29,20,2,1,No,Stumped,5
+Fixture Tanmay Yash,Tamil Nadu,bowler,Fixture Elite Cup,2023,M0586,Rajasthan,"Narendra Modi Stadium, Ahmedabad",1,5,18,16,1,0,No,Run Out,7
+Fixture Tanmay Yash,Tamil Nadu,bowler,Fixture Elite Cup,2023,M0587,Mumbai,"Narendra Modi Stadium, Ahmedabad",2,5,18,12,1,0,No,Bowled,2
+Fixture Tanmay Yash,Tamil Nadu,bowler,Fixture State League,2023,M0588,Karnataka,"Sawai Mansingh Stadium, Jaipur",2,7,2,1,0,0,Yes,Not Out,1
+Fixture Tanmay Yash,Tamil Nadu,bowler,Fixture State League,2024,M0589,Punjab,"Narendra Modi Stadium, Ahmedabad",1,2,35,25,3,1,No,Stumped,11
+Fixture Tanmay Yash,Tamil Nadu,bowler,Fixture State League,2022,M0590,Punjab,"Narendra Modi Stadium, Ahmedabad",1,6,15,11,1,0,No,Caught,3
+Fixture Tanmay Yash,Tamil Nadu,bowler,Fixture State League,2022,M0591,Gujarat,"Wankhede Stadium, Mumbai",1,7,14,8,1,0,No,Stumped,0
+Fixture Tanmay Yash,Tamil Nadu,bowler,Fixture State League,2023,M0592,Gujarat,"M. Chinnaswamy Stadium, Bengaluru",2,2,15,13,1,0,No,Caught,6
+Fixture Tanmay Yash,Tamil Nadu,bowler,Fixture State League,2024,M0593,Punjab,"Narendra Modi Stadium, Ahmedabad",2,3,38,24,3,1,No,Bowled,8
+Fixture Tanmay Yash,Tamil Nadu,bowler,Fixture Emerging Trophy,2024,M0594,Delhi,"Sawai Mansingh Stadium, Jaipur",1,1,30,21,2,1,Yes,Not Out,6
+Fixture Tanmay Yash,Tamil Nadu,bowler,Fixture Emerging Trophy,2024,M0595,Karnataka,"Eden Gardens, Kolkata",2,5,31,18,2,1,No,Run Out,7
+Fixture Tanmay Yash,Tamil Nadu,bowler,Fixture Emerging Trophy,2025,M0596,Mumbai,"Sawai Mansingh Stadium, Jaipur",1,2,31,21,2,1,Yes,Not Out,7
+Fixture Tanmay Yash,Tamil Nadu,bowler,Fixture Emerging Trophy,2025,M0597,Karnataka,"Narendra Modi Stadium, Ahmedabad",2,4,29,19,2,1,No,Caught,7
+Fixture Tanmay Yash,Tamil Nadu,bowler,Fixture Emerging Trophy,2024,M0598,Delhi,"Sawai Mansingh Stadium, Jaipur",2,1,18,11,1,0,No,Run Out,4
+Fixture Tanmay Yash,Tamil Nadu,bowler,Fixture Emerging Trophy,2025,M0599,Delhi,"Wankhede Stadium, Mumbai",1,3,34,31,3,1,No,Bowled,11
+Fixture Chetan Lakra,Bengal,bowler,Fixture Elite Cup,2025,M0600,Mumbai,"Wankhede Stadium, Mumbai",2,3,25,13,2,1,No,Bowled,6
+Fixture Chetan Lakra,Bengal,bowler,Fixture Elite Cup,2023,M0601,Gujarat,"Arun Jaitley Stadium, Delhi",1,4,62,32,5,3,No,Caught & Bowled,5
+Fixture Chetan Lakra,Bengal,bowler,Fixture Elite Cup,2024,M0602,Karnataka,"Sawai Mansingh Stadium, Jaipur",1,5,37,19,3,2,No,LBW,0
+Fixture Chetan Lakra,Bengal,bowler,Fixture Elite Cup,2025,M0603,Delhi,"Narendra Modi Stadium, Ahmedabad",2,1,51,27,4,2,Yes,Not Out,6
+Fixture Chetan Lakra,Bengal,bowler,Fixture Elite Cup,2024,M0604,Karnataka,"Wankhede Stadium, Mumbai",2,1,66,33,5,3,No,Stumped,7
+Fixture Chetan Lakra,Bengal,bowler,Fixture State League,2023,M0605,Delhi,"Sawai Mansingh Stadium, Jaipur",1,6,38,17,3,2,No,Bowled,1
+Fixture Chetan Lakra,Bengal,bowler,Fixture State League,2022,M0606,Punjab,"Wankhede Stadium, Mumbai",1,7,31,15,2,1,Yes,Not Out,3
+Fixture Chetan Lakra,Bengal,bowler,Fixture State League,2024,M0607,Tamil Nadu,"Eden Gardens, Kolkata",2,1,61,33,5,3,No,Stumped,11
+Fixture Chetan Lakra,Bengal,bowler,Fixture State League,2023,M0608,Delhi,"Eden Gardens, Kolkata",2,4,46,24,4,2,No,LBW,6
+Fixture Chetan Lakra,Bengal,bowler,Fixture State League,2024,M0609,Rajasthan,"M. Chinnaswamy Stadium, Bengaluru",2,1,33,22,2,1,No,Caught & Bowled,3
+Fixture Chetan Lakra,Bengal,bowler,Fixture Emerging Trophy,2025,M0610,Karnataka,"Wankhede Stadium, Mumbai",1,3,41,24,3,2,No,Run Out,4
+Fixture Chetan Lakra,Bengal,bowler,Fixture Emerging Trophy,2024,M0611,Gujarat,"Arun Jaitley Stadium, Delhi",2,7,14,7,1,0,No,LBW,2
+Fixture Chetan Lakra,Bengal,bowler,Fixture Emerging Trophy,2025,M0612,Delhi,"M. Chinnaswamy Stadium, Bengaluru",2,1,92,43,8,5,No,Caught,14
+Fixture Chetan Lakra,Bengal,bowler,Fixture Emerging Trophy,2024,M0613,Delhi,"M. Chinnaswamy Stadium, Bengaluru",2,3,32,22,2,1,No,Caught,2
+Fixture Chetan Lakra,Bengal,bowler,Fixture Emerging Trophy,2024,M0614,Mumbai,"Narendra Modi Stadium, Ahmedabad",1,3,49,33,4,2,Yes,Not Out,8
+Fixture Gaurav Dagar,Punjab,all rounder,Fixture State League,2024,M0615,Gujarat,"Wankhede Stadium, Mumbai",2,1,36,23,3,1,No,Caught & Bowled,8
+Fixture Gaurav Dagar,Punjab,all rounder,Fixture State League,2024,M0616,Gujarat,"Arun Jaitley Stadium, Delhi",1,2,39,34,3,1,Yes,Not Out,12
+Fixture Gaurav Dagar,Punjab,all rounder,Fixture State League,2023,M0617,Mumbai,"Eden Gardens, Kolkata",1,2,27,15,2,1,No,Run Out,2
+Fixture Gaurav Dagar,Punjab,all rounder,Fixture State League,2023,M0618,Karnataka,"Narendra Modi Stadium, Ahmedabad",2,5,11,7,0,0,No,Stumped,2
+Fixture Gaurav Dagar,Punjab,all rounder,Fixture State League,2022,M0619,Gujarat,"Eden Gardens, Kolkata",1,2,32,21,2,1,No,Stumped,4
+Fixture Gaurav Dagar,Punjab,all rounder,Fixture State League,2022,M0620,Rajasthan,"M. Chinnaswamy Stadium, Bengaluru",2,6,32,20,2,1,No,Run Out,5
+Fixture Dhruv Nagar,Gujarat,wicket keeper,Fixture Elite Cup,2023,M0621,Bengal,"Sawai Mansingh Stadium, Jaipur",1,5,30,29,2,1,No,Caught,10
+Fixture Dhruv Nagar,Gujarat,wicket keeper,Fixture Elite Cup,2024,M0622,Punjab,"Arun Jaitley Stadium, Delhi",2,6,21,13,1,0,No,Stumped,5
+Fixture Dhruv Nagar,Gujarat,wicket keeper,Fixture Elite Cup,2024,M0623,Punjab,"Narendra Modi Stadium, Ahmedabad",1,4,11,9,0,0,No,Stumped,0
+Fixture Dhruv Nagar,Gujarat,wicket keeper,Fixture Elite Cup,2025,M0624,Mumbai,"Arun Jaitley Stadium, Delhi",1,3,36,26,3,1,No,Stumped,7
+Fixture Dhruv Nagar,Gujarat,wicket keeper,Fixture Elite Cup,2025,M0625,Tamil Nadu,"Arun Jaitley Stadium, Delhi",1,1,39,27,3,1,No,Run Out,9
+Fixture Zaid Rawat,Rajasthan,batter,Fixture Elite Cup,2023,M0626,Tamil Nadu,"Eden Gardens, Kolkata",2,2,33,24,2,1,No,LBW,5
+Fixture Zaid Rawat,Rajasthan,batter,Fixture Elite Cup,2023,M0627,Mumbai,"Sawai Mansingh Stadium, Jaipur",1,1,41,22,3,2,No,Run Out,8
+Fixture Zaid Rawat,Rajasthan,batter,Fixture Elite Cup,2023,M0628,Tamil Nadu,"Wankhede Stadium, Mumbai",1,7,43,19,3,2,No,Caught,6
+Fixture Zaid Rawat,Rajasthan,batter,Fixture Elite Cup,2023,M0629,Mumbai,"Sawai Mansingh Stadium, Jaipur",1,5,58,27,5,3,No,Caught,9
+Fixture Zaid Rawat,Rajasthan,batter,Fixture Elite Cup,2024,M0630,Bengal,"Arun Jaitley Stadium, Delhi",1,1,41,25,3,2,No,Stumped,9
+Fixture Zaid Rawat,Rajasthan,batter,Fixture Elite Cup,2024,M0631,Delhi,"Wankhede Stadium, Mumbai",1,1,66,33,5,3,No,LBW,9
+Fixture Zaid Rawat,Rajasthan,batter,Fixture State League,2022,M0632,Karnataka,"Sawai Mansingh Stadium, Jaipur",2,3,25,15,2,1,No,Bowled,6
+Fixture Zaid Rawat,Rajasthan,batter,Fixture State League,2024,M0633,Karnataka,"Wankhede Stadium, Mumbai",1,7,23,12,2,1,No,Bowled,2
+Fixture Zaid Rawat,Rajasthan,batter,Fixture State League,2024,M0634,Tamil Nadu,"Eden Gardens, Kolkata",1,3,25,15,2,1,No,Caught & Bowled,3
+Fixture Zaid Rawat,Rajasthan,batter,Fixture State League,2023,M0635,Karnataka,"Wankhede Stadium, Mumbai",1,1,62,30,5,3,Yes,Not Out,9
+Fixture Zaid Rawat,Rajasthan,batter,Fixture State League,2024,M0636,Karnataka,"Wankhede Stadium, Mumbai",1,1,63,35,5,3,No,Caught,10
+Fixture Zaid Rawat,Rajasthan,batter,Fixture State League,2023,M0637,Karnataka,"Sawai Mansingh Stadium, Jaipur",1,5,50,31,4,2,No,LBW,12
+Fixture Zaid Rawat,Rajasthan,batter,Fixture Emerging Trophy,2025,M0638,Tamil Nadu,"Sawai Mansingh Stadium, Jaipur",2,1,41,24,3,2,No,LBW,7
+Fixture Zaid Rawat,Rajasthan,batter,Fixture Emerging Trophy,2024,M0639,Delhi,"Narendra Modi Stadium, Ahmedabad",2,2,56,36,5,3,No,Bowled,10
+Fixture Zaid Rawat,Rajasthan,batter,Fixture Emerging Trophy,2024,M0640,Tamil Nadu,"Wankhede Stadium, Mumbai",1,4,51,28,4,2,No,Stumped,5
+Fixture Zaid Rawat,Rajasthan,batter,Fixture Emerging Trophy,2025,M0641,Bengal,"Eden Gardens, Kolkata",2,6,29,14,2,1,No,Caught & Bowled,1
+Fixture Zaid Rawat,Rajasthan,batter,Fixture Emerging Trophy,2025,M0642,Karnataka,"Sawai Mansingh Stadium, Jaipur",2,3,46,25,4,2,Yes,Not Out,7
+Fixture Zaid Rawat,Rajasthan,batter,Fixture Emerging Trophy,2025,M0643,Delhi,"Wankhede Stadium, Mumbai",2,3,39,24,3,2,No,Stumped,6
+Fixture Jatin Zope,Delhi,batter,Fixture Elite Cup,2023,M0644,Gujarat,"Sawai Mansingh Stadium, Jaipur",2,3,36,20,3,2,No,Caught & Bowled,2
+Fixture Jatin Zope,Delhi,batter,Fixture Elite Cup,2023,M0645,Karnataka,"Wankhede Stadium, Mumbai",1,3,46,24,4,2,No,Stumped,7
+Fixture Jatin Zope,Delhi,batter,Fixture Elite Cup,2025,M0646,Gujarat,"Eden Gardens, Kolkata",2,3,46,27,4,2,No,Stumped,7
+Fixture Jatin Zope,Delhi,batter,Fixture Elite Cup,2024,M0647,Karnataka,"Narendra Modi Stadium, Ahmedabad",1,5,42,27,3,2,No,Run Out,3
+Fixture Jatin Zope,Delhi,batter,Fixture State League,2024,M0648,Tamil Nadu,"Sawai Mansingh Stadium, Jaipur",2,2,43,25,3,2,No,Bowled,2
+Fixture Jatin Zope,Delhi,batter,Fixture State League,2023,M0649,Tamil Nadu,"Arun Jaitley Stadium, Delhi",2,2,28,15,2,1,Yes,Not Out,1
+Fixture Jatin Zope,Delhi,batter,Fixture State League,2022,M0650,Punjab,"Sawai Mansingh Stadium, Jaipur",1,3,56,36,5,3,Yes,Not Out,8
+Fixture Jatin Zope,Delhi,batter,Fixture State League,2023,M0651,Tamil Nadu,"Arun Jaitley Stadium, Delhi",1,6,34,17,3,1,No,Run Out,5
+Fixture Jatin Zope,Delhi,batter,Fixture Emerging Trophy,2025,M0652,Bengal,"Sawai Mansingh Stadium, Jaipur",1,1,39,18,3,2,Yes,Not Out,4
+Fixture Jatin Zope,Delhi,batter,Fixture Emerging Trophy,2024,M0653,Tamil Nadu,"Arun Jaitley Stadium, Delhi",1,6,23,11,2,1,Yes,Not Out,2
+Fixture Jatin Zope,Delhi,batter,Fixture Emerging Trophy,2024,M0654,Karnataka,"Narendra Modi Stadium, Ahmedabad",2,3,56,31,5,3,No,Caught & Bowled,12
+Fixture Jatin Zope,Delhi,batter,Fixture Emerging Trophy,2024,M0655,Gujarat,"Arun Jaitley Stadium, Delhi",2,3,28,16,2,1,Yes,Not Out,5
