@@ -5,9 +5,11 @@ Legacy service-role JWTs remain compatible with both headers. Never log key valu
 """
 from __future__ import annotations
 
+import base64
+import json
 import os
-from urllib.parse import urlparse
 import re
+from urllib.parse import urlparse
 
 
 class SupabaseConfigurationError(RuntimeError):
@@ -44,7 +46,18 @@ def _classify_key(key: str) -> str:
     # as bearer credentials; validate their compact-token shape without decoding/logging.
     parts = key.split(".")
     if len(parts) == 3 and all(re.fullmatch(r"[A-Za-z0-9_-]+", part) for part in parts):
-        return "legacy_jwt"
+        try:
+            header_part = parts[0] + "=" * (-len(parts[0]) % 4)
+            payload_part = parts[1] + "=" * (-len(parts[1]) % 4)
+            jwt_header = json.loads(base64.urlsafe_b64decode(header_part.encode("ascii")))
+            claims = json.loads(base64.urlsafe_b64decode(payload_part.encode("ascii")))
+        except (ValueError, UnicodeError, json.JSONDecodeError):
+            jwt_header, claims = None, None
+        if (isinstance(jwt_header, dict) and isinstance(jwt_header.get("alg"), str)
+                and jwt_header["alg"].lower() != "none" and isinstance(claims, dict)
+                and claims.get("role") == "service_role"):
+            return "legacy_jwt"
+        raise SupabaseConfigurationError("Legacy Supabase JWT must be a service_role key")
     raise SupabaseConfigurationError("SUPABASE_SECRET_KEY is malformed (expected sb_secret_* or a legacy service_role JWT)")
 
 
@@ -62,9 +75,13 @@ def supabase_api_headers(extra: dict[str, str] | None = None, *, key: str | None
     """Headers for server-key REST and Storage APIs; never for user JWT requests."""
     server_key = (key if key is not None else get_supabase_server_key()).strip()
     kind = _classify_key(server_key)
-    headers = {"apikey": server_key, "Content-Type": "application/json"}
-    if kind == "legacy_jwt":
-        headers["Authorization"] = f"Bearer {server_key}"
+    headers = {"Content-Type": "application/json"}
     if extra:
         headers.update(extra)
+    # Authentication headers are authoritative and cannot be overridden by call sites.
+    headers["apikey"] = server_key
+    if kind == "legacy_jwt":
+        headers["Authorization"] = f"Bearer {server_key}"
+    else:
+        headers.pop("Authorization", None)
     return headers
