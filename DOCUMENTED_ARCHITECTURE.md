@@ -1,0 +1,9 @@
+# Royal Scout deployment architecture
+
+The Next.js application in `web/` signs users in with Supabase Auth and renders the existing cricket analytics/rankings bundle. Authenticated server routes mint short-lived private Storage upload/download signatures and proxy queue requests to FastAPI. The browser sends large files directly to the private `uploads` bucket using resumable TUS; job references contain bucket/object paths, not client-supplied filesystem paths.
+
+The FastAPI service in `engine/royalscout/api.py` authenticates protected routes with `X-Worker-Secret`. The same Render container supervises FastAPI plus one sequential worker. `SupabaseQueue` calls PostgREST and PostgreSQL RPCs. `claim_processing_job()` uses `FOR UPDATE SKIP LOCKED` to avoid duplicate concurrent claims; `processing_logs` stores progress separately from the job row. The worker downloads private objects as streams to confined temporary staging, invokes the established Royal Scout analytics pipeline, and publishes the required `bundle.json` and generated artefacts to private Storage before completion.
+
+`supabase_auth.py` is the single Python backend source of key/header rules. `sb_secret_*` is never a Bearer token; legacy JWT keys retain both headers. User access tokens remain separate from project server credentials. Database RLS protects user-facing access; the trusted worker uses the private project key and narrowly granted queue RPCs.
+
+Render local disk is disposable. Free Render is a demonstration deployment: sleeping, resource ceilings and interruptions mean it does not guarantee continuous or large-job processing. Temporary files are cleaned after jobs and stale jobs requeued after worker restarts. Use an always-on instance with adequate memory for production-scale work; no claim is made that the free plan can process an arbitrarily large archive within resource limits.
