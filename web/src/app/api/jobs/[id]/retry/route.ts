@@ -18,7 +18,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   if (error || !data.user) return NextResponse.json({ error: "Sign in to retry processing." }, { status: 401 });
   const access = await getStaffAccess(session, data.user.id);
   if (access.status !== "verified" || !access.canUpload) {
-    return NextResponse.json({ error: access.message ?? "Your verified role cannot retry processing.", access_status: access.status }, { status: 403 });
+    return NextResponse.json({ error: access.message ?? "Only the platform administrator may retry processing.", access_status: access.status }, { status: 403 });
   }
   const workerUrl = process.env.WORKER_API_URL;
   const secret = process.env.WORKER_SHARED_SECRET;

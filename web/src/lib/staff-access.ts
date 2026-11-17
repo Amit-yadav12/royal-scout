@@ -8,7 +8,7 @@ type SupabaseProfileLookup = {
   };
 };
 
-export type StaffRole = "viewer" | "analyst" | "scout" | "admin";
+export type StaffRole = "viewer" | "admin";
 
 export type StaffAccess =
   | { status: "verified"; role: StaffRole; canUpload: boolean; message: null }
@@ -16,8 +16,7 @@ export type StaffAccess =
   | { status: "invalid_role"; role: null; canUpload: false; message: string }
   | { status: "lookup_failed"; role: null; canUpload: false; message: string };
 
-const VALID_ROLES: readonly StaffRole[] = ["viewer", "analyst", "scout", "admin"];
-const INGESTION_ROLES: readonly StaffRole[] = ["analyst", "scout", "admin"];
+const VALID_ROLES: readonly StaffRole[] = ["viewer", "admin"];
 
 /** Read only the signed-in user's own profile; distinguish absent data from DB/RLS failures. */
 export async function getStaffAccess(client: unknown, userId: string): Promise<StaffAccess> {
@@ -37,7 +36,7 @@ export async function getStaffAccess(client: unknown, userId: string): Promise<S
         message: "Your staff profile has an unsupported role value. Ask a platform administrator to repair it." };
     }
     const role = data.role as StaffRole;
-    return { status: "verified", role, canUpload: INGESTION_ROLES.includes(role), message: null };
+    return { status: "verified", role, canUpload: role === "admin", message: null };
   } catch {
     return { status: "lookup_failed", role: null, canUpload: false,
       message: "Royal Scout could not contact Supabase to verify your profile. Retry when the service is available." };
@@ -50,7 +49,7 @@ export async function getStaffRole(client: unknown, userId: string): Promise<Sta
   return access.status === "verified" ? access.role : null;
 }
 
-/** Only verified analyst, scout, or admin profiles may upload/process. */
+/** Only the verified administrator profile may upload or process datasets. */
 export async function mayManageIngestion(client: unknown, userId: string): Promise<boolean> {
   const access = await getStaffAccess(client, userId);
   return access.status === "verified" && access.canUpload;

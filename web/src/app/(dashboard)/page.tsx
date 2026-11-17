@@ -19,7 +19,7 @@ export default async function OverviewPage() {
       <EmptyState
         tone="warning"
         title="No analytical bundle has been generated"
-        description="Import a dataset through Data Ingestion (the worker will analyse it) or run the engine locally: python -m royalscout.cli ingest --paths <files> --publish src/data/bundle.json. Until then this dashboard deliberately shows no figures."
+        description="The platform administrator can import a dataset through Data Ingestion (the worker will analyse it) or run the engine locally: python -m royalscout.cli ingest --paths <files> --publish src/data/bundle.json. Until then this dashboard deliberately shows no figures."
       />
     );
   }

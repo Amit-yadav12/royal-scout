@@ -44,6 +44,17 @@ describe("staff-gated ingestion routes", () => {
     expect((await jobResponse.json()).stage).toContain("staff permission");
   });
 
+  it.each(["analyst", "scout"])("fails closed for legacy %s roles", async (legacyRole) => {
+    mocks.getStaffAccess.mockResolvedValue({
+      status: "invalid_role", role: null, canUpload: false,
+      message: `Legacy ${legacyRole} access is no longer supported.`,
+    });
+    const signResponse = await signUpload(sameOriginPost("/api/uploads/sign"));
+    const jobResponse = await createJob(sameOriginPost("/api/jobs"));
+    expect(signResponse.status).toBe(403);
+    expect(jobResponse.status).toBe(403);
+  });
+
   it("reports a missing profile to the signed-in user without granting access", async () => {
     mocks.getStaffAccess.mockResolvedValue({
       status: "profile_missing", role: null, canUpload: false,

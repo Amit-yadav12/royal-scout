@@ -16,10 +16,10 @@ export async function POST(request: Request) {
   const session = await createServerSupabase();
   if (!session) return errorJson("Supabase authentication is not configured.", 503, "authentication", "Configure the Supabase URL and publishable key.");
   const { data: { user }, error: authError } = await session.auth.getUser();
-  if (authError || !user) return errorJson("Sign in before queueing a dataset.", 401, "authentication", "Use an invited staff account.");
+  if (authError || !user) return errorJson("Sign in before queueing a dataset.", 401, "authentication", "Sign in with the administrator account.");
   const access = await getStaffAccess(session, user.id);
   if (access.status !== "verified" || !access.canUpload) {
-    return errorJson(access.message ?? "Your verified staff role cannot queue datasets.", 403, `staff permission: ${access.status}`, "Ask a platform administrator to verify your profile and grant analyst or scout access.");
+    return errorJson(access.message ?? "Your verified account cannot queue datasets.", 403, `staff permission: ${access.status}`, "Only the platform administrator can upload and process datasets.");
   }
   const workerUrl = process.env.WORKER_API_URL;
   const workerSecret = process.env.WORKER_SHARED_SECRET;

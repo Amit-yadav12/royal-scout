@@ -33,7 +33,7 @@ export async function POST(request: Request) {
   }
   const access = await getStaffAccess(sessionClient, authData.user.id);
   if (access.status !== "verified" || !access.canUpload) {
-    return NextResponse.json({ error: access.message ?? "Your verified staff role does not permit dataset uploads.",
+    return NextResponse.json({ error: access.message ?? "Only the platform administrator may upload datasets.",
       access_status: access.status, role: access.role }, { status: 403, headers: { "Cache-Control": "no-store" } });
   }
 

@@ -14,7 +14,7 @@ Do not use this UUID unless it matches the intended operator's authenticated acc
 
 ## Apply the migrations first
 
-Apply the repository migrations in order: `0001`–`0009` as needed, then `0010_atomic_upload_jobs.sql`, `0011_protect_profile_roles.sql`, and `0012_staff_profile_repair_and_admin_assignment.sql`. The connected production project currently reports migrations through `0009` plus `20261116171951 lock_profile_role_updates`; reconcile that existing migration history with the deployment owner before using `supabase db push`. These are schema changes; review them and apply through the normal change-control process. Migration `0012` safely inserts missing Auth profiles as `viewer` and creates the one-time bootstrap function.
+Apply the repository migrations in order: `0001`–`0009` as needed, then `0010_atomic_upload_jobs.sql`, `0011_protect_profile_roles.sql`, `0012_staff_profile_repair_and_admin_assignment.sql`, and `20261116180000_admin_only_staff_access.sql`. The connected production project originally reported migrations through `0009` plus `20261116171951_lock_profile_role_updates`; reconcile that existing migration history with the deployment owner before using `supabase db push --remote --include-all`. These are schema changes; review them and apply through the normal change-control process. Migration `0012` backfills missing Auth profiles as `viewer` and creates the one-time bootstrap function. The admin-only migration downgrades analyst/scout profiles to read-only, restricts roles to viewer/admin, and enforces a single administrator.
 
 The bootstrap procedure intentionally cannot be called through the public app, the authenticated API, or the service-role REST client. Run it once from the Supabase Dashboard SQL Editor as the database owner, after checking that the UUID is the intended operator:
 
@@ -43,7 +43,7 @@ The procedure checks that the Auth account exists and its email is confirmed, se
 ## After bootstrap
 
 1. Sign out and back in (or refresh the session) and open **Data Ingestion**. The page reads the current profile role from the server. A role-change listener refreshes access on focus and every 15 seconds; **Refresh permissions** triggers an immediate check.
-2. Open **Staff Access** and invite the intended analyst/scout or change an existing verified staff account. Admin role changes and invitations are restricted to an authenticated admin and go through `assign_staff_role`; the database function re-checks the actor and prevents downgrading the last admin. Self-role changes are rejected.
-3. Analyst and scout can upload/process; viewer cannot. Both `/api/uploads/sign` and `/api/jobs` independently verify the current session and role and return HTTP 403 when access is absent or insufficient.
+2. Open **Administration** to review accounts or invite a read-only user. Invitations cannot grant administrator access. The administrator cannot be changed in the app; the database enforces exactly one administrator.
+3. Only the administrator can upload, process, or retry datasets. `/api/uploads/sign`, `/api/jobs`, and the retry route independently verify the current authenticated administrator and return HTTP 403 otherwise. The rest of the dashboard remains read-only and public.
 
 Do not enable public sign-up to solve a missing profile. Do not modify role claims in user metadata, infer a role from email, invoke the bootstrap from the browser, or expose a Supabase secret/service-role key to the client.
