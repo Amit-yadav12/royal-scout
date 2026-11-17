@@ -40,10 +40,11 @@ select completed_at, completed_by from public.staff_bootstrap_state where single
 
 The procedure checks that the Auth account exists and its email is confirmed, serializes against concurrent role assignments, refuses to run if an admin already exists, and records a one-use marker. It does not create an Auth user. Keep the execution record in the organisation's audit trail.
 
-## After bootstrap
+## Passwordless admin sign-in and public access
 
-1. Sign out and back in to the Royal Scout app with the bootstrapped account (`amiatyadav1275a@gmail.com`). The profile role in Supabase—not the email address—grants administrator access.
-2. Public analytics, dataset selection, and CSV exports require no sign-in. Use **Admin sign in** only to access **Data Ingestion**. There is no staff-login or invitation workflow; new public visitors do not need accounts.
-3. Only the administrator can upload, process, or retry datasets. `/api/uploads/sign`, `/api/jobs`, and the retry route independently verify the authenticated administrator and return HTTP 403 otherwise. The database migration enforces only one admin and prevents assigning analyst/scout/admin roles through the app.
+1. Public analytics, dataset selection, and CSV exports require no sign-in. Only **Data Ingestion** requires administrator authentication; there is no staff invitation flow or password sign-in.
+2. The Admin sign-in page sends a single-use email link to `amiatyadav1275a@gmail.com` with account creation disabled. The Supabase `profiles.role` check grants administrator access; email address alone does not.
+3. Configure a production SMTP provider in Supabase **Authentication → Settings → SMTP Settings**. The built-in sender is intended for testing and may be restricted or rate-limited. In **Authentication → URL Configuration**, allow the deployed app origin and its `/auth/callback` path so the magic link can return to the app.
+4. Only the administrator can upload, process, or retry datasets. `/api/uploads/sign`, `/api/jobs`, and the retry route independently verify the authenticated administrator and return HTTP 403 otherwise. The database migration enforces one admin and prevents assigning analyst/scout/admin roles through the app.
 
 Do not enable public sign-up to solve a missing profile. Do not modify role claims in user metadata, infer a role from email, invoke the bootstrap from the browser, or expose a Supabase secret/service-role key to the client.
