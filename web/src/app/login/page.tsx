@@ -8,7 +8,7 @@ import { BrandLockup } from "@/components/brand-mark";
 import { existingAdminOtpOptions } from "@/lib/auth-policy";
 import { safeRedirectTarget } from "@/lib/safe-redirect";
 
-const ADMIN_LOGIN_EMAIL = "amiatyadav1275a@gmail.com";
+const ADMIN_LOGIN_EMAIL = "amityadav1275a@gmail.com";
 
 function LoginForm() {
   const params = useSearchParams();
