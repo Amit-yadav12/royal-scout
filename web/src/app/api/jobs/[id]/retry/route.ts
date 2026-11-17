@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createServerSupabase } from "@/lib/supabase";
-import { mayManageIngestion } from "@/lib/staff-access";
+import { getStaffAccess } from "@/lib/staff-access";
 import { isSameOriginRequest } from "@/lib/request-security";
 
 export const runtime = "nodejs";
@@ -12,18 +12,17 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   if (!/^job_[a-f0-9]{16}$/.test(id)) {
     return NextResponse.json({ error: "Invalid job identifier." }, { status: 400 });
   }
-  const workerUrl = process.env.WORKER_API_URL;
-  const secret = process.env.WORKER_SHARED_SECRET;
-  if (!workerUrl || !secret) {
-    return NextResponse.json({ error: "Processing worker is not configured." }, { status: 503 });
-  }
   const session = await createServerSupabase();
   if (!session) return NextResponse.json({ error: "Supabase authentication is not configured." }, { status: 503 });
   const { data, error } = await session.auth.getUser();
   if (error || !data.user) return NextResponse.json({ error: "Sign in to retry processing." }, { status: 401 });
-  if (!(await mayManageIngestion(session, data.user.id))) {
-    return NextResponse.json({ error: "Only authorised analysts, scouts, or admins may retry jobs." }, { status: 403 });
+  const access = await getStaffAccess(session, data.user.id);
+  if (access.status !== "verified" || !access.canUpload) {
+    return NextResponse.json({ error: access.message ?? "Your verified role cannot retry processing.", access_status: access.status }, { status: 403 });
   }
+  const workerUrl = process.env.WORKER_API_URL;
+  const secret = process.env.WORKER_SHARED_SECRET;
+  if (!workerUrl || !secret) return NextResponse.json({ error: "Processing worker is not configured." }, { status: 503 });
 
   try {
     const base = workerUrl.replace(/\/$/, "");

@@ -9,12 +9,14 @@ import { Notice } from "@/components/ui/empty";
 import { DataTable, TBody, TD, TH, THead } from "@/components/ui/table";
 import { UploadPanel } from "@/components/upload-panel";
 import { createServerSupabase } from "@/lib/supabase";
-import { getStaffRole } from "@/lib/staff-access";
+import { getStaffAccess, type StaffAccess } from "@/lib/staff-access";
 
 export default async function IngestionPage() {
   const [datasetContext, session] = await Promise.all([loadDashboardDataset(), createServerSupabase()]);
   const { data: { user } } = session ? await session.auth.getUser() : { data: { user: null } };
-  const role = user && session ? await getStaffRole(session, user.id) : null;
+  const access: StaffAccess = user && session
+    ? await getStaffAccess(session, user.id)
+    : { status: "lookup_failed", role: null, canUpload: false, message: "Your sign-in session could not be verified. Sign in again." };
   const bundle = datasetContext.bundle;
   const ready = hasBundle(bundle);
   const ing = ready ? bundle.ingestion : null;
@@ -27,7 +29,7 @@ export default async function IngestionPage() {
         description="Upload cricket datasets directly to private Supabase Storage, then follow validation, queueing, processing and publication with source-level provenance."
       />
 
-      <UploadPanel role={role} />
+      <UploadPanel initialAccess={access} />
 
       {ing && bundle ? (
         <>

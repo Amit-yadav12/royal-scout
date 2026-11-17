@@ -3,7 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 import { createServerSupabase } from "@/lib/supabase";
 import { isPlatformAdmin } from "@/lib/staff-access";
-import { isInvitableStaffRole } from "@/lib/auth-policy";
+import { isAssignableStaffRole } from "@/lib/auth-policy";
 import { isSameOriginRequest } from "@/lib/request-security";
 
 export const runtime = "nodejs";
@@ -47,17 +47,26 @@ export async function PATCH(request: Request) {
     return NextResponse.json({ error: "Invalid staff user ID." }, { status: 400 });
   }
   if (userId === auth.user.id) return NextResponse.json({ error: "You cannot change your own role. Ask another administrator." }, { status: 409 });
-  if (!isInvitableStaffRole(body.role)) return NextResponse.json({ error: "Choose viewer, analyst, or scout. Administrator privileges are bootstrap-only." }, { status: 400 });
+  if (!isAssignableStaffRole(body.role)) return NextResponse.json({ error: "Choose viewer, analyst, scout, or admin." }, { status: 400 });
 
   const { data: target, error: targetError } = await auth.admin.auth.admin.getUserById(userId);
   if (targetError || !target.user) return NextResponse.json({ error: "That authenticated staff account was not found." }, { status: 404 });
   const { data: current, error: roleError } = await auth.admin.from("profiles").select("role").eq("id", userId).maybeSingle();
   if (roleError) return NextResponse.json({ error: "Could not verify the current staff role." }, { status: 503 });
   if (!current) return NextResponse.json({ error: "The user profile is missing. Repair profile provisioning before changing access." }, { status: 409 });
-  if (current.role === "admin") return NextResponse.json({ error: "Administrator roles cannot be changed through this screen." }, { status: 409 });
-
-  const { data: updated, error: updateError } = await auth.admin.from("profiles").update({ role: body.role })
-    .eq("id", userId).select("id,email,display_name,role").maybeSingle();
-  if (updateError || !updated) return NextResponse.json({ error: "The role update failed. The previous role remains in effect." }, { status: 503 });
+  const { data: assignedRows, error: updateError } = await auth.admin.rpc("assign_staff_role", {
+    p_actor_id: auth.user.id,
+    p_user_id: userId,
+    p_role: body.role,
+  });
+  if (updateError) {
+    const reason = updateError.message.toLowerCase();
+    if (reason.includes("last platform administrator")) return NextResponse.json({ error: "The last platform administrator cannot be downgraded." }, { status: 409 });
+    if (reason.includes("target staff profile is missing")) return NextResponse.json({ error: "That account has no staff profile. Run the Auth profile backfill before assigning a role." }, { status: 409 });
+    if (reason.includes("only an existing platform administrator")) return NextResponse.json({ error: "Your administrator access changed. Refresh and sign in again." }, { status: 403 });
+    return NextResponse.json({ error: "The role assignment failed. Check that migration 0012 is applied; the previous role remains in effect." }, { status: 503 });
+  }
+  const updated = Array.isArray(assignedRows) ? assignedRows[0] : assignedRows;
+  if (!updated || typeof updated !== "object") return NextResponse.json({ error: "The role assignment returned no updated profile." }, { status: 503 });
   return NextResponse.json({ staff: updated }, { headers: { "Cache-Control": "no-store" } });
 }

@@ -6,7 +6,7 @@ import { CircleAlert, CircleCheck, Loader2, Trash2, UploadCloud, X } from "lucid
 import { bytes } from "@/lib/format";
 import { Badge } from "./ui/badge";
 import { Notice } from "./ui/empty";
-import type { StaffRole } from "@/lib/staff-access";
+import type { StaffAccess, StaffRole } from "@/lib/staff-access";
 import { WORKER_AUTO_RETRIES, WORKER_HEALTH_TIMEOUT_MS, workerHealthState, workerRetryDelay } from "@/lib/worker-health";
 import { ACCEPTED_UPLOAD_TYPES, validateUploadFiles } from "@/lib/upload-validation";
 
@@ -44,6 +44,7 @@ interface UploadInit {
 }
 
 const TERMINAL = new Set(["succeeded", "failed", "cancelled"]);
+const STAFF_ROLES = new Set(["viewer", "analyst", "scout", "admin"]);
 
 function base64(value: string): string {
   return window.btoa(unescape(encodeURIComponent(value)));
@@ -154,7 +155,7 @@ async function uploadSignedFile(file: File, signed: SignedFile, onProgress: (loa
   onProgress(file.size);
 }
 
-export function UploadPanel({ role }: { role: StaffRole | null }) {
+export function UploadPanel({ initialAccess }: { initialAccess: StaffAccess }) {
   const router = useRouter();
   const [files, setFiles] = useState<File[]>([]);
   const [name, setName] = useState("Scouting dataset");
@@ -163,6 +164,9 @@ export function UploadPanel({ role }: { role: StaffRole | null }) {
   const [error, setError] = useState<string | null>(null);
   const [hint, setHint] = useState<string | null>(null);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [access, setAccess] = useState<StaffAccess>(initialAccess);
+  const [refreshingAccess, setRefreshingAccess] = useState(false);
+  const [accessRefreshError, setAccessRefreshError] = useState<string | null>(null);
   const [worker, setWorker] = useState<"unknown" | "ok" | "unavailable" | "not_configured">("unknown");
   const [workerDetail, setWorkerDetail] = useState("Checking the Render worker…");
   const [workerSuggestion, setWorkerSuggestion] = useState<string | null>(null);
@@ -175,6 +179,46 @@ export function UploadPanel({ role }: { role: StaffRole | null }) {
   const healthLockRef = useRef(false);
   const aliveRef = useRef(true);
   const retryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const refreshAccess = useCallback(async () => {
+    setRefreshingAccess(true);
+    setAccessRefreshError(null);
+    try {
+      const response = await fetch("/api/staff/access", { cache: "no-store", credentials: "same-origin" });
+      const payload: unknown = await response.json().catch(() => null);
+      if (payload && typeof payload === "object") {
+        const value = payload as Record<string, unknown>;
+        if (value.status === "verified" && typeof value.role === "string" && STAFF_ROLES.has(value.role)) {
+          const role = value.role as StaffRole;
+          setAccess({ status: "verified", role, canUpload: ["analyst", "scout", "admin"].includes(role), message: null });
+          return;
+        }
+        if (["profile_missing", "invalid_role", "lookup_failed"].includes(String(value.status))) {
+          setAccess({ status: value.status as StaffAccess["status"], role: null, canUpload: false,
+            message: typeof value.message === "string" ? value.message : "Staff permission could not be verified." } as StaffAccess);
+          if (!response.ok) setAccessRefreshError(typeof value.message === "string" ? value.message : `Permission check failed (HTTP ${response.status}).`);
+          return;
+        }
+        if (typeof value.message === "string") setAccessRefreshError(value.message);
+      }
+      throw new Error(`Permission check returned an invalid response (HTTP ${response.status}).`);
+    } catch (cause) {
+      const message = cause instanceof Error ? cause.message : "Could not refresh staff permissions.";
+      setAccessRefreshError(message);
+      setAccess({ status: "lookup_failed", role: null, canUpload: false,
+        message: "Access is not currently verified. Upload stays disabled until Supabase confirms your role." });
+    } finally {
+      setRefreshingAccess(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void refreshAccess();
+    const onFocus = () => void refreshAccess();
+    const interval = setInterval(() => void refreshAccess(), 15_000);
+    window.addEventListener("focus", onFocus);
+    return () => { clearInterval(interval); window.removeEventListener("focus", onFocus); };
+  }, [refreshAccess]);
 
   const checkWorker = useCallback(async (attempts = 1) => {
     if (healthLockRef.current) return;
@@ -250,7 +294,8 @@ export function UploadPanel({ role }: { role: StaffRole | null }) {
     setWakingWorker(false);
   }
 
-  const canUpload = ["analyst", "scout", "admin"].includes(role ?? "");
+  const role = access.status === "verified" ? access.role : null;
+  const canUpload = access.status === "verified" && access.canUpload;
 
   function addFiles(incoming: File[]) {
     const existing = new Set(files.map((file) => `${file.name}:${file.size}:${file.lastModified}`));
@@ -557,10 +602,15 @@ export function UploadPanel({ role }: { role: StaffRole | null }) {
             </button>
           </div> : null}
         </div>
-        <div className="rounded-lg border border-surface-line bg-surface px-4 py-3 text-xs shadow-card">
-          <p className="font-semibold text-ink">Your permission level: <span className="capitalize">{role ?? "unavailable"}</span></p>
-          {!canUpload ? <p className="mt-1 text-2xs leading-relaxed text-rose-700">Upload permission is denied for this role. Ask an authorised administrator to grant analyst or scout access. Your role is never inferred from your email address.</p> :
-            <p className="mt-1 text-2xs text-ink-soft">Your role permits dataset upload and processing.</p>}
+        <div className="rounded-lg border border-surface-line bg-surface px-4 py-3 text-xs shadow-card" aria-live="polite">
+          <p className="font-semibold text-ink">Your permission level: <span className="capitalize">{access.status === "verified" ? access.role : access.status === "profile_missing" ? "Profile missing" : access.status === "invalid_role" ? "Invalid role" : "Could not verify"}</span></p>
+          {canUpload ? <p className="mt-1 text-2xs text-ink-soft">Supabase confirmed your {role} role. Dataset upload and processing are enabled when the worker is ready.</p> :
+            <p className="mt-1 text-2xs leading-relaxed text-rose-700">{access.message}</p>}
+          {access.status === "verified" && access.role === "viewer" ? <p className="mt-1 text-2xs text-ink-soft">Viewer accounts can inspect read-only scouting analytics but cannot upload or process datasets.</p> : null}
+          {accessRefreshError ? <p role="alert" className="mt-1 text-2xs text-rose-700">Permission refresh failed: {accessRefreshError}</p> : null}
+          <button className="btn mt-3" type="button" onClick={() => void refreshAccess()} disabled={refreshingAccess}>
+            {refreshingAccess ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}{refreshingAccess ? "Checking permissions…" : "Refresh permissions"}
+          </button>
         </div>
         <div className="flex items-center gap-1.5 text-2xs text-ink-faint">
           <CircleCheck className="h-3 w-3 text-emerald-600" /> Large file bytes never pass through a Vercel Function.

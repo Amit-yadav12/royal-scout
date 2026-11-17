@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createServerSupabase, supabaseServerHeaders } from "@/lib/supabase";
-import { mayManageIngestion } from "@/lib/staff-access";
+import { getStaffAccess } from "@/lib/staff-access";
 import { isSameOriginRequest } from "@/lib/request-security";
 
 export const runtime = "nodejs";
@@ -13,15 +13,17 @@ function errorJson(error: string, status: number, stage: string, suggestion: str
 
 export async function POST(request: Request) {
   if (!isSameOriginRequest(request)) return errorJson("Cross-origin job submissions are not allowed.", 403, "authorisation", "Use the Royal Scout dashboard on its configured domain.");
-  const workerUrl = process.env.WORKER_API_URL;
-  const workerSecret = process.env.WORKER_SHARED_SECRET;
-  if (!workerUrl || !workerSecret) return errorJson("The Render worker is not configured.", 503, "worker readiness", "Set WORKER_API_URL and WORKER_SHARED_SECRET on the web deployment and Render worker.");
-
   const session = await createServerSupabase();
   if (!session) return errorJson("Supabase authentication is not configured.", 503, "authentication", "Configure the Supabase URL and publishable key.");
   const { data: { user }, error: authError } = await session.auth.getUser();
   if (authError || !user) return errorJson("Sign in before queueing a dataset.", 401, "authentication", "Use an invited staff account.");
-  if (!(await mayManageIngestion(session, user.id))) return errorJson("Your current staff role cannot queue datasets.", 403, "staff permission", "Ask a platform administrator to grant analyst or scout access.");
+  const access = await getStaffAccess(session, user.id);
+  if (access.status !== "verified" || !access.canUpload) {
+    return errorJson(access.message ?? "Your verified staff role cannot queue datasets.", 403, `staff permission: ${access.status}`, "Ask a platform administrator to verify your profile and grant analyst or scout access.");
+  }
+  const workerUrl = process.env.WORKER_API_URL;
+  const workerSecret = process.env.WORKER_SHARED_SECRET;
+  if (!workerUrl || !workerSecret) return errorJson("The Render worker is not configured.", 503, "worker readiness", "Set WORKER_API_URL and WORKER_SHARED_SECRET on the web deployment and Render worker.");
 
   let body: { project_id?: unknown; dataset_id?: unknown; dataset_name?: unknown; bucket?: unknown; paths?: unknown };
   try { body = await request.json(); }
