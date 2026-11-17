@@ -28,14 +28,14 @@ export function datasetOptionsFrom(records: SuccessfulDatasetRecord[]): DatasetO
   return [...unique.values()];
 }
 
-/** The first uploaded dataset is the default source; later uploads stay isolated. */
+/** Default to the most recently uploaded successful dataset; keep earlier datasets isolated and selectable. */
 export function primaryDatasetId(datasets: DatasetOption[]): string | null {
   if (!datasets.length) return null;
   return [...datasets].sort((a, b) => {
     const aTime = Date.parse(a.created_at);
     const bTime = Date.parse(b.created_at);
-    if (Number.isFinite(aTime) && Number.isFinite(bTime)) return aTime - bTime;
-    return datasets.indexOf(b) - datasets.indexOf(a);
+    if (Number.isFinite(aTime) && Number.isFinite(bTime)) return bTime - aTime;
+    return datasets.indexOf(a) - datasets.indexOf(b);
   })[0]?.dataset_id ?? null;
 }
 

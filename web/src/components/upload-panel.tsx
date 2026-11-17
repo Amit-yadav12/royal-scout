@@ -348,7 +348,18 @@ export function UploadPanel({ initialAccess }: { initialAccess: StaffAccess }) {
         setJob(data);
         if (data.status === "succeeded") {
           if (data.dataset_id) {
-            setHint("Processing succeeded. This upload is a separate dataset; the primary source was not replaced or merged. Choose this dataset from the active-dataset selector when you explicitly want to inspect it.");
+            try {
+              const activeResponse = await fetch("/api/datasets/active", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ dataset_id: data.dataset_id }),
+              });
+              const activePayload = await activeResponse.json().catch(() => null);
+              if (!activeResponse.ok) throw new Error(activePayload?.error ?? "dataset selection failed");
+              setHint("Processing succeeded. This uploaded dataset is now active across analytics; earlier datasets remain separate and available in the selector.");
+            } catch {
+              setHint("Processing succeeded, but the dashboard could not switch datasets automatically. Select this completed upload from the dataset selector.");
+            }
           }
           router.refresh();
         }

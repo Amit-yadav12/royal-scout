@@ -44,7 +44,7 @@ export function DatasetSelector({ datasets, selectedId }: { datasets: DatasetOpt
         disabled={busy || datasets.length < 2}
         onChange={(event) => void select(event.target.value)}
       >
-        <option value="">Primary source · {datasets.find((dataset) => dataset.dataset_id === primaryId)?.name}</option>
+        <option value="">Latest successful · {datasets.find((dataset) => dataset.dataset_id === primaryId)?.name}</option>
         {datasets.filter((dataset) => dataset.dataset_id !== primaryId).map((dataset) => (
           <option key={dataset.dataset_id} value={dataset.dataset_id}>
             {dataset.name}{dataset.is_fixture ? " · TEST DATA" : ""} · {new Date(dataset.created_at).toLocaleDateString()}
