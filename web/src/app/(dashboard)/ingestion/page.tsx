@@ -1,3 +1,4 @@
+import { notFound, redirect } from "next/navigation";
 import { UploadCloud } from "lucide-react";
 import { loadDashboardDataset } from "@/lib/server-dataset";
 import { hasBundle } from "@/lib/bundle";
@@ -9,14 +10,16 @@ import { Notice } from "@/components/ui/empty";
 import { DataTable, TBody, TD, TH, THead } from "@/components/ui/table";
 import { UploadPanel } from "@/components/upload-panel";
 import { createServerSupabase } from "@/lib/supabase";
-import { getStaffAccess, type StaffAccess } from "@/lib/staff-access";
+import { getStaffAccess } from "@/lib/staff-access";
 
 export default async function IngestionPage() {
-  const [datasetContext, session] = await Promise.all([loadDashboardDataset(), createServerSupabase()]);
-  const { data: { user } } = session ? await session.auth.getUser() : { data: { user: null } };
-  const access: StaffAccess = user && session
-    ? await getStaffAccess(session, user.id)
-    : { status: "lookup_failed", role: null, canUpload: false, message: "Your sign-in session could not be verified. Sign in again." };
+  const session = await createServerSupabase();
+  if (!session) redirect("/login?next=%2Fingestion");
+  const { data: { user }, error } = await session.auth.getUser();
+  if (error || !user) redirect("/login?next=%2Fingestion");
+  const access = await getStaffAccess(session, user.id);
+  if (access.status !== "verified" || access.role !== "admin") notFound();
+  const datasetContext = await loadDashboardDataset();
   const bundle = datasetContext.bundle;
   const ready = hasBundle(bundle);
   const ing = ready ? bundle.ingestion : null;

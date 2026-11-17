@@ -9,8 +9,11 @@ describe("private staff authentication policy", () => {
     });
   });
 
-  it.each(["viewer", "analyst", "scout", "admin"])("allows an administrator to assign %s", (role) => {
-    expect(isAssignableStaffRole(role)).toBe(true);
+  it("allows only read-only viewer invitations; admin elevation stays bootstrap-only", () => {
+    expect(isAssignableStaffRole("viewer")).toBe(true);
+    expect(isAssignableStaffRole("analyst")).toBe(false);
+    expect(isAssignableStaffRole("scout")).toBe(false);
+    expect(isAssignableStaffRole("admin")).toBe(false);
   });
 
   it.each(["owner", "anonymous", "", null, undefined, 1])("rejects malformed staff role %s", (role) => {

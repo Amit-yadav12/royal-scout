@@ -19,7 +19,6 @@ const NAV_GROUPS: { label: string; items: { href: string; label: string; icon: N
     items: [
       { href: "/", label: "Overview", icon: "LayoutDashboard" },
       { href: "/data-center", label: "Data Center", icon: "Database" },
-      { href: "/ingestion", label: "Data Ingestion", icon: "UploadCloud" },
       { href: "/data-audit", label: "Data Audit", icon: "ShieldAlert" },
     ],
   },
@@ -55,8 +54,8 @@ const NAV_GROUPS: { label: string; items: { href: string; label: string; icon: N
 const SECTION_HELP: Record<string, string> = {
   "/": "Dataset health, capability coverage and the headline findings.",
   "/data-center": "Every dataset version, original file, hash and derived artefact.",
-  "/ingestion": "Upload files or archives and watch the ingestion log.",
-  "/staff": "Invite and manage authorised staff access.",
+  "/ingestion": "Administrator-only dataset upload and processing.",
+  "/staff": "Review accounts and invite read-only users; administrator access cannot be granted here.",
   "/data-audit": "Column-level audit, cricket-rule validation and a transparent quality score.",
   "/batting": "Batting output, distribution and the components behind each score.",
   "/bowling": "Workload, wicket-taking and containment, with specialist classification.",
@@ -83,7 +82,10 @@ export async function Shell({ children }: { children: React.ReactNode }) {
     }
   }
   const navGroups = isAdmin
-    ? [...NAV_GROUPS, { label: "Administration", items: [{ href: "/staff", label: "Staff Access", icon: "Users" as NavIconName }] }]
+    ? [...NAV_GROUPS, { label: "Administration", items: [
+        { href: "/ingestion", label: "Data Ingestion", icon: "UploadCloud" as NavIconName },
+        { href: "/staff", label: "Administration", icon: "Users" as NavIconName },
+      ] }]
     : NAV_GROUPS;
   const bundle = datasetContext.bundle;
   const ready = hasBundle(bundle);

@@ -44,7 +44,7 @@ interface UploadInit {
 }
 
 const TERMINAL = new Set(["succeeded", "failed", "cancelled"]);
-const STAFF_ROLES = new Set(["viewer", "analyst", "scout", "admin"]);
+const STAFF_ROLES = new Set(["viewer", "admin"]);
 
 function base64(value: string): string {
   return window.btoa(unescape(encodeURIComponent(value)));
@@ -190,7 +190,7 @@ export function UploadPanel({ initialAccess }: { initialAccess: StaffAccess }) {
         const value = payload as Record<string, unknown>;
         if (value.status === "verified" && typeof value.role === "string" && STAFF_ROLES.has(value.role)) {
           const role = value.role as StaffRole;
-          setAccess({ status: "verified", role, canUpload: ["analyst", "scout", "admin"].includes(role), message: null });
+          setAccess({ status: "verified", role, canUpload: role === "admin", message: null });
           return;
         }
         if (["profile_missing", "invalid_role", "lookup_failed"].includes(String(value.status))) {
@@ -604,9 +604,9 @@ export function UploadPanel({ initialAccess }: { initialAccess: StaffAccess }) {
         </div>
         <div className="rounded-lg border border-surface-line bg-surface px-4 py-3 text-xs shadow-card" aria-live="polite">
           <p className="font-semibold text-ink">Your permission level: <span className="capitalize">{access.status === "verified" ? access.role : access.status === "profile_missing" ? "Profile missing" : access.status === "invalid_role" ? "Invalid role" : "Could not verify"}</span></p>
-          {canUpload ? <p className="mt-1 text-2xs text-ink-soft">Supabase confirmed your {role} role. Dataset upload and processing are enabled when the worker is ready.</p> :
+          {canUpload ? <p className="mt-1 text-2xs text-ink-soft">Supabase confirmed your administrator role. Dataset upload and processing are enabled when the worker is ready.</p> :
             <p className="mt-1 text-2xs leading-relaxed text-rose-700">{access.message}</p>}
-          {access.status === "verified" && access.role === "viewer" ? <p className="mt-1 text-2xs text-ink-soft">Viewer accounts can inspect read-only scouting analytics but cannot upload or process datasets.</p> : null}
+          {access.status === "verified" && access.role === "viewer" ? <p className="mt-1 text-2xs text-ink-soft">Your account is read-only. Only the platform administrator can upload or process datasets.</p> : null}
           {accessRefreshError ? <p role="alert" className="mt-1 text-2xs text-rose-700">Permission refresh failed: {accessRefreshError}</p> : null}
           <button className="btn mt-3" type="button" onClick={() => void refreshAccess()} disabled={refreshingAccess}>
             {refreshingAccess ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}{refreshingAccess ? "Checking permissions…" : "Refresh permissions"}

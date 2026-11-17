@@ -5,8 +5,8 @@ export function existingStaffOtpOptions(emailRedirectTo: string) {
   } as const;
 }
 
-/** Roles an authenticated platform admin may assign; never sourced from email. */
-export const ASSIGNABLE_STAFF_ROLES = ["viewer", "analyst", "scout", "admin"] as const;
+/** The sole administrator may invite read-only users; elevation is bootstrap-only. */
+export const ASSIGNABLE_STAFF_ROLES = ["viewer"] as const;
 export type AssignableStaffRole = typeof ASSIGNABLE_STAFF_ROLES[number];
 
 export function isAssignableStaffRole(role: unknown): role is AssignableStaffRole {
