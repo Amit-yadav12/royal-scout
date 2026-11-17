@@ -13,6 +13,7 @@ vi.mock("@/lib/staff-access", () => ({ getStaffAccess: mocks.getStaffAccess }));
 
 import { POST as signUpload } from "../uploads/sign/route";
 import { POST as createJob } from "../jobs/route";
+import { GET as getJobStatus } from "../jobs/[id]/route";
 import { GET as staffAccess } from "../staff/access/route";
 
 const viewerAccess = {
@@ -85,6 +86,61 @@ describe("staff-gated ingestion routes", () => {
         "https://xncrdfgetktfmnhflltd.storage.supabase.co/storage/v1/upload/resumable/sign",
       );
       expect(fetchMock).toHaveBeenCalledTimes(2);
+    } finally {
+      fetchMock.mockRestore();
+      for (const [key, value] of Object.entries(previousEnv)) {
+        if (value === undefined) delete process.env[key];
+        else process.env[key] = value;
+      }
+    }
+  });
+
+  it("reads processing status and logs from Supabase, scoped to the creating user", async () => {
+    const previousEnv = {
+      SUPABASE_URL: process.env.SUPABASE_URL,
+      SUPABASE_SECRET_KEY: process.env.SUPABASE_SECRET_KEY,
+      SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
+    };
+    process.env.SUPABASE_URL = "https://xncrdfgetktfmnhflltd.supabase.co";
+    process.env.SUPABASE_SECRET_KEY = "sb_secret_test";
+    delete process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const jobId = "job_a06aa564ddc94b6c";
+    let updatedAt = new Date().toISOString();
+    let ownerId = user.id;
+    const fetchMock = vi.spyOn(globalThis, "fetch").mockImplementation(async (input) => {
+      const url = new URL(String(input));
+      if (url.pathname.endsWith("/processing_jobs")) {
+        return Response.json([{
+          id: jobId, dataset_id: "ds_7e15a4d8fc41461b", status: "running", progress: 52,
+          stage: "canonicalising", detail: "5 table(s) profiled", error: null,
+          created_by: ownerId, updated_at: updatedAt,
+        }]);
+      }
+      if (url.pathname.endsWith("/processing_logs")) {
+        return Response.json([{ stage: "canonicalising", message: "5 table(s) profiled", progress: 52,
+          created_at: updatedAt }]);
+      }
+      return new Response(null, { status: 404 });
+    });
+
+    try {
+      const makeRequest = () => getJobStatus(
+        new Request(`http://localhost/api/jobs/${jobId}`), { params: Promise.resolve({ id: jobId }) },
+      );
+      const response = await makeRequest();
+      expect(response.status).toBe(200);
+      expect(await response.json()).toMatchObject({
+        id: jobId, status: "running", progress: 52, heartbeat_stale: false,
+        logs: [{ stage: "canonicalising", message: "5 table(s) profiled", progress: 52 }],
+      });
+
+      updatedAt = new Date(Date.now() - 6 * 60_000).toISOString();
+      const staleResponse = await makeRequest();
+      expect((await staleResponse.json()).heartbeat_stale).toBe(true);
+
+      ownerId = "another-user-id";
+      expect((await makeRequest()).status).toBe(403);
+      expect(fetchMock).toHaveBeenCalledTimes(5);
     } finally {
       fetchMock.mockRestore();
       for (const [key, value] of Object.entries(previousEnv)) {

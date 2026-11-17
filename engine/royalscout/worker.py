@@ -154,12 +154,22 @@ def run_worker(storage: Path, once: bool = False, interval: float = 5.0, max_job
     signal.signal(signal.SIGTERM, _handle_signal)
     signal.signal(signal.SIGINT, _handle_signal)
     queue = make_queue(storage)
-    if hasattr(queue, "requeue_stale"):
+    stale_recovery_supported = hasattr(queue, "requeue_stale")
+    last_stale_check = time.monotonic()
+    if stale_recovery_supported:
         recovered = queue.requeue_stale()
         print(f"[worker] stale_jobs_requeued={recovered}", flush=True)
     print(f"[worker] queue={type(queue).__name__} storage={storage}", flush=True)
     processed = 0
     while not _shutdown:
+        if stale_recovery_supported and time.monotonic() - last_stale_check >= 60:
+            try:
+                recovered = queue.requeue_stale()
+                if recovered:
+                    print(f"[worker] stale_jobs_requeued={recovered}", flush=True)
+            except Exception as exc:
+                print(f"[worker] stale-job recovery check failed ({type(exc).__name__})", file=sys.stderr, flush=True)
+            last_stale_check = time.monotonic()
         job = queue.claim_next()
         if job is None:
             if once:
