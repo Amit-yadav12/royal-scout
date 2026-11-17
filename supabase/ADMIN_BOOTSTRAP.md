@@ -42,8 +42,8 @@ The procedure checks that the Auth account exists and its email is confirmed, se
 
 ## After bootstrap
 
-1. Sign out and back in (or refresh the session) and open **Data Ingestion**. The page reads the current profile role from the server. A role-change listener refreshes access on focus and every 15 seconds; **Refresh permissions** triggers an immediate check.
-2. Open **Administration** to review accounts or invite a read-only user. Invitations cannot grant administrator access. The administrator cannot be changed in the app; the database enforces exactly one administrator.
-3. Only the administrator can upload, process, or retry datasets. `/api/uploads/sign`, `/api/jobs`, and the retry route independently verify the current authenticated administrator and return HTTP 403 otherwise. The rest of the dashboard remains read-only and public.
+1. Sign out and back in to the Royal Scout app with the bootstrapped account (`amiatyadav1275a@gmail.com`). The profile role in Supabase—not the email address—grants administrator access.
+2. Public analytics, dataset selection, and CSV exports require no sign-in. Use **Admin sign in** only to access **Data Ingestion**. There is no staff-login or invitation workflow; new public visitors do not need accounts.
+3. Only the administrator can upload, process, or retry datasets. `/api/uploads/sign`, `/api/jobs`, and the retry route independently verify the authenticated administrator and return HTTP 403 otherwise. The database migration enforces only one admin and prevents assigning analyst/scout/admin roles through the app.
 
 Do not enable public sign-up to solve a missing profile. Do not modify role claims in user metadata, infer a role from email, invoke the bootstrap from the browser, or expose a Supabase secret/service-role key to the client.

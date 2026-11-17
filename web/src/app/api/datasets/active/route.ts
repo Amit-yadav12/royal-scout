@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { createServerSupabase } from "@/lib/supabase";
 import { getSuccessfulDatasetOptions } from "@/lib/server-dataset";
 import { isSameOriginRequest } from "@/lib/request-security";
 
@@ -9,11 +8,6 @@ const ACTIVE_COOKIE = "rs_active_dataset";
 
 export async function POST(request: Request) {
   if (!isSameOriginRequest(request)) return NextResponse.json({ error: "Cross-origin dataset selection is not allowed." }, { status: 403 });
-  const session = await createServerSupabase();
-  if (!session) return NextResponse.json({ error: "Authentication is not configured." }, { status: 503 });
-  const { data, error } = await session.auth.getUser();
-  if (error || !data.user) return NextResponse.json({ error: "Sign in to select a dataset." }, { status: 401 });
-
   let datasetId: unknown;
   try {
     ({ dataset_id: datasetId } = await request.json());
