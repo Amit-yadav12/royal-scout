@@ -97,7 +97,10 @@ export async function POST(request: Request) {
       const directHost = supabaseOrigin.hostname.endsWith(".supabase.co")
         ? `${supabaseOrigin.hostname.split(".")[0]}.storage.supabase.co`
         : supabaseOrigin.host;
-      const tusEndpoint = `${supabaseOrigin.protocol}//${directHost}/storage/v1/upload/resumable`;
+      // The /sign TUS route validates this short-lived object-bound token and
+      // uses Supabase's privileged signed-upload context. The ordinary route
+      // applies client RLS and rejects this upload against the private bucket.
+      const tusEndpoint = `${supabaseOrigin.protocol}//${directHost}/storage/v1/upload/resumable/sign`;
       const relativeSignedUrl = String(data.url ?? "");
       const signedUrl = relativeSignedUrl.startsWith("http") ? relativeSignedUrl :
         `${trimSlash(url)}/storage/v1/${relativeSignedUrl.replace(/^\/?(?:storage\/v1\/)?/, "")}`;
