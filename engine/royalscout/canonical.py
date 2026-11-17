@@ -592,6 +592,32 @@ def reduce_ball_events_to_innings(events: pl.DataFrame) -> tuple[list[dict[str, 
             "record_id": _rid("derived_bat", r["match_id"], r["innings_number"], r["batter"]),
             "lineage": {"derived_from": "ball_events"},
         })
+    # Run-outs can dismiss the non-striker, who is not the batter on that
+    # delivery. Preserve that dismissal against the actual dismissed player
+    # rather than charging it to (or omitting it from) the striker.
+    if "dismissed_batter" in events.columns:
+        dismissed = (events.filter(pl.col("dismissed_batter").is_not_null())
+                     .select("match_id", "innings_number", pl.col("dismissed_batter").alias("player"),
+                             "team_batting", "competition", "season").unique())
+        by_key = {(str(r["match_id"]), int(r["innings_number"]), r["player"]): r for r in dismissed.to_dicts()}
+        existing = {(str(r["match_id"]), int(r["innings_number"]), r["player"]): r for r in bat_rows}
+        for key, ctx in by_key.items():
+            if key in existing:
+                existing[key]["dismissals"] = 1
+                existing[key]["not_outs"] = 0
+            else:
+                r = {"player": ctx["player"], "team": ctx["team_batting"], "opposition": None,
+                     "competition": ctx["competition"], "season": ctx["season"],
+                     "match_id": ctx["match_id"], "match_date": None, "venue": None,
+                     "innings_number": ctx["innings_number"], "batting_position": None,
+                     "runs": 0, "balls_faced": 0, "fours": 0, "sixes": 0, "dot_balls_faced": 0,
+                     "not_outs": 0, "dismissals": 1, "innings_count": 1, "highest_score": 0,
+                     "granularity": GRANULARITY_INNINGS, "derived_balls": False,
+                     "derived_dismissals": False, "flags": ["derived_from_ball_by_ball", "dismissed_as_non_striker"],
+                     "source_file": "derived:ball_events", "worksheet": "derived", "source_row": None,
+                     "record_id": _rid("derived_bat", *key), "lineage": {"derived_from": "ball_events"}}
+                bat_rows.append(r)
+
     bowl = (
         events.group_by(["match_id", "innings_number", "bowler", "team_bowling", "competition", "season"])
         .agg([

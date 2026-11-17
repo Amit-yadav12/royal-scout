@@ -37,7 +37,15 @@ import polars as pl
 # extras that mean the delivery was not a legal ball
 ILLEGAL_EXTRAS = {"wide", "Overstep", "other", "Penalty"}
 # wickets that are *not* credited to the bowler
-NON_BOWLER_WICKETS = {"RunOut", "Retire Out", "Obstracting the field", "Obstructing the field"}
+NON_BOWLER_WICKETS = {
+    "runout", "retireout", "obstractingthefield", "obstructingthefield",
+    "timedout", "hitballtwice", "handledtheball",
+}
+KNOWN_DISMISSALS = {
+    "bowled", "caught", "caughtbehind", "caughtandbowled", "lbw", "legbeforewicket",
+    "stumped", "hitwicket", "hitballtwice", "handledtheball", "timedout", "runout",
+    "retireout", "obstructingthefield", "obstractingthefield",
+}
 
 BALLS_PER_OVER = 6
 DEFAULT_INNINGS_BALLS = 120
@@ -54,19 +62,49 @@ class RawPack:
 
     @property
     def source_files(self) -> list[str]:
-        return ["ball_by_ball.csv", "matches.csv", "competitions.csv", "teams.csv",
-                "playing_eleven.csv", "competition_team_player_mapping.csv"]
+        required = ["ball_by_ball.csv", "matches.csv", "competitions.csv",
+                    "playing_eleven.csv", "competition_team_player_mapping.csv"]
+        return required + (["teams.csv"] if self.teams.height else [])
+
+
+def _provider_files(root: Path) -> dict[str, Path]:
+    """Resolve provider tables by basename or schema, despite staging prefixes/nesting."""
+    signatures = {
+        "ball": {"match_id", "innings", "overid", "striker_id", "bowler_id", "extras1_runs"},
+        "matches": {"match_id", "comp_id", "match_date", "result"},
+        "competitions": {"comp_id", "comp_name", "match_format"},
+        "teams": {"team_id", "team_name"},
+        "playing_eleven": {"match_id", "player_id", "is_played"},
+        "mapping": {"player_id", "player_name", "team_id", "comp_id"},
+    }
+    found: dict[str, Path] = {}
+    candidates = (p for p in root.rglob("*") if p.is_file() and p.suffix.lower() == ".csv")
+    for path in sorted(candidates):
+        try:
+            header = set(pl.read_csv(path, n_rows=0).columns)
+        except Exception:
+            continue
+        for key, required in signatures.items():
+            if key not in found and required.issubset(header):
+                found[key] = path
+    missing = [key for key in ("ball", "matches", "competitions", "playing_eleven", "mapping")
+               if key not in found]
+    if missing:
+        raise FileNotFoundError("SupeRR pack is missing required table(s): " + ", ".join(missing))
+    return found
 
 
 def load_raw(root: Path | str) -> RawPack:
     root = Path(root)
+    files = _provider_files(root)
     return RawPack(
-        ball=pl.read_csv(root / "ball_by_ball.csv", infer_schema_length=50_000),
-        matches=pl.read_csv(root / "matches.csv", infer_schema_length=10_000, try_parse_dates=True),
-        competitions=pl.read_csv(root / "competitions.csv"),
-        teams=pl.read_csv(root / "teams.csv"),
-        playing_eleven=pl.read_csv(root / "playing_eleven.csv"),
-        mapping=pl.read_csv(root / "competition_team_player_mapping.csv"),
+        ball=pl.read_csv(files["ball"], infer_schema_length=50_000),
+        matches=pl.read_csv(files["matches"], infer_schema_length=10_000, try_parse_dates=True),
+        competitions=pl.read_csv(files["competitions"]),
+        teams=pl.read_csv(files["teams"]) if "teams" in files else pl.DataFrame(
+            schema={"team_id": pl.Int64, "team_name": pl.Utf8}),
+        playing_eleven=pl.read_csv(files["playing_eleven"]),
+        mapping=pl.read_csv(files["mapping"]),
     )
 
 
@@ -84,12 +122,16 @@ def derive_ball_state(pack: RawPack) -> pl.DataFrame:
             .alias("total_runs"),
         pl.col("runs").alias("bat_runs"),
         (pl.col("extras1_runs").fill_null(0) + pl.col("extras_2_runs").fill_null(0)).alias("extra_runs"),
-        (pl.col("is_wicket") & ~pl.col("dismissal_type").fill_null("").is_in(list(NON_BOWLER_WICKETS)))
-            .alias("bowler_wicket"),
+        pl.when(~pl.col("is_wicket").fill_null(False)).then(False)
+          .when(pl.col("dismissal_type").fill_null("").str.to_lowercase()
+                .str.replace_all(r"[^a-z]", "").is_in(list(NON_BOWLER_WICKETS))).then(False)
+          .when(pl.col("dismissal_type").fill_null("").str.to_lowercase()
+                .str.replace_all(r"[^a-z]", "").is_in(list(KNOWN_DISMISSALS))).then(True)
+          .otherwise(None).alias("bowler_wicket"),
         (pl.col("is_wicket") & (pl.col("dismissed_player_id") == pl.col("striker_id")))
             .alias("striker_out"),
         # runs charged to the bowler: bat runs + wides + no-balls (not byes/leg-byes/penalty)
-        (pl.col("runs") + pl.when(pl.col("extras_type").is_in(["wide", "Overstep", "other"]))
+        (pl.col("runs") + pl.when(pl.col("extras_type").is_in(["wide", "Overstep"]))
             .then(pl.col("extras1_runs").fill_null(0) + pl.col("extras_2_runs").fill_null(0))
             .otherwise(0)).alias("bowler_conceded"),
     ).with_columns(

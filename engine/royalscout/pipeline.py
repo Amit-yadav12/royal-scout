@@ -287,11 +287,11 @@ def filter_events(events: pl.DataFrame | None, flt: dict[str, list[str]] | None)
         if not values:
             continue
         if key == "competition":
-            e = pl.col("competition").is_in(values)
+            e = pl.col("competition").cast(pl.Utf8).is_in(values)
         elif key == "season":
-            e = pl.col("season").is_in(values)
+            e = pl.col("season").cast(pl.Utf8).is_in(values)
         elif key == "team":
-            e = pl.col("team_batting").is_in(values) | pl.col("team_bowling").is_in(values)
+            e = pl.col("team_batting").cast(pl.Utf8).is_in(values) | pl.col("team_bowling").cast(pl.Utf8).is_in(values)
         else:
             continue
         expr = e if expr is None else (expr & e)
@@ -314,7 +314,7 @@ class ScopeAnalysis:
 
 def analyse_scope(bat_records: list[dict[str, Any]], bowl_records: list[dict[str, Any]],
                   events: pl.DataFrame | None, roles: dict[str, dict[str, Any]],
-                  cfg: Config) -> ScopeAnalysis:
+                  cfg: Config, events_tagged: bool = False) -> ScopeAnalysis:
     bat_raw = bat_mod.compute_batting_raw(bat_records)
     bowl_raw = bowl_mod.compute_bowling_raw(bowl_records)
 
@@ -324,7 +324,7 @@ def analyse_scope(bat_records: list[dict[str, Any]], bowl_records: list[dict[str
     pressure_basis = "unavailable"
     impact: dict[str, dict[str, Any]] = {}
     if events is not None and events.height > 0:
-        tagged = tag_ball_events(events, cfg)
+        tagged = events if events_tagged else tag_ball_events(events, cfg)
         phases = phase_aggregates(tagged)
         pressure_bat = pressure_batting_metrics(tagged, cfg)
         pressure_bowl = pressure_bowling_metrics(tagged, cfg)
@@ -462,6 +462,183 @@ def metric_availability(caps: dict[str, bool], tables: list[TableProfile]) -> li
     return rows
 
 
+def _superr_pressure_analysis(folder: Path, cache_dir: Path) -> dict[str, Any]:
+    """Run the existing SupeRR PRI methodology for an active provider pack."""
+    import math
+    from .superr import load as superr_load
+    from .superr import metrics as superr_metrics
+    from .superr import rank as superr_rank
+    from .superr.pressure import tag_pressure
+
+    pack = superr_load.load_raw(folder)
+    names = superr_load.player_names(pack)
+    state, identity_merges = superr_load.harmonise_identities(superr_load.derive_ball_state(pack))
+    labels = superr_load.competition_labels(pack)
+    enriched_state = state.join(labels.select("comp_id", "comp_name", "season", "competition_kind"),
+                                on="comp_id", how="left")
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    enriched_state.write_parquet(cache_dir / "ball_state.parquet")
+    tagged = superr_metrics.add_par(tag_pressure(state), pack).join(
+        labels.select("comp_id", "comp_name", "season", "competition_kind"), on="comp_id", how="left")
+    tagged.write_parquet(cache_dir / "pressure_ball_state.parquet")
+    regulation = tagged.filter(pl.col("innings") <= 2)
+    primary = regulation.filter(pl.col("competition_kind").is_in(["IPL", "T20I"]))
+    other = regulation.filter(pl.col("competition_kind") == "Other T20")
+    cfg = superr_metrics.Config()
+    pballs = primary.filter(pl.col("is_pressure"))
+    npballs = primary.filter(~pl.col("is_pressure"))
+    def per_100_wickets(frame):
+        return round(100 * float(frame["is_wicket"].mean()), 3) if frame.height else None
+    def runs_per_over(frame):
+        legal = int(frame["_legal_i"].sum()) if frame.height else 0
+        return round(float(frame["total_runs"].sum()) * 6 / legal, 3) if legal else None
+    facts = {
+        "provider": "superr-selector-s2", "primary_competitions": ["IPL", "T20I"],
+        "deliveries_source": int(state.height), "regulation_deliveries": int(regulation.height),
+        "primary_deliveries": int(primary.height), "other_t20_sensitivity_deliveries": int(other.height),
+        "matches_primary": int(primary["match_id"].n_unique()),
+        "matches_with_ball_data": int(state["match_id"].n_unique()),
+        "super_over_deliveries_excluded": int(state.filter(pl.col("innings") > 2).height),
+        "unknown_dismissal_attribution_rows": int(state.filter(
+            pl.col("is_wicket") & pl.col("bowler_wicket").is_null()).height),
+        "pressure_deliveries_primary": int(primary["is_pressure"].sum()),
+        "pressure_share_primary": round(float(primary["is_pressure"].mean()), 4) if primary.height else None,
+        "pressure_wickets_per_100": per_100_wickets(pballs),
+        "nonpressure_wickets_per_100": per_100_wickets(npballs),
+        "pressure_runs_per_over": runs_per_over(pballs),
+        "nonpressure_runs_per_over": runs_per_over(npballs),
+        "identity_merges": identity_merges,
+        "method": "SupeRR Selector PRI with situation-par adjustment and match bootstrap",
+        "eligibility": {"pressure_balls": 120, "pressure_matches": 6, "pressure_innings": 8,
+                        "baseline_balls": 60},
+    }
+    # Persist the compact player-match sufficient statistics used for rescoring
+    # and match bootstrap; avoid retaining repeated full-table computations.
+    pools: dict[str, dict[str, Any]] = {}
+    primary_final: dict[str, pl.DataFrame] = {}
+    robustness: dict[str, list[dict[str, Any]]] = {}
+    robustness_counts: dict[str, dict[str, int]] = {}
+    for pool_name, frame in (("primary", primary), ("IPL", primary.filter(pl.col("competition_kind") == "IPL")),
+                             ("T20I", primary.filter(pl.col("competition_kind") == "T20I")),
+                             ("other_t20_sensitivity", other)):
+        if frame.height == 0:
+            pools[pool_name] = {}
+            continue
+        use_cfg = cfg if pool_name != "other_t20_sensitivity" else cfg.with_(competitions=("Other T20",))
+        panels = superr_metrics.build_panels(frame, use_cfg)
+        if pool_name == "primary":
+            for panel_name, panel in panels.items():
+                panel.write_parquet(cache_dir / f"player_match_{panel_name}.parquet")
+        ranked_by_role: dict[str, Any] = {}
+        for role in ("bat", "bowl"):
+            panel_key = "bat" if role == "bat" else "bowl"
+            inn_key = "bat_inn" if role == "bat" else "bowl_inn"
+            ids = superr_metrics._player_universe(panels[panel_key], panels[inn_key], use_cfg, role)
+            scored = (superr_rank.score_role(frame, use_cfg, role, panels=panels, ids=ids)
+                      if len(ids) else pl.DataFrame())
+            if pool_name == "primary" and len(ids):
+                boot = superr_metrics.bootstrap_ranks(frame, panels, use_cfg, role, ids, B=400, seed=20261115)
+                scored = scored.join(boot, on="player_id", how="left")
+            if scored.height:
+                scored = scored.sort("pri", descending=True).with_row_index("rank").with_columns(
+                    (pl.col("rank") + 1).alias("rank"),
+                    pl.col("player_id").replace_strict(names, default=None).alias("player_name"))
+                if pool_name == "primary":
+                    # Expose exact evidence counts so every shortlist entry is auditable.
+                    exposure = panels[panel_key].group_by("player_id").agg(
+                        pl.col("p_balls").sum().alias("pressure_balls"),
+                        pl.col("b_balls").sum().alias("baseline_balls"),
+                        pl.col("match_id").n_unique().alias("pressure_matches"))
+                    inn_count = panels[inn_key].group_by("player_id").agg(
+                        pl.len().alias("pressure_innings"))
+                    scored = scored.join(exposure, on="player_id", how="left").join(
+                        inn_count, on="player_id", how="left")
+                    alt_summary, alt_matrix, _ = superr_rank.alternative_table(regulation, pack, role)
+                    alt_summary.write_parquet(cache_dir / f"robustness_methods_{role}.parquet")
+                    alt_matrix.write_parquet(cache_dir / f"robustness_ranks_{role}.parquet")
+                    stability_ids = scored.head(40)["player_id"].to_list()
+                    season_stability = superr_rank.season_stability(
+                        regulation, use_cfg, role, [int(pid) for pid in stability_ids])
+                    season_stability.write_parquet(cache_dir / f"season_stability_{role}.parquet")
+                    scored = superr_rank.selection_gates(scored, alt_matrix, season_stability)
+                    selected, rejected = superr_rank.select_final(scored, n=10)
+                    selected.write_parquet(cache_dir / f"pressure_final_{role}.parquet")
+                    rejected.write_parquet(cache_dir / f"pressure_rejected_{role}.parquet")
+                    primary_final[role] = selected
+                    robustness[role] = alt_summary.to_dicts()
+                    robustness_counts[role] = {
+                        "alternative_methods": int(alt_summary.height),
+                        "rank_columns": len([col for col in alt_matrix.columns if col.startswith("rank_")]),
+                        "final_candidates": int(selected.height),
+                        "confirmed_candidates": int(selected.filter(pl.col("confirmed")).height)
+                        if selected.height else 0,
+                    }
+                ranked_by_role[role] = scored
+            else:
+                ranked_by_role[role] = pl.DataFrame()
+        pools[pool_name] = ranked_by_role
+
+    # Keep competition-specific robustness alongside (not mixed into) the
+    # primary IPL+T20I pressure ranking. Other T20 is sensitivity-only.
+    output: dict[str, Any] = {"facts": facts, "primary": {}, "final": {}, "robustness": {},
+                              "ipl_robustness": {}, "t20i_robustness": {},
+                              "other_t20_sensitivity": {}}
+    role_keys = {"bat": "batters", "bowl": "bowlers"}
+    pool_targets = {"IPL": "ipl_robustness", "T20I": "t20i_robustness",
+                    "other_t20_sensitivity": "other_t20_sensitivity"}
+    ranks_by_comp: dict[str, dict[str, dict[int, int]]] = {r: {} for r in role_keys}
+    for pool_name in ("IPL", "T20I"):
+        for role in role_keys:
+            frame = pools.get(pool_name, {}).get(role, pl.DataFrame())
+            ranks_by_comp[role][pool_name] = ({int(r["player_id"]): int(r["rank"])
+                                                for r in frame.select("player_id", "rank").to_dicts()}
+                                               if frame.height else {})
+    for pool_name in ("primary", "IPL", "T20I", "other_t20_sensitivity"):
+        dest = output["primary"] if pool_name == "primary" else output[pool_targets[pool_name]]
+        for role, key in role_keys.items():
+            frame = pools.get(pool_name, {}).get(role, pl.DataFrame())
+            if frame.height == 0:
+                dest[key] = []
+                continue
+            if pool_name == "primary":
+                additions = []
+                for row in frame.head(30).to_dicts():
+                    pid = int(row["player_id"])
+                    row["ipl_rank"] = ranks_by_comp[role]["IPL"].get(pid)
+                    row["t20i_rank"] = ranks_by_comp[role]["T20I"].get(pid)
+                    row["robustness_basis"] = "separate IPL/T20I ranks; not a selection gate"
+                    additions.append(row)
+                dest[key] = additions
+            else:
+                dest[key] = frame.head(30).to_dicts()
+    for role, key in role_keys.items():
+        final_frame = primary_final.get(role, pl.DataFrame())
+        final_rows = final_frame.to_dicts() if final_frame.height else []
+        for row in final_rows:
+            pid = int(row["player_id"])
+            row["ipl_rank"] = ranks_by_comp[role]["IPL"].get(pid)
+            row["t20i_rank"] = ranks_by_comp[role]["T20I"].get(pid)
+        output["final"][key] = final_rows
+        output["robustness"][key] = robustness.get(role, [])
+    output["facts"]["robustness"] = robustness_counts
+    output["facts"]["eligible_primary"] = {
+        "batters": pools["primary"].get("bat", pl.DataFrame()).height,
+        "bowlers": pools["primary"].get("bowl", pl.DataFrame()).height,
+    }
+    output["facts"]["bootstrap_resamples"] = 400
+    output["facts"]["ranked_output_limit"] = 30
+    def finite_values(value):
+        if isinstance(value, float) and not math.isfinite(value):
+            return None
+        if isinstance(value, dict):
+            return {key: finite_values(item) for key, item in value.items()}
+        if isinstance(value, list):
+            return [finite_values(item) for item in value]
+        return value
+
+    return finite_values(output)
+
+
 # ---------------------------------------------------------------------------
 # Main pipeline
 # ---------------------------------------------------------------------------
@@ -478,7 +655,7 @@ def run_pipeline(sources: list[Path], storage_root: Path, project_id: str, datas
     ing = ingest_sources(sources, workdir, cfg, progress)
     progress("canonicalising", 52, f"{len(ing.profiles)} table(s) profiled")
 
-    pack_dir = provider_superr.detect(sources)
+    pack_dir = provider_superr.detect(sources, [workdir / "extracted", workdir / "originals"])
     if pack_dir is not None:
         progress("canonicalising", 52, f"SupeRR provider pack detected at {pack_dir.name}")
         cd = provider_superr.build(pack_dir, cfg)
@@ -500,7 +677,9 @@ def run_pipeline(sources: list[Path], storage_root: Path, project_id: str, datas
 
     progress("computing analytics", 72, "")
     events = cd.ball_events
-    global_scope = analyse_scope(cd.batting, cd.bowling, events, roles, cfg)
+    tagged_events = tag_ball_events(events, cfg) if events is not None and events.height else events
+    global_scope = analyse_scope(cd.batting, cd.bowling, tagged_events, roles, cfg,
+                                 events_tagged=tagged_events is not None and tagged_events is not events)
     progress("ranking", 80, "")
 
     bat_lb = build_leaderboard(global_scope.batting, cfg, "batting",
@@ -508,16 +687,26 @@ def run_pipeline(sources: list[Path], storage_root: Path, project_id: str, datas
     bowl_lb = build_leaderboard(global_scope.bowling, cfg, "bowling",
                                {"type": "global", "label": "All data", "filter": {}})
 
+    # The provider's pressure shortlist is a distinct analysis product; keep it
+    # separate from the engine's overall RABI/RABBI leaderboards.
+    superr_pressure = None
+    if pack_dir is not None:
+        progress("SupeRR pressure rankings", 82, "building match-state and player-match caches")
+        superr_pressure = _superr_pressure_analysis(pack_dir, workdir / "superr_cache")
+
     # ---- precomputed filter scopes ----
     scopes_out: list[dict[str, Any]] = []
-    scope_defs = candidate_scopes(cd.batting, cd.bowling)
+    # Cap CPU-heavy scope re-analysis; the active dataset still exposes the
+    # full global ranking and its most useful competition/season/team slices.
+    scope_budget = min(48, max(1, 12_000_000 // max(1, len(cd.batting) + len(cd.bowling))))
+    scope_defs = candidate_scopes(cd.batting, cd.bowling, max_scopes=scope_budget)
     for i, sc in enumerate(scope_defs):
         flt = sc["filter"]
         if not flt:
             lb_b, lb_w = bat_lb, bowl_lb
         else:
             sb = analyse_scope(filter_records(cd.batting, flt), filter_records(cd.bowling, flt),
-                               filter_events(events, flt), roles, cfg)
+                               filter_events(tagged_events, flt), roles, cfg, events_tagged=True)
             lb_b = build_leaderboard(sb.batting, cfg, "batting", sc)
             lb_w = build_leaderboard(sb.bowling, cfg, "bowling", sc)
         scopes_out.append({
@@ -529,7 +718,7 @@ def run_pipeline(sources: list[Path], storage_root: Path, project_id: str, datas
             "batters_eligible": lb_b.eligible_count,
             "bowlers_eligible": lb_w.eligible_count,
         })
-        progress("precomputing filter scopes", 80 + 8 * (i + 1) / max(1, len(scope_defs)),
+        progress("precomputing filter scopes", 83 + 5 * (i + 1) / max(1, len(scope_defs)),
                  sc["label"])
 
     # ---- stability ----
@@ -545,6 +734,10 @@ def run_pipeline(sources: list[Path], storage_root: Path, project_id: str, datas
 
     caps = cd.capabilities
     limitations = _limitations(caps, quality, ing)
+    scope_comps = {str(r.get("competition")).strip() for r in cd.batting + cd.bowling if r.get("competition")}
+    scope_seasons = {str(r.get("season")).strip() for r in cd.batting + cd.bowling if r.get("season")}
+    scope_teams = {str(r.get("team")).strip() for r in cd.batting + cd.bowling if r.get("team")}
+    scope_potential = 1 + len(scope_comps) + len(scope_seasons) + len(scope_teams) + len(scope_comps) * len(scope_seasons)
     bundle: dict[str, Any] = {
         "meta": {
             "project_id": project_id, "dataset_id": dataset_id, "name": dataset_name,
@@ -585,6 +778,10 @@ def run_pipeline(sources: list[Path], storage_root: Path, project_id: str, datas
             "splits": bowl_mod.bowling_situational_splits(cd.bowling),
             "leaderboard": bowl_lb.to_dict(),
         },
+        "scope_precomputation": {
+            "budget": scope_budget, "generated": len(scope_defs),
+            "potential": scope_potential, "truncated": len(scope_defs) < scope_potential,
+        },
         "leaderboards": {
             "global": {
                 "batters": [_export_row(r) for r in bat_lb.rows[:cfg.eligibility.leaderboard_size]],
@@ -600,6 +797,7 @@ def run_pipeline(sources: list[Path], storage_root: Path, project_id: str, datas
             },
             "scopes": scopes_out,
         },
+        "pressure_rankings": superr_pressure,
         "pressure": {
             "phases": global_scope.phases,
             "scenarios": scenario_table(cfg),
@@ -643,6 +841,44 @@ def run_pipeline(sources: list[Path], storage_root: Path, project_id: str, datas
         prov = provenance_block(bundle)
         write_csv(exports_dir / "top30_batters.csv", BAT_COLUMNS, bundle["leaderboards"]["global"]["batters"], prov)
         write_csv(exports_dir / "top30_bowlers.csv", BOWL_COLUMNS, bundle["leaderboards"]["global"]["bowlers"], prov)
+        if superr_pressure is not None:
+            pressure_columns = [(key, label) for key, label in (
+                ("rank", "Rank"), ("player_id", "Player ID"), ("player_name", "Player"),
+                ("pri", "Pressure Reliability Index"), ("p_balls", "Pressure balls"),
+                ("pressure_matches", "Pressure matches"), ("pressure_innings", "Pressure innings"),
+                ("p_sr", "Pressure strike rate"), ("base_sr", "Baseline strike rate"), ("lift_sr", "Strike-rate lift"),
+                ("p_econ", "Pressure economy"), ("base_econ", "Baseline economy"), ("lift_econ", "Economy lift"),
+                ("p_wk_rate", "Pressure wickets per 100 balls"), ("consistency", "Pressure consistency"),
+                ("rank_median", "Bootstrap median rank"), ("rank_p05", "Bootstrap rank p05"),
+                ("rank_p95", "Bootstrap rank p95"), ("p_top10", "Bootstrap top-10 probability"),
+                ("ipl_rank", "IPL rank"), ("t20i_rank", "T20I rank"),
+                ("median_rank_across_methods", "Median rank across methods"),
+                ("methods_with_top10", "Methods with top-10 rank"), ("methods_available", "Methods available"),
+                ("seasons_above_baseline", "Seasons above baseline"), ("seasons_evaluated", "Seasons evaluated"),
+                ("confirmed", "Robustness gate confirmed"),
+            )]
+            for role, plural in (("batters", "batters"), ("bowlers", "bowlers")):
+                for pool_name, title, limit in (("primary", "pressure_top10", 10),
+                                                ("ipl_robustness", "pressure_ipl_top10", 10),
+                                                ("t20i_robustness", "pressure_t20i_top10", 10),
+                                                ("other_t20_sensitivity", "pressure_other_t20_sensitivity", 10)):
+                    source_pool = (superr_pressure.get("final", {}) if pool_name == "primary" and title == "pressure_top10"
+                                   else superr_pressure.get(pool_name, {}))
+                    rows = source_pool.get(role, [])[:limit]
+                    pool_label = {"primary": "IPL + T20I primary", "ipl_robustness": "IPL robustness",
+                                  "t20i_robustness": "T20I robustness",
+                                  "other_t20_sensitivity": "Other T20 sensitivity only"}[pool_name]
+                    pressure_prov = {**prov, "ranking_method": "SupeRR Pressure Reliability Index (PRI)",
+                                     "competition_pool": pool_label,
+                                     "sample_size_rules": superr_pressure["facts"]["eligibility"],
+                                     "confidence_method": (f"match bootstrap ({superr_pressure['facts']['bootstrap_resamples']} resamples)"
+                                                           if pool_name == "primary" else
+                                                           "competition-specific PRI rank only; bootstrap intervals not computed for this separate pool")}
+                    if pool_name == "primary":
+                        pressure_prov["selection_gate"] = (
+                            "median rank <=15 across available alternative methods and pressure performance "
+                            "evaluated in >=2 seasons; unconfirmed rows remain labelled")
+                    write_csv(exports_dir / f"{title}_{plural}.csv", pressure_columns, rows, pressure_prov)
         try:
             export_workbook(bundle, exports_dir)
         except Exception as exc:
@@ -701,6 +937,10 @@ def _limitations(caps: dict[str, bool], quality, ing: IngestionResult) -> list[s
         lim.append("No opposition column was found: opposition-adjusted PPI component unavailable.")
     if not caps.get("venue_data"):
         lim.append("No venue column was found: venue splits unavailable.")
+    if caps.get("team_identity_unresolved"):
+        lim.append("Some provider team IDs could not be resolved to an explicit team name; IDs are retained as unresolved labels, not guessed names.")
+    if caps.get("unknown_bowler_wicket_attribution"):
+        lim.append("Some dismissal labels are unknown to the provider mapping; those wickets are not credited to bowlers and are excluded from wicket-rate claims.")
     if quality.summary.get("unmapped_tables"):
         lim.append(f"{quality.summary['unmapped_tables']} table(s) could not be mapped and were excluded; "
                    "they are listed in the schema section for manual review.")

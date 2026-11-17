@@ -121,7 +121,7 @@ def process_job(job: Job, queue: Any, storage: Path, export: bool = True) -> dic
     dataset_dir = Path(storage) / "projects" / job.project_id / "datasets" / job.dataset_id
     artefacts = [dataset_dir / name for name in ("bundle.json", "ingestion_report.json", "quality_report.json", "config.json")
                  if (dataset_dir / name).is_file()]
-    for sub in ("exports", "canonical"):
+    for sub in ("exports", "canonical", "superr_cache"):
         d = dataset_dir / sub
         if d.exists():
             artefacts.extend(sorted(p for p in d.iterdir() if p.is_file()))
@@ -129,10 +129,16 @@ def process_job(job: Job, queue: Any, storage: Path, export: bool = True) -> dic
     artifact_bucket = os.getenv("SUPABASE_ARTIFACT_BUCKET", "royal-scout-artifacts")
     uploads = publish_to_supabase(artefacts, artifact_bucket, f"{job.project_id}/{job.dataset_id}")
     bundle_upload = next((item for item in uploads if item.get("file") == "bundle.json"), None)
-    if (os.getenv("RS_ENV", "development").lower() == "production" or isinstance(queue, SupabaseQueue)) and (
-            not bundle_upload or bundle_upload.get("status") != "uploaded"):
-        raise RuntimeError("required analytical bundle could not be published to private Storage")
     remote_mode = os.getenv("RS_ENV", "development").lower() == "production" or isinstance(queue, SupabaseQueue)
+    if remote_mode:
+        uploaded = {item.get("file") for item in uploads if item.get("status") == "uploaded"}
+        required_outputs = {"bundle.json", "top30_batters.csv", "top30_bowlers.csv"}
+        if bundle.get("pressure_rankings"):
+            required_outputs |= {"pressure_top10_batters.csv", "pressure_top10_bowlers.csv"}
+        missing = sorted(required_outputs - uploaded)
+        if missing:
+            raise RuntimeError("required computed analytics outputs were not published to private Storage: "
+                               + ", ".join(missing))
     result = {
         "bundle_object": f"{job.project_id}/{job.dataset_id}/bundle.json" if bundle_upload and bundle_upload.get("status") == "uploaded" else None,
         "bundle_path": None if remote_mode else str(dataset_dir / "bundle.json"),
@@ -142,6 +148,11 @@ def process_job(job: Job, queue: Any, storage: Path, export: bool = True) -> dic
         "summary": bundle["ingestion"]["summary"],
         "batters_ranked": len(bundle["leaderboards"]["global"]["batters"]),
         "bowlers_ranked": len(bundle["leaderboards"]["global"]["bowlers"]),
+        "pressure_rankings_available": bool(bundle.get("pressure_rankings")),
+        "pressure_batters_ranked": (bundle.get("pressure_rankings") or {}).get("facts", {}).get("eligible_primary", {}).get("batters", 0),
+        "pressure_bowlers_ranked": (bundle.get("pressure_rankings") or {}).get("facts", {}).get("eligible_primary", {}).get("bowlers", 0),
+        "pressure_batters_finalists": len((bundle.get("pressure_rankings") or {}).get("final", {}).get("batters", [])),
+        "pressure_bowlers_finalists": len((bundle.get("pressure_rankings") or {}).get("final", {}).get("bowlers", [])),
         "quality_score": bundle["quality"]["score"],
     }
     if remote_mode:

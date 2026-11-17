@@ -254,16 +254,23 @@ def candidate_scopes(bat_records: list[dict[str, Any]], bowl_records: list[dict[
         if r.get("team"):
             teams.add(str(r["team"]).strip())
     scopes: list[dict[str, Any]] = [{"type": "global", "label": "All data", "filter": {}}]
-    for c in sorted(comps):
-        scopes.append({"type": "competition", "label": c, "filter": {"competition": [c]}})
-    for s in sorted(seasons):
-        scopes.append({"type": "season", "label": s, "filter": {"season": [s]}})
-    for t in sorted(teams):
-        scopes.append({"type": "team", "label": t, "filter": {"team": [t]}})
+    # Keep precomputation strictly bounded; do not let a large number of teams
+    # or competition-season combinations multiply analysis cost without limit.
+    for values, make in (
+        (sorted(comps), lambda v: {"type": "competition", "label": v,
+                                   "filter": {"competition": [v]}}),
+        (sorted(seasons), lambda v: {"type": "season", "label": v,
+                                     "filter": {"season": [v]}}),
+        (sorted(teams), lambda v: {"type": "team", "label": v,
+                                   "filter": {"team": [v]}}),
+    ):
+        for value in values:
+            if len(scopes) >= max_scopes:
+                break
+            scopes.append(make(value))
     budget = max_scopes - len(scopes)
-    if budget > 0 and len(comps) * len(seasons) <= budget:
-        for c in sorted(comps):
-            for s in sorted(seasons):
-                scopes.append({"type": "competition_season", "label": f"{c} · {s}",
-                               "filter": {"competition": [c], "season": [s]}})
+    pairs = [(c, s) for c in sorted(comps) for s in sorted(seasons)]
+    for c, s in pairs[:max(0, budget)]:
+        scopes.append({"type": "competition_season", "label": f"{c} · {s}",
+                       "filter": {"competition": [c], "season": [s]}})
     return scopes
