@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createServerSupabase, supabaseServerHeaders } from "@/lib/supabase";
-import { mayManageIngestion } from "@/lib/staff-access";
+import { getStaffAccess } from "@/lib/staff-access";
 import { isSameOriginRequest } from "@/lib/request-security";
 
 export const runtime = "nodejs";
@@ -23,20 +23,6 @@ export async function POST(request: Request) {
   if (!isSameOriginRequest(request)) {
     return NextResponse.json({ error: "Cross-origin upload signing is not allowed." }, { status: 403 });
   }
-  const url = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const serverKey = process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
-  const projectId = process.env.ROYAL_SCOUT_PROJECT_ID ?? "royal-scout";
-
-  if (!/^[a-zA-Z0-9_-]{1,64}$/.test(projectId)) {
-    return NextResponse.json({ error: "ROYAL_SCOUT_PROJECT_ID must contain only letters, numbers, underscores or hyphens (maximum 64 characters)." }, { status: 500 });
-  }
-  if (!url || !serverKey || serverKey.startsWith("sb_publishable_")) {
-    return NextResponse.json(
-      { error: "Secure uploads are not configured.", hint: "Configure Supabase URL and the server-only service-role key." },
-      { status: 503 },
-    );
-  }
-
   const sessionClient = await createServerSupabase();
   if (!sessionClient) {
     return NextResponse.json({ error: "Supabase authentication is not configured." }, { status: 503 });
@@ -45,8 +31,20 @@ export async function POST(request: Request) {
   if (authError || !authData.user) {
     return NextResponse.json({ error: "Sign in before uploading scouting data." }, { status: 401 });
   }
-  if (!(await mayManageIngestion(sessionClient, authData.user.id))) {
-    return NextResponse.json({ error: "Dataset uploads are restricted to authorised analyst, scout, or admin accounts." }, { status: 403 });
+  const access = await getStaffAccess(sessionClient, authData.user.id);
+  if (access.status !== "verified" || !access.canUpload) {
+    return NextResponse.json({ error: access.message ?? "Your verified staff role does not permit dataset uploads.",
+      access_status: access.status, role: access.role }, { status: 403, headers: { "Cache-Control": "no-store" } });
+  }
+
+  const url = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const serverKey = process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const projectId = process.env.ROYAL_SCOUT_PROJECT_ID ?? "royal-scout";
+  if (!/^[a-zA-Z0-9_-]{1,64}$/.test(projectId)) {
+    return NextResponse.json({ error: "ROYAL_SCOUT_PROJECT_ID must contain only letters, numbers, underscores or hyphens (maximum 64 characters)." }, { status: 500 });
+  }
+  if (!url || !serverKey || serverKey.startsWith("sb_publishable_")) {
+    return NextResponse.json({ error: "Secure uploads are not configured.", hint: "Configure Supabase URL and the server-only service-role key." }, { status: 503 });
   }
 
   let body: { dataset_name?: unknown; files?: unknown };

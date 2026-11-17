@@ -1,8 +1,8 @@
 type SupabaseProfileLookup = {
   from: (table: "profiles") => {
-    select: (columns: "role") => {
+    select: (columns: "id,role") => {
       eq: (column: "id", value: string) => {
-        maybeSingle: () => PromiseLike<{ data: { role?: string } | null; error: unknown }>;
+        maybeSingle: () => PromiseLike<{ data: { id?: string; role?: string } | null; error: unknown }>;
       };
     };
   };
@@ -10,27 +10,53 @@ type SupabaseProfileLookup = {
 
 export type StaffRole = "viewer" | "analyst" | "scout" | "admin";
 
-export async function getStaffRole(client: unknown, userId: string): Promise<StaffRole | null> {
+export type StaffAccess =
+  | { status: "verified"; role: StaffRole; canUpload: boolean; message: null }
+  | { status: "profile_missing"; role: null; canUpload: false; message: string }
+  | { status: "invalid_role"; role: null; canUpload: false; message: string }
+  | { status: "lookup_failed"; role: null; canUpload: false; message: string };
+
+const VALID_ROLES: readonly StaffRole[] = ["viewer", "analyst", "scout", "admin"];
+const INGESTION_ROLES: readonly StaffRole[] = ["analyst", "scout", "admin"];
+
+/** Read only the signed-in user's own profile; distinguish absent data from DB/RLS failures. */
+export async function getStaffAccess(client: unknown, userId: string): Promise<StaffAccess> {
   try {
-    const { data, error } = await (client as SupabaseProfileLookup).from("profiles").select("role").eq("id", userId).maybeSingle();
-    if (error || !["viewer", "analyst", "scout", "admin"].includes(data?.role ?? "")) return null;
-    return data!.role as StaffRole;
+    const { data, error } = await (client as SupabaseProfileLookup)
+      .from("profiles").select("id,role").eq("id", userId).maybeSingle();
+    if (error) {
+      return { status: "lookup_failed", role: null, canUpload: false,
+        message: "Royal Scout could not verify your profile from Supabase. Retry, then ask an administrator to check profile read access." };
+    }
+    if (!data || data.id !== userId) {
+      return { status: "profile_missing", role: null, canUpload: false,
+        message: "Your authenticated account has no matching staff profile. Ask the platform owner to run the profile backfill or initial-admin bootstrap." };
+    }
+    if (!VALID_ROLES.includes(data.role as StaffRole)) {
+      return { status: "invalid_role", role: null, canUpload: false,
+        message: "Your staff profile has an unsupported role value. Ask a platform administrator to repair it." };
+    }
+    const role = data.role as StaffRole;
+    return { status: "verified", role, canUpload: INGESTION_ROLES.includes(role), message: null };
   } catch {
-    return null;
+    return { status: "lookup_failed", role: null, canUpload: false,
+      message: "Royal Scout could not contact Supabase to verify your profile. Retry when the service is available." };
   }
 }
 
-/** Only explicitly elevated staff may create or retry ingestion jobs. */
+/** Compatibility helper for server gates; every non-verified result fails closed. */
+export async function getStaffRole(client: unknown, userId: string): Promise<StaffRole | null> {
+  const access = await getStaffAccess(client, userId);
+  return access.status === "verified" ? access.role : null;
+}
+
+/** Only verified analyst, scout, or admin profiles may upload/process. */
 export async function mayManageIngestion(client: unknown, userId: string): Promise<boolean> {
-  return ["analyst", "scout", "admin"].includes((await getStaffRole(client, userId)) ?? "");
+  const access = await getStaffAccess(client, userId);
+  return access.status === "verified" && access.canUpload;
 }
 
 /** Staff administration is deliberately narrower than ingestion permissions. */
 export async function isPlatformAdmin(client: unknown, userId: string): Promise<boolean> {
-  try {
-    const { data, error } = await (client as SupabaseProfileLookup).from("profiles").select("role").eq("id", userId).maybeSingle();
-    return !error && data?.role === "admin";
-  } catch {
-    return false;
-  }
+  return (await getStaffRole(client, userId)) === "admin";
 }

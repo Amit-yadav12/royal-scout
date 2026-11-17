@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { existingStaffOtpOptions, isInvitableStaffRole } from "../auth-policy";
+import { existingStaffOtpOptions, isAssignableStaffRole } from "../auth-policy";
 
 describe("private staff authentication policy", () => {
   it("requests a magic link only for an existing user", () => {
@@ -9,11 +9,11 @@ describe("private staff authentication policy", () => {
     });
   });
 
-  it.each(["viewer", "analyst", "scout"])("permits administrator invitation of %s staff", (role) => {
-    expect(isInvitableStaffRole(role)).toBe(true);
+  it.each(["viewer", "analyst", "scout", "admin"])("allows an administrator to assign %s", (role) => {
+    expect(isAssignableStaffRole(role)).toBe(true);
   });
 
-  it.each(["admin", "owner", "anonymous", "", null, undefined, 1])("rejects privileged or malformed invitation role %s", (role) => {
-    expect(isInvitableStaffRole(role)).toBe(false);
+  it.each(["owner", "anonymous", "", null, undefined, 1])("rejects malformed staff role %s", (role) => {
+    expect(isAssignableStaffRole(role)).toBe(false);
   });
 });

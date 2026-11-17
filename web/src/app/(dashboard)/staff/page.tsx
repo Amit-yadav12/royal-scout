@@ -17,9 +17,9 @@ export default async function StaffAdministrationPage() {
   if (!(await isPlatformAdmin(session, user.id))) notFound();
 
   return <div className="motion-enter space-y-4">
-    <PageHeader title="Staff access" description="Provision invited colleagues and manage least-privilege roles. Only authorised administrators can grant analyst/scout upload permissions." icon={UsersRound} />
+    <PageHeader title="Staff access" description="Provision invited colleagues and manage least-privilege roles. Only verified administrators can assign roles or grant upload access." icon={UsersRound} />
     <div className="mx-auto max-w-5xl space-y-4">
-      <Card><CardHeader title="Current staff roles" subtitle="Viewer is read-only. Analyst and scout can upload and process datasets. Administrator roles cannot be assigned here." /><CardBody><StaffRoleManager currentUserId={user.id} /></CardBody></Card>
+      <Card><CardHeader title="Current staff roles" subtitle="Viewer is read-only. Analyst and scout can upload and process datasets. Admins can manage staff and all ingestion access; the last admin cannot be downgraded." /><CardBody><StaffRoleManager currentUserId={user.id} /></CardBody></Card>
       <Card><CardHeader title="Invite staff" subtitle="Public self-registration is disabled. Invitations create authorised accounts with an explicit initial role." /><CardBody><StaffInvitationForm /></CardBody></Card>
       <div className="flex items-start gap-3 rounded-xl border border-gold-400/20 bg-gold-400/[0.06] px-4 py-3 text-xs leading-relaxed text-ink-soft"><ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-royal-gold" /><p>Role checks are performed on the server for every upload and job request. Initial administrator access is provisioned only through the documented one-time Supabase bootstrap procedure; email domains never grant privileges.</p></div>
     </div>

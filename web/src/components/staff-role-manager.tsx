@@ -37,14 +37,14 @@ export function StaffRoleManager({ currentUserId }: { currentUserId: string }) {
   }
 
   return <div className="space-y-3">
-    <div className="flex flex-wrap items-center justify-between gap-2"><p className="text-xs text-ink-soft">Only admins can grant or revoke analyst/scout upload permission. Admin roles are bootstrap-only and cannot be changed here.</p><button type="button" className="btn" onClick={() => void load()} disabled={loading}><RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} />Refresh</button></div>
+    <div className="flex flex-wrap items-center justify-between gap-2"><p className="text-xs text-ink-soft">Only verified admins can grant viewer, analyst, scout, or admin access. You cannot change your own role, and the last admin cannot be downgraded.</p><button type="button" className="btn" onClick={() => void load()} disabled={loading}><RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} />Refresh</button></div>
     {error ? <p role="alert" className="private-message private-message--error"><CircleAlert className="h-4 w-4" />{error}</p> : null}
     {notice ? <p role="status" className="private-message private-message--success"><CircleCheck className="h-4 w-4" />{notice}</p> : null}
     {loading ? <p className="flex items-center gap-2 py-5 text-xs text-ink-soft"><LoaderCircle className="h-4 w-4 animate-spin" />Loading staff roles…</p> : staff.length ? <ul className="divide-y divide-surface-line rounded-lg border border-surface-line">
       {staff.map((member) => <li key={member.id} className="flex flex-wrap items-center gap-3 px-3 py-2.5">
         <div className="min-w-0 flex-1"><p className="truncate text-xs font-medium text-ink">{member.display_name || member.email || member.id}</p><p className="truncate text-2xs text-ink-faint">{member.email || member.id}{member.id === currentUserId ? " · you" : ""}</p></div>
         <label className="sr-only" htmlFor={`role-${member.id}`}>Role for {member.email || member.id}</label>
-        <select id={`role-${member.id}`} className="input w-40" value={member.role} disabled={member.role === "admin" || member.id === currentUserId || busyId === member.id} onChange={(event) => void update(member.id, event.target.value as Staff["role"])}>
+        <select id={`role-${member.id}`} className="input w-40" value={member.role} disabled={member.id === currentUserId || busyId === member.id} onChange={(event) => void update(member.id, event.target.value as Staff["role"])}>
           <option value="viewer">Viewer</option><option value="analyst">Analyst · upload</option><option value="scout">Scout · upload</option><option value="admin">Administrator</option>
         </select>
         {busyId === member.id ? <LoaderCircle className="h-4 w-4 animate-spin text-royal-pink" /> : member.role === "admin" ? <ShieldCheck className="h-4 w-4 text-royal-gold" aria-label="Administrator" /> : null}

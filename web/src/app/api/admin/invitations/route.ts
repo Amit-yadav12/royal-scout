@@ -36,7 +36,7 @@ export async function POST(request: Request) {
     return jsonError("Enter a valid staff email address.", 400);
   }
   if (!isInvitableStaffRole(role)) {
-    return jsonError("Choose viewer, analyst, or scout. Administrator privileges cannot be assigned through staff invitations.", 400);
+    return jsonError("Choose viewer, analyst, scout, or admin. Only a verified platform administrator can send invitations.", 400);
   }
 
   const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -63,19 +63,25 @@ export async function POST(request: Request) {
     id: data.user.id,
     email,
     display_name: displayName || email.split("@")[0],
-    role,
-  }, { onConflict: "id" });
+  }, { onConflict: "id", ignoreDuplicates: true });
 
-  // The Auth invitation is already sent. If the role write fails, preserve the
-  // database trigger's least-privilege viewer default instead of retrying or
-  // deleting an authorised account; report the downgrade clearly to the admin.
+  // Auth invitations have already been sent. Missing profiles or failed role
+  // assignment remain non-privileged and are reported clearly to the admin.
   if (profileError) {
-    return NextResponse.json({
-      invited: true,
-      email,
-      role: "viewer",
-      warning: "The invitation was sent with the default viewer role; the requested role could not be assigned. Review staff permissions before use.",
-    }, { status: 202, headers: { "Cache-Control": "no-store" } });
+    return NextResponse.json({ invited: true, email, role: "unavailable",
+      warning: "The invitation was sent, but the staff profile could not be confirmed. Run the profile backfill before granting access." },
+    { status: 202, headers: { "Cache-Control": "no-store" } });
+  }
+
+  if (role !== "viewer") {
+    const { error: roleAssignmentError } = await admin.rpc("assign_staff_role", {
+      p_actor_id: user.id, p_user_id: data.user.id, p_role: role,
+    });
+    if (roleAssignmentError) {
+      return NextResponse.json({ invited: true, email, role: "viewer",
+        warning: "The invitation was sent with viewer access. The requested role was not assigned; apply migration 0012 and review staff access before use." },
+      { status: 202, headers: { "Cache-Control": "no-store" } });
+    }
   }
 
   return NextResponse.json({ invited: true, email, role }, { status: 201, headers: { "Cache-Control": "no-store" } });

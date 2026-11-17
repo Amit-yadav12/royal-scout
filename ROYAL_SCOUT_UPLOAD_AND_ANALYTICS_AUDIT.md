@@ -1,10 +1,10 @@
 # Royal Scout upload and analytics audit
 
 **Audit date:** 2026-11-16 (UTC)
-**Working branch:** `arena/3fbbeaac-royal-scout`
-**Repository base:** `cd52d7e7d09e74ef40d5e8baa12955798aa51c99`
-**Disposition:** **Locally implemented and passing available unit/build checks; not yet production-ready or end-to-end verified.**
-**Production writes/deployments:** None performed. The new database migrations have **not** been applied to Supabase.
+**Working branch:** `arena/46bdbf84-royal-scout`
+**Repository base:** `6486961f810d2cb27a95cada3f6628544e5ee305`
+**Disposition:** **Staff permission root cause identified; local repair and tests pass, but production migration/bootstrap and full pipeline E2E remain pending.**
+**Production writes/deployments:** None performed in this turn. The new database migrations have **not** been applied to Supabase.
 
 ## Executive summary
 
@@ -47,12 +47,12 @@ This is source review, not a penetration test. Recheck every newly added API rou
 
 ## Validation performed
 
-- Web unit tests: **63 passed** across 11 Vitest files.
-- Web TypeScript check: **passed** when run separately from Next build (running concurrently with `next build` races on generated `.next/types`).
-- Web production build: **passed**. It emits a warning that the Supabase browser package references `process.version` through the middleware dependency graph; verify deployed Edge/runtime behavior even though the build succeeds.
-- Python engine tests: **70 passed** with the project virtual environment, including a readiness regression test for a missing upload bucket.
+- Web unit tests: **66 passed** across 12 Vitest files, including new tests confirming viewer denial at upload signing/job creation and visibility of missing-profile status.
+- Web TypeScript check: **passed** (`npm run typecheck`).
+- Web production build: **passed** (`npm run build`). It emits the existing warning that the Supabase browser package references `process.version` through the middleware dependency graph; verify deployed Edge/runtime behavior even though the build succeeds.
+- Python engine tests and local Next.js smoke checks were not rerun in this turn; prior results are historical, not validation of this patchset.
 - `git diff --check`: **passed**.
-- Local Next.js smoke check (no Supabase/Render credentials): `/` returned 200; unauthenticated `/ingestion` and `/staff` redirected to login; cross-origin-missing upload/job POSTs were rejected with 403; retired ingest returned 410.
+- Full authenticated browser TUS, worker processing, artifact publication, and dataset activation E2E are still pending; no live migration/bootstrap/deployment was performed.
 - Earlier Playwright coverage in this repository was blocked for most tests by missing Chromium. This change has not been run through a complete browser E2E suite.
 - `npm ci` reports **6 dependency advisories** (3 moderate, 1 high, 2 critical); no forced dependency upgrade was attempted in this task.
 
