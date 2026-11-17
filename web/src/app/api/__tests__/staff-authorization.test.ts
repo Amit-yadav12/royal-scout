@@ -41,7 +41,7 @@ describe("staff-gated ingestion routes", () => {
     expect(jobResponse.status).toBe(403);
     expect(mocks.getStaffAccess).toHaveBeenCalledWith(expect.anything(), user.id);
     expect((await signResponse.json()).access_status).toBe("verified");
-    expect((await jobResponse.json()).stage).toContain("staff permission");
+    expect((await jobResponse.json()).stage).toContain("admin permission");
   });
 
   it.each(["analyst", "scout"])("fails closed for legacy %s roles", async (legacyRole) => {

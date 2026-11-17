@@ -6,7 +6,7 @@ import { createBrowserClient } from "@supabase/ssr";
 
 export function SignOutButton({ authenticated }: { authenticated: boolean }) {
   const [busy, setBusy] = useState(false);
-  if (!authenticated) return <Link className="btn" href="/login">Sign in</Link>;
+  if (!authenticated) return <Link className="btn" href="/login?next=%2Fingestion">Admin sign in</Link>;
 
   async function signOut() {
     setBusy(true);

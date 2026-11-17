@@ -1,13 +1,12 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 
-/** Public dashboard reads stay open; staff workflows require a verified session.
+/** Public dashboard reads stay open; only the administrator ingestion page requires a verified session.
  * Every API route enforces its own authentication/role policy (including GETs).
  */
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const protectedPage = pathname === "/ingestion" || pathname.startsWith("/ingestion/") ||
-    pathname === "/staff" || pathname.startsWith("/staff/");
+  const protectedPage = pathname === "/ingestion" || pathname.startsWith("/ingestion/");
   const alwaysPublic = pathname === "/login" || pathname === "/auth/callback" ||
     pathname.startsWith("/_next/") || pathname === "/favicon.ico" || pathname.startsWith("/api/") ||
     /\.(?:avif|css|gif|ico|jpe?g|js|map|png|svg|webp|woff2?|ttf)$/i.test(pathname);

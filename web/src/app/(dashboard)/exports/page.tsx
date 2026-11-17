@@ -65,7 +65,7 @@ export default async function ExportsPage() {
       <Card>
         <CardHeader title="Public read-only access" subtitle="The dashboard and analytical exports are available without an account." />
         <CardBody>
-          <Notice>Uploads, processing retries, staff invitations and worker artefact downloads are disabled on this public dashboard. CSV exports below are generated from the selected dataset and retain their provenance details.</Notice>
+          <Notice>Uploads, processing retries, and private worker artefact downloads require the administrator sign-in. Public CSV exports below are generated from the selected dataset and retain provenance details.</Notice>
         </CardBody>
       </Card>
 
