@@ -43,7 +43,7 @@ The procedure checks that the Auth account exists and its email is confirmed, se
 ## Passwordless admin sign-in and public access
 
 1. Public analytics, dataset selection, and CSV exports require no sign-in. Only **Data Ingestion** requires administrator authentication; there is no staff invitation flow or password sign-in.
-2. The Admin sign-in page sends a single-use email link to `amiatyadav1275a@gmail.com` with account creation disabled. The Supabase `profiles.role` check grants administrator access; email address alone does not.
+2. The Admin sign-in page sends a single-use email link to `amityadav1275a@gmail.com` with account creation disabled. The Supabase `profiles.role` check grants administrator access; email address alone does not.
 3. Configure a production SMTP provider in Supabase **Authentication → Settings → SMTP Settings**. The built-in sender is intended for testing and may be restricted or rate-limited. In **Authentication → URL Configuration**, allow the deployed app origin and its `/auth/callback` path so the magic link can return to the app.
 4. Only the administrator can upload, process, or retry datasets. `/api/uploads/sign`, `/api/jobs`, and the retry route independently verify the authenticated administrator and return HTTP 403 otherwise. The database migration enforces one admin and prevents assigning analyst/scout/admin roles through the app.
 
