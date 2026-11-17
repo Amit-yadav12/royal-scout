@@ -18,6 +18,8 @@ interface JobState {
   stage?: string;
   detail?: string;
   progress?: number;
+  updated_at?: string | null;
+  heartbeat_stale?: boolean;
   error?: string | null;
   logs?: { at: string; stage: string; message: string; progress?: number }[];
   result?: Record<string, unknown>;
@@ -326,6 +328,12 @@ export function UploadPanel({ initialAccess }: { initialAccess: StaffAccess }) {
           return;
         }
         const data = (await res.json()) as JobState;
+        setError(null);
+        if (data.heartbeat_stale && data.status === "running") {
+          setHint("The worker has stopped reporting progress. Your upload remains in private storage; the job will be requeued automatically after its recovery timeout.");
+        } else if (data.status === "running" || data.status === "queued") {
+          setHint(null);
+        }
         if (data.status === "succeeded") {
           try {
             const artifactResponse = await fetch(`/api/jobs/${encodeURIComponent(jobId)}/artifacts`, { cache: "no-store" });
