@@ -125,7 +125,7 @@ function localContext(error: string | null = null): DashboardDatasetContext {
   const ready = hasBundle(snapshot);
   const option: DatasetOption = {
     dataset_id: snapshot.meta.dataset_id,
-    name: `${snapshot.meta.name} (embedded snapshot)`,
+    name: `${snapshot.meta.name} (local build snapshot)`,
     created_at: snapshot.meta.created_at,
     is_fixture: Boolean(snapshot.meta.is_fixture),
   };
@@ -145,7 +145,9 @@ export const loadDashboardDataset = cache(async (): Promise<DashboardDatasetCont
       : localContext("Project configuration is invalid.");
   }
   if (!env) {
-    return localContext("Live dataset storage is not configured; showing the embedded public snapshot.");
+    return process.env.NODE_ENV === "production"
+      ? { bundle: null, datasets: [], selectedId: null, error: "Private live-dataset access is not configured. Contact the administrator.", embeddedSnapshot: false }
+      : localContext();
   }
 
   try {
@@ -172,7 +174,10 @@ export const loadDashboardDataset = cache(async (): Promise<DashboardDatasetCont
 });
 
 export async function getSuccessfulDatasetOptions(): Promise<DatasetOption[]> {
-  if (!serverEnvironment()) return localContext().datasets;
+  if (!serverEnvironment()) {
+    if (process.env.NODE_ENV === "production") throw new Error("Private live-dataset access is not configured.");
+    return localContext().datasets;
+  }
   const rows = await listSuccessfulDatasets();
   return datasetOptionsFrom(rows as SuccessfulDatasetRecord[]);
 }

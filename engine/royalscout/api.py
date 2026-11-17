@@ -25,6 +25,7 @@ import uuid
 from pathlib import Path
 from typing import Any, Literal
 from uuid import UUID
+from urllib.parse import quote
 
 from fastapi import Depends, FastAPI, File, Form, Header, HTTPException, UploadFile, Response
 from pydantic import BaseModel, Field
@@ -84,8 +85,12 @@ def _health_report() -> dict[str, Any]:
     supabase_reachable = False
     queue_accessible = False
     storage_accessible = False
+    upload_storage_accessible = False
     queue_diagnostic = "not_checked"
     storage_diagnostic = "not_checked"
+    upload_storage_diagnostic = "not_checked"
+    upload_bucket = os.getenv("SUPABASE_UPLOAD_BUCKET", "uploads")
+    upload_bucket_name_valid = bool(re.fullmatch(r"[A-Za-z0-9_-]{1,64}", upload_bucket))
     queue_name = "unavailable"
     if supabase_configured:
         import httpx
@@ -100,14 +105,29 @@ def _health_report() -> dict[str, Any]:
             queue_diagnostic = "supabase_unreachable"
         try:
             bucket = os.getenv("SUPABASE_ARTIFACT_BUCKET", "royal-scout-artifacts")
-            response = httpx.get(f"{configured_url}/storage/v1/bucket/{bucket}",
-                                 headers=supabase_api_headers(key=server_key), timeout=5)
-            supabase_reachable = True
-            storage_accessible = response.is_success
-            storage_diagnostic = ("ok" if storage_accessible else {401: "invalid_api_key", 403: "permission_denied",
-                                  404: "artifact_bucket_missing"}.get(response.status_code, "storage_unavailable"))
+            if not re.fullmatch(r"[A-Za-z0-9_-]{1,64}", bucket):
+                storage_diagnostic = "invalid_artifact_bucket_name"
+            else:
+                response = httpx.get(f"{configured_url}/storage/v1/bucket/{quote(bucket, safe='')}",
+                                     headers=supabase_api_headers(key=server_key), timeout=5)
+                supabase_reachable = True
+                storage_accessible = response.is_success
+                storage_diagnostic = ("ok" if storage_accessible else {401: "invalid_api_key", 403: "permission_denied",
+                                      404: "artifact_bucket_missing"}.get(response.status_code, "storage_unavailable"))
         except Exception:
             storage_diagnostic = "supabase_unreachable"
+        try:
+            if not upload_bucket_name_valid:
+                upload_storage_diagnostic = "invalid_upload_bucket_name"
+            else:
+                response = httpx.get(f"{configured_url}/storage/v1/bucket/{quote(upload_bucket, safe='')}",
+                                     headers=supabase_api_headers(key=server_key), timeout=5)
+                supabase_reachable = True
+                upload_storage_accessible = response.is_success
+                upload_storage_diagnostic = ("ok" if upload_storage_accessible else {401: "invalid_api_key", 403: "permission_denied",
+                                             404: "upload_bucket_missing"}.get(response.status_code, "upload_storage_unavailable"))
+        except Exception:
+            upload_storage_diagnostic = "supabase_unreachable"
         try:
             from .db import SupabaseQueue
             queue_name = type(SupabaseQueue()).__name__
@@ -126,14 +146,18 @@ def _health_report() -> dict[str, Any]:
         "supabase_configured": supabase_configured, "supabase_key_type": key_type,
         "supabase_reachable": supabase_reachable, "queue_accessible": queue_accessible,
         "storage_accessible": storage_accessible,
+        "upload_bucket_configured": upload_bucket_name_valid,
+        "upload_storage_accessible": upload_storage_accessible,
         "queue_diagnostic": queue_diagnostic,
         "storage_diagnostic": storage_diagnostic,
+        "upload_storage_diagnostic": upload_storage_diagnostic,
         "worker_shared_secret_configured": bool(SHARED_SECRET),
         "temporary_storage_writable": storage_writable,
         "queue_configuration_valid": (queue_name == "SupabaseQueue" and os.getenv("RS_USE_SUPABASE_QUEUE", "1") == "1") if os.getenv("RS_ENV", "development").lower() == "production" else True,
     }
     ready = all(checks[key] for key in ("configuration_valid", "supabase_reachable", "queue_accessible",
-                                         "storage_accessible", "worker_shared_secret_configured",
+                                         "storage_accessible", "upload_bucket_configured", "upload_storage_accessible",
+                                         "worker_shared_secret_configured",
                                          "temporary_storage_writable", "queue_configuration_valid"))
     return {"status": "ready" if ready else "degraded", "ready": ready,
             "model_version": MODEL_VERSION, "checks": checks, "queue": queue_name,

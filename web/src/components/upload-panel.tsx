@@ -1,11 +1,14 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { CircleAlert, CircleCheck, Loader2, UploadCloud } from "lucide-react";
+import { CircleAlert, CircleCheck, Loader2, Trash2, UploadCloud, X } from "lucide-react";
 import { bytes } from "@/lib/format";
 import { Badge } from "./ui/badge";
 import { Notice } from "./ui/empty";
+import type { StaffRole } from "@/lib/staff-access";
+import { WORKER_AUTO_RETRIES, WORKER_HEALTH_TIMEOUT_MS, workerHealthState, workerRetryDelay } from "@/lib/worker-health";
+import { ACCEPTED_UPLOAD_TYPES, validateUploadFiles } from "@/lib/upload-validation";
 
 interface JobState {
   job_id?: string;
@@ -52,51 +55,63 @@ function tusRequest(
   headers: Record<string, string>,
   body: Blob | null,
   onProgress?: (loaded: number) => void,
+  signal?: AbortSignal,
 ): Promise<{ status: number; location: string | null; offset: number | null; responseText: string }> {
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
+    const cleanup = () => signal?.removeEventListener("abort", abort);
+    const abort = () => xhr.abort();
+    if (signal?.aborted) { reject(new Error("Upload was cancelled.")); return; }
+    signal?.addEventListener("abort", abort, { once: true });
     xhr.open(method, url, true);
     for (const [key, value] of Object.entries(headers)) xhr.setRequestHeader(key, value);
     if (onProgress && body) xhr.upload.onprogress = (event) => onProgress(event.loaded);
     xhr.onload = () => {
+      cleanup();
       const rawOffset = xhr.getResponseHeader("Upload-Offset");
-      resolve({
-        status: xhr.status,
-        location: xhr.getResponseHeader("Location"),
-        offset: rawOffset === null ? null : Number(rawOffset),
-        responseText: xhr.responseText,
-      });
+      resolve({ status: xhr.status, location: xhr.getResponseHeader("Location"),
+        offset: rawOffset === null ? null : Number(rawOffset), responseText: xhr.responseText });
     };
-    xhr.onerror = () => reject(new Error("Network error during resumable upload."));
-    xhr.onabort = () => reject(new Error("Upload was cancelled."));
+    xhr.onerror = () => { cleanup(); reject(new Error("Network error during resumable upload.")); };
+    xhr.onabort = () => { cleanup(); reject(new Error("Upload was cancelled.")); };
     xhr.send(body);
   });
 }
 
-async function uploadSignedFile(file: File, signed: SignedFile, onProgress: (loaded: number) => void) {
+async function uploadSignedFile(file: File, signed: SignedFile, onProgress: (loaded: number) => void, signal: AbortSignal) {
   const metadata = [
     `bucketName ${base64(signed.bucket)}`,
     `objectName ${base64(signed.path)}`,
     `contentType ${base64(file.type || "application/octet-stream")}`,
     `cacheControl ${base64("3600")}`,
   ].join(",");
-  const commonHeaders = {
+  const apiKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? "";
+  if (!apiKey || !signed.token || !signed.bucket || !signed.path) throw new Error(`${file.name}: signed upload response is incomplete.`);
+  const commonHeaders: Record<string, string> = {
     "Tus-Resumable": "1.0.0",
     "x-signature": signed.token,
-    apikey: process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? "",
+    apikey: apiKey,
   };
+  // Legacy anon keys are JWTs and need the bearer header; new publishable keys
+  // are API keys and must only be sent as apikey.
+  if (/^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/.test(apiKey)) commonHeaders.Authorization = `Bearer ${apiKey}`;
 
   const created = await tusRequest("POST", signed.tus_endpoint, {
     ...commonHeaders,
     "Upload-Length": String(file.size),
     "Upload-Metadata": metadata,
-  }, null);
+  }, null, undefined, signal);
   if (created.status !== 201 || !created.location) {
     throw new Error(`${file.name}: could not initialise resumable upload (HTTP ${created.status}) ${created.responseText}`);
   }
-  const uploadUrl = new URL(created.location, signed.tus_endpoint).toString();
+  const uploadSession = new URL(created.location, signed.tus_endpoint);
+  if (uploadSession.origin !== new URL(signed.tus_endpoint).origin) {
+    throw new Error(`${file.name}: storage returned an unexpected resumable-upload host.`);
+  }
+  const uploadUrl = uploadSession.toString();
   const chunkSize = 6 * 1024 * 1024;
   let offset = created.offset ?? 0;
+  if (!Number.isInteger(offset) || offset < 0 || offset > file.size) throw new Error(`${file.name}: storage returned an invalid initial upload offset.`);
   let retries = 0;
   onProgress(offset);
 
@@ -108,7 +123,7 @@ async function uploadSignedFile(file: File, signed: SignedFile, onProgress: (loa
         ...commonHeaders,
         "Upload-Offset": String(offset),
         "Content-Type": "application/offset+octet-stream",
-      }, chunk, (loaded) => onProgress(offset + loaded));
+      }, chunk, (loaded) => onProgress(offset + loaded), signal);
       if (result.status !== 204) {
         throw new Error(`chunk upload failed (HTTP ${result.status}) ${result.responseText}`);
       }
@@ -120,10 +135,11 @@ async function uploadSignedFile(file: File, signed: SignedFile, onProgress: (loa
       retries = 0;
       onProgress(offset);
     } catch (error) {
+      if (signal.aborted) throw new Error(`${file.name}: upload cancelled.`);
       retries += 1;
       if (retries > 5) throw new Error(`${file.name}: resumable upload stopped after 5 retries. ${error instanceof Error ? error.message : String(error)}`);
       await new Promise((resolve) => setTimeout(resolve, Math.min(15000, retries * 2000)));
-      const status = await tusRequest("HEAD", uploadUrl, commonHeaders, null);
+      const status = await tusRequest("HEAD", uploadUrl, commonHeaders, null, undefined, signal);
       if (status.status !== 200 || status.offset === null || status.offset < 0 || status.offset > file.size) {
         throw new Error(`${file.name}: could not recover resumable upload position (HTTP ${status.status}).`);
       }
@@ -131,10 +147,14 @@ async function uploadSignedFile(file: File, signed: SignedFile, onProgress: (loa
       onProgress(offset);
     }
   }
+  const finalStatus = await tusRequest("HEAD", uploadUrl, commonHeaders, null, undefined, signal);
+  if (finalStatus.status !== 200 || finalStatus.offset !== file.size) {
+    throw new Error(`${file.name}: final TUS verification failed (HTTP ${finalStatus.status}, offset ${finalStatus.offset ?? "unknown"}, expected ${file.size}).`);
+  }
   onProgress(file.size);
 }
 
-export function UploadPanel() {
+export function UploadPanel({ role }: { role: StaffRole | null }) {
   const router = useRouter();
   const [files, setFiles] = useState<File[]>([]);
   const [name, setName] = useState("Scouting dataset");
@@ -144,21 +164,112 @@ export function UploadPanel() {
   const [hint, setHint] = useState<string | null>(null);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [worker, setWorker] = useState<"unknown" | "ok" | "unavailable" | "not_configured">("unknown");
+  const [workerDetail, setWorkerDetail] = useState("Checking the Render worker…");
+  const [workerSuggestion, setWorkerSuggestion] = useState<string | null>(null);
+  const [wakeUrl, setWakeUrl] = useState<string | null>(null);
+  const [checkingWorker, setCheckingWorker] = useState(false);
+  const [wakingWorker, setWakingWorker] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const uploadAbortRef = useRef<AbortController | null>(null);
+  const healthAbortRef = useRef<AbortController | null>(null);
+  const healthLockRef = useRef(false);
+  const aliveRef = useRef(true);
+  const retryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const checkWorker = useCallback(async (attempts = 1) => {
+    if (healthLockRef.current) return;
+    healthLockRef.current = true;
+    setCheckingWorker(true);
+    if (retryTimerRef.current) clearTimeout(retryTimerRef.current);
+    let lastState: "ok" | "unavailable" | "not_configured" = "unavailable";
+    try {
+      for (let attempt = 1; attempt <= attempts; attempt += 1) {
+        const controller = new AbortController();
+        healthAbortRef.current = controller;
+        const timeout = setTimeout(() => controller.abort(), WORKER_HEALTH_TIMEOUT_MS);
+        try {
+          const response = await fetch("/api/health", { cache: "no-store", signal: controller.signal });
+          const payload = await response.json().catch(() => null);
+          lastState = workerHealthState(payload);
+          if (!aliveRef.current) return;
+          setWorker(lastState);
+          setWorkerDetail(typeof payload?.detail === "string" ? payload.detail : `Worker health returned HTTP ${response.status}.`);
+          setWorkerSuggestion(typeof payload?.suggestion === "string" ? payload.suggestion : null);
+          setWakeUrl(typeof payload?.wake_url === "string" ? payload.wake_url : null);
+          if (lastState === "ok" || lastState === "not_configured") break;
+        } catch (cause) {
+          lastState = "unavailable";
+          if (!aliveRef.current) return;
+          setWorker(lastState);
+          setWorkerDetail(controller.signal.aborted ? "Worker health check timed out." : "Could not reach the worker health endpoint.");
+          setWorkerSuggestion("Render may be sleeping or restarting. Use Wake Backend, then retry the connection.");
+          if (attempt === attempts) break;
+        } finally {
+          clearTimeout(timeout);
+          if (healthAbortRef.current === controller) healthAbortRef.current = null;
+        }
+        if (attempt < attempts) await new Promise((resolve) => setTimeout(resolve, workerRetryDelay(attempt)));
+      }
+    } finally {
+      healthLockRef.current = false;
+      if (aliveRef.current) setCheckingWorker(false);
+      // Bound each retry burst, then continue checking at a low rate while the
+      // panel stays open so a transient cold start never permanently locks UI.
+      if (aliveRef.current && lastState === "unavailable") {
+        retryTimerRef.current = setTimeout(() => void checkWorker(2), 30_000);
+      }
+    }
+  }, []);
 
   useEffect(() => {
-    let alive = true;
-    fetch("/api/health", { cache: "no-store" })
-      .then((r) => r.json())
-      .then((d) => {
-        if (!alive) return;
-        setWorker(d.uploads_enabled && d.worker === "ok" ? "ok" : d.worker === "unreachable" ? "unavailable" : "not_configured");
-      })
-      .catch(() => alive && setWorker("unavailable"));
+    aliveRef.current = true;
+    void checkWorker(WORKER_AUTO_RETRIES);
     return () => {
-      alive = false;
+      aliveRef.current = false;
+      healthAbortRef.current?.abort();
+      if (retryTimerRef.current) clearTimeout(retryTimerRef.current);
     };
-  }, []);
+  }, [checkWorker]);
+
+  async function retryConnection() {
+    healthAbortRef.current?.abort();
+    while (healthLockRef.current) await new Promise((resolve) => setTimeout(resolve, 50));
+    await checkWorker(3);
+  }
+
+  async function wakeBackend() {
+    if (!wakeUrl || wakingWorker) return;
+    setWakingWorker(true);
+    setWorkerDetail("Sending a wake request to Render, then checking readiness…");
+    // A direct, read-only liveness GET lets the browser hold the cold-start
+    // request without consuming a Vercel function timeout. The opaque response
+    // is expected; readiness is verified separately through our same-origin API.
+    void fetch(wakeUrl, { method: "GET", mode: "no-cors", cache: "no-store" }).catch(() => undefined);
+    await new Promise((resolve) => setTimeout(resolve, 1200));
+    await retryConnection();
+    setWakingWorker(false);
+  }
+
+  const canUpload = ["analyst", "scout", "admin"].includes(role ?? "");
+
+  function addFiles(incoming: File[]) {
+    const existing = new Set(files.map((file) => `${file.name}:${file.size}:${file.lastModified}`));
+    const combined = [...files, ...incoming.filter((file) => !existing.has(`${file.name}:${file.size}:${file.lastModified}`))];
+    const validationError = validateUploadFiles(combined);
+    if (validationError) { setError(validationError); return; }
+    setError(null);
+    setHint(null);
+    setFiles(combined);
+  }
+
+  function removeFile(index: number) {
+    setFiles((current) => current.filter((_, position) => position !== index));
+    setError(null);
+  }
+
+  function cancelUpload() {
+    uploadAbortRef.current?.abort();
+  }
 
   async function poll(jobId: string) {
     for (let i = 0; i < 600; i += 1) {
@@ -216,12 +327,17 @@ export function UploadPanel() {
   }
 
   async function submit() {
-    if (!files.length || busy) return;
+    if (!files.length || busy || worker !== "ok" || !canUpload) return;
+    const validationError = validateUploadFiles(files);
+    if (validationError) { setError(validationError); return; }
+    const controller = new AbortController();
+    uploadAbortRef.current = controller;
     setBusy(true);
     setError(null);
     setHint(null);
     setJob(null);
     setUploadProgress(0);
+    let currentStage = "Preparing signed-upload authorisation";
 
     try {
       // Only small metadata passes through Vercel. The file bytes go directly
@@ -233,6 +349,7 @@ export function UploadPanel() {
           dataset_name: name || "Scouting dataset",
           files: files.map((file) => ({ name: file.name, size: file.size, type: file.type })),
         }),
+        signal: controller.signal,
       });
       const signPayload = await signResponse.json();
       if (!signResponse.ok) {
@@ -246,16 +363,18 @@ export function UploadPanel() {
       for (let i = 0; i < files.length; i += 1) {
         const file = files[i];
         const signed = init.files[i];
+        currentStage = `Uploading ${file.name} directly to private Storage`;
         await uploadSignedFile(file, signed, (loaded) => {
           const pct = total ? ((completed + loaded) / total) * 100 : 100;
           setUploadProgress(Math.min(100, pct));
-        });
+        }, controller.signal);
         completed += file.size;
         setUploadProgress(total ? (completed / total) * 100 : 100);
       }
 
       // The worker receives storage references only; it downloads the objects
       // from the private bucket, so neither Vercel nor the browser proxies them.
+      currentStage = "Verifying uploaded file sizes and registering the processing job";
       const jobResponse = await fetch("/api/jobs", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -266,6 +385,7 @@ export function UploadPanel() {
           bucket: init.bucket,
           paths: init.files.map((file) => file.path),
         }),
+        signal: controller.signal,
       });
       const jobPayload = await jobResponse.json();
       if (!jobResponse.ok) {
@@ -278,9 +398,15 @@ export function UploadPanel() {
       setFiles([]);
       if (inputRef.current) inputRef.current.value = "";
     } catch (e) {
-      setError(e instanceof Error ? e.message : String(e));
-      setHint("If the storage upload completed but job creation failed, the uploaded objects remain in the private uploads bucket. Check the worker configuration before retrying.");
+      const message = e instanceof Error ? e.message : String(e);
+      setError(controller.signal.aborted ? `Upload cancelled during ${currentStage}.` : `${currentStage}: ${message}`);
+      setHint(controller.signal.aborted
+        ? "A cancelled resumable session may retain uploaded chunks temporarily; select the files again and retry to create a fresh signed upload."
+        : currentStage.includes("Storage")
+          ? "Check the Supabase TUS endpoint, signed token, CORS allow-headers, bucket and object metadata. The panel resumes from the server Upload-Offset when the connection is interrupted."
+          : "If storage completed but job creation failed, the private objects and their signed ownership claims remain. Retry after checking the queue/worker readiness; no job is reported as successful until it is accepted.");
     } finally {
+      uploadAbortRef.current = null;
       setBusy(false);
     }
   }
@@ -301,7 +427,7 @@ export function UploadPanel() {
             onDragOver={(e) => e.preventDefault()}
             onDrop={(e) => {
               e.preventDefault();
-              setFiles(Array.from(e.dataTransfer.files));
+              addFiles(Array.from(e.dataTransfer.files));
             }}
           >
             <UploadCloud className="h-6 w-6 text-ink-faint" />
@@ -310,8 +436,9 @@ export function UploadPanel() {
               ref={inputRef}
               type="file"
               multiple
+              accept={ACCEPTED_UPLOAD_TYPES}
               className="mt-1 block w-full max-w-xs text-2xs text-ink-soft file:mr-2 file:rounded file:border-0 file:bg-navy-900 file:px-2.5 file:py-1.5 file:text-2xs file:font-medium file:text-white"
-              onChange={(e) => setFiles(Array.from(e.target.files ?? []))}
+              onChange={(e) => { addFiles(Array.from(e.target.files ?? [])); e.currentTarget.value = ""; }}
             />
           </div>
 
@@ -323,24 +450,26 @@ export function UploadPanel() {
           {files.length ? (
             <ul className="max-h-32 space-y-1 overflow-y-auto text-2xs">
               {files.map((f, i) => (
-                <li key={`${f.name}-${i}`} className="flex items-center justify-between gap-2 border-b border-surface-line/60 pb-1">
-                  <span className="truncate text-ink">{f.name}</span>
+                <li key={`${f.name}-${f.lastModified}-${i}`} className="flex items-center gap-2 border-b border-surface-line/60 pb-1">
+                  <span className="min-w-0 flex-1 truncate text-ink">{f.name}<span className="ml-2 text-ink-faint">{f.type || "file"}</span></span>
                   <span className="shrink-0 font-mono text-ink-faint">{bytes(f.size)}</span>
+                  <button className="grid h-6 w-6 shrink-0 place-items-center rounded text-ink-faint hover:bg-rose-50 hover:text-rose-700" type="button" onClick={() => removeFile(i)} disabled={busy} aria-label={`Remove ${f.name}`}><X className="h-3.5 w-3.5" /></button>
                 </li>
               ))}
             </ul>
           ) : null}
 
           <div className="flex items-center gap-2">
-            <button className="btn-pink" onClick={submit} disabled={busy || !files.length || worker !== "ok"}>
+            <button className="btn-pink" onClick={submit} disabled={busy || !files.length || worker !== "ok" || !canUpload}>
               {busy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <UploadCloud className="h-3.5 w-3.5" />}
               {busy ? "Uploading…" : "Upload and process"}
             </button>
             {files.length ? (
-              <button className="btn" onClick={() => { setFiles([]); if (inputRef.current) inputRef.current.value = ""; }} disabled={busy}>
-                Clear
+              <button className="btn" type="button" onClick={() => { setFiles([]); setError(null); if (inputRef.current) inputRef.current.value = ""; }} disabled={busy}>
+                <Trash2 className="h-3.5 w-3.5" />Clear
               </button>
             ) : null}
+            {busy ? <button className="btn" type="button" onClick={cancelUpload}>Cancel upload</button> : null}
           </div>
 
           {busy ? (
@@ -412,19 +541,27 @@ export function UploadPanel() {
       </div>
 
       <div className="space-y-3">
-        {worker === "ok" ? (
-          <Notice tone="success">
-            Upload storage and processing worker are configured. Files go directly to the private Supabase Storage bucket; only signed-upload metadata and storage object references pass through Vercel.
-          </Notice>
-        ) : worker === "not_configured" ? (
-          <Notice tone="warning">
-            Secure uploads are not configured. Set Supabase URL, publishable key and server-only SUPABASE_SECRET_KEY (legacy service-role JWT is supported), then configure WORKER_API_URL and WORKER_SHARED_SECRET. Sign in is required for uploads.
-          </Notice>
-        ) : worker === "unavailable" ? (
-          <Notice tone="danger">The processing worker is configured but not responding. Uploads are disabled until it is healthy.</Notice>
-        ) : (
-          <Notice>Checking Supabase storage and processing worker availability…</Notice>
-        )}
+        <div className="rounded-lg border border-surface-line bg-surface px-4 py-3 shadow-card" role="status" aria-live="polite">
+          <p className="flex items-center gap-2 text-xs font-semibold text-ink">
+            {checkingWorker || wakingWorker ? <Loader2 className="h-4 w-4 animate-spin text-royal-pink" /> : worker === "ok" ? <CircleCheck className="h-4 w-4 text-emerald-600" /> : <CircleAlert className="h-4 w-4 text-amber-600" />}
+            {worker === "ok" ? "Worker ready" : worker === "not_configured" ? "Worker not configured" : wakingWorker ? "Waking Render backend…" : checkingWorker ? "Checking Render connection…" : "Worker connection unavailable"}
+          </p>
+          <p className="mt-1 text-2xs leading-relaxed text-ink-soft">{workerDetail}</p>
+          {workerSuggestion && worker !== "ok" ? <p className="mt-1 text-2xs text-ink-faint">{workerSuggestion}</p> : null}
+          {worker !== "ok" ? <div className="mt-3 flex flex-wrap gap-2">
+            <button className="btn" type="button" onClick={() => void retryConnection()} disabled={wakingWorker}>
+              {checkingWorker && !wakingWorker ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}Retry Connection
+            </button>
+            <button className="btn" type="button" onClick={() => void wakeBackend()} disabled={!wakeUrl || wakingWorker}>
+              {wakingWorker ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}Wake Backend
+            </button>
+          </div> : null}
+        </div>
+        <div className="rounded-lg border border-surface-line bg-surface px-4 py-3 text-xs shadow-card">
+          <p className="font-semibold text-ink">Your permission level: <span className="capitalize">{role ?? "unavailable"}</span></p>
+          {!canUpload ? <p className="mt-1 text-2xs leading-relaxed text-rose-700">Upload permission is denied for this role. Ask an authorised administrator to grant analyst or scout access. Your role is never inferred from your email address.</p> :
+            <p className="mt-1 text-2xs text-ink-soft">Your role permits dataset upload and processing.</p>}
+        </div>
         <div className="flex items-center gap-1.5 text-2xs text-ink-faint">
           <CircleCheck className="h-3 w-3 text-emerald-600" /> Large file bytes never pass through a Vercel Function.
         </div>

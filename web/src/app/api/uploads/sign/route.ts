@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createServerSupabase, supabaseServerHeaders } from "@/lib/supabase";
 import { mayManageIngestion } from "@/lib/staff-access";
+import { isSameOriginRequest } from "@/lib/request-security";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -19,6 +20,9 @@ function safeFileName(name: string): string {
 }
 
 export async function POST(request: Request) {
+  if (!isSameOriginRequest(request)) {
+    return NextResponse.json({ error: "Cross-origin upload signing is not allowed." }, { status: 403 });
+  }
   const url = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
   const serverKey = process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
   const projectId = process.env.ROYAL_SCOUT_PROJECT_ID ?? "royal-scout";
