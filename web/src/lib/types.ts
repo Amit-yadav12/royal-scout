@@ -180,6 +180,72 @@ export interface QualityColumn {
   notes: string[];
 }
 
+export interface PressureRankRow {
+  rank: number;
+  player_id: number;
+  player_name: string | null;
+  pri: number;
+  p_balls: number;
+  p_sr?: number | null;
+  p_econ?: number | null;
+  p_wk_rate?: number | null;
+  rank_median?: number | null;
+  rank_p05?: number | null;
+  rank_p95?: number | null;
+  p_top10?: number | null;
+  pressure_balls?: number;
+  pressure_matches?: number;
+  pressure_innings?: number;
+  ipl_rank?: number | null;
+  t20i_rank?: number | null;
+  median_rank_across_methods?: number | null;
+  methods_with_top10?: number;
+  methods_available?: number;
+  seasons_above_baseline?: number;
+  seasons_evaluated?: number;
+  gate_pass?: boolean;
+  confirmed?: boolean;
+  [key: string]: unknown;
+}
+
+export interface PressureRankingPool {
+  batters: PressureRankRow[];
+  bowlers: PressureRankRow[];
+}
+
+export interface PressureRankings {
+  facts: {
+    provider: string;
+    primary_competitions: string[];
+    deliveries_source: number;
+    regulation_deliveries: number;
+    primary_deliveries: number;
+    other_t20_sensitivity_deliveries: number;
+    matches_primary: number;
+    matches_with_ball_data: number;
+    super_over_deliveries_excluded: number;
+    unknown_dismissal_attribution_rows: number;
+    pressure_deliveries_primary: number;
+    pressure_share_primary: number | null;
+    pressure_wickets_per_100: number | null;
+    nonpressure_wickets_per_100: number | null;
+    pressure_runs_per_over: number | null;
+    nonpressure_runs_per_over: number | null;
+    eligibility: { pressure_balls: number; pressure_matches: number; pressure_innings: number; baseline_balls: number };
+    eligible_primary: { batters: number; bowlers: number };
+    robustness: Record<string, { alternative_methods: number; rank_columns: number; final_candidates: number; confirmed_candidates: number }>;
+    bootstrap_resamples: number;
+    ranked_output_limit: number;
+    identity_merges: Record<string, unknown>[];
+  };
+  primary: PressureRankingPool;
+  final: PressureRankingPool;
+  robustness: Record<string, Record<string, unknown>[]>;
+  ipl_robustness: PressureRankingPool;
+  t20i_robustness: PressureRankingPool;
+  other_t20_sensitivity: PressureRankingPool;
+}
+
 export interface Bundle {
   meta: {
     project_id: string;
@@ -259,6 +325,8 @@ export interface Bundle {
     };
     scopes: ScopePayload[];
   };
+  pressure_rankings?: PressureRankings | null;
+  scope_precomputation?: { budget: number; generated: number; potential: number; truncated: boolean };
   pressure: {
     phases: {
       batting: Record<string, Record<string, any>>;

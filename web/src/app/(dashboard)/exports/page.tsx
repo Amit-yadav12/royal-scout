@@ -18,6 +18,14 @@ export default async function ExportsPage() {
   const bundle = (await loadDashboardDataset()).bundle;
   if (!hasBundle(bundle)) return <EmptyState tone="warning" title="No dataset" description="No bundle has been generated yet." />;
   const b = bundle;
+  const pressureExports = b.pressure_rankings ? [
+    { href: "/api/export?ranking=pressure&discipline=batting&pool=primary&limit=10", label: "Pressure Top 10 batters (IPL + T20I)", format: "CSV" },
+    { href: "/api/export?ranking=pressure&discipline=bowling&pool=primary&limit=10", label: "Pressure Top 10 bowlers (IPL + T20I)", format: "CSV" },
+    { href: "/api/export?ranking=pressure&discipline=batting&pool=ipl&limit=10", label: "IPL pressure batter robustness", format: "CSV" },
+    { href: "/api/export?ranking=pressure&discipline=bowling&pool=t20i&limit=10", label: "T20I pressure bowler robustness", format: "CSV" },
+    { href: "/api/export?ranking=pressure&discipline=batting&pool=other_t20_sensitivity&limit=10", label: "Other T20 sensitivity only", format: "CSV" },
+  ] : [];
+  const liveExports = [...LIVE_EXPORTS, ...pressureExports];
   return (
     <div className="space-y-4">
       <PageHeader
@@ -30,7 +38,7 @@ export default async function ExportsPage() {
         <Card className="lg:col-span-2">
           <CardHeader title="Live exports" subtitle="Generated on request from the current bundle, so the file always matches what you see." />
           <CardBody className="space-y-2">
-            {LIVE_EXPORTS.map((e) => (
+            {liveExports.map((e) => (
               <a key={e.href} href={e.href} className="flex items-center justify-between gap-3 rounded border border-surface-line px-3 py-2 text-xs hover:border-navy-700/30 hover:bg-surface-muted">
                 <span className="font-medium text-ink">{e.label}</span>
                 <span className="flex items-center gap-2">
@@ -40,8 +48,8 @@ export default async function ExportsPage() {
               </a>
             ))}
             <Notice>
-              The scope selector in the header applies to these links: download a competition- or team-specific leaderboard
-              and the file records that scope in its provenance block.
+              Overall ranking links follow the active scope. Pressure exports are separately labelled by competition pool;
+              the primary pressure list is IPL + T20I, while Other T20 is sensitivity-only. Every CSV records its active dataset and methodology.
             </Notice>
           </CardBody>
         </Card>

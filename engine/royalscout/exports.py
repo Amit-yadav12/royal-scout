@@ -212,6 +212,36 @@ def export_workbook(bundle: dict[str, Any], out_dir: Path) -> Path:
                        bundle.get("quality", {}).get("columns", []) or []),
         "Methodology": ([("field", "Field"), ("value", "Value")], _methodology_rows(bundle)),
     }
+    pressure = bundle.get("pressure_rankings")
+    if pressure:
+        cols = [(key, label) for key, label in (
+            ("rank", "Rank"), ("player_id", "Player ID"), ("player_name", "Player"),
+            ("pri", "SupeRR PRI"), ("p_balls", "Pressure balls"),
+            ("pressure_matches", "Pressure matches"), ("pressure_innings", "Pressure innings"),
+            ("p_sr", "Pressure strike rate"), ("p_econ", "Pressure economy"),
+            ("rank_median", "Bootstrap median rank"), ("rank_p05", "Bootstrap rank p05"),
+            ("rank_p95", "Bootstrap rank p95"), ("p_top10", "Bootstrap top-10 probability"),
+            ("ipl_rank", "IPL rank"), ("t20i_rank", "T20I rank"),
+            ("median_rank_across_methods", "Median rank across methods"),
+            ("methods_with_top10", "Methods with top-10 rank"), ("methods_available", "Methods available"),
+            ("seasons_above_baseline", "Seasons above baseline"), ("seasons_evaluated", "Seasons evaluated"),
+            ("confirmed", "Robustness gate confirmed"),
+        )]
+        final = pressure.get("final", {})
+        sheets["Pressure Top 10 Batters"] = (cols, (final.get("batters", []) or [])[:10])
+        sheets["Pressure Top 10 Bowlers"] = (cols, (final.get("bowlers", []) or [])[:10])
+        facts = pressure.get("facts", {})
+        sheets["Pressure Methodology"] = ([("field", "Field"), ("value", "Value")], [
+            {"field": "ranking_method", "value": "SupeRR Pressure Reliability Index (PRI)"},
+            {"field": "primary_competitions", "value": ", ".join(facts.get("primary_competitions", ["IPL", "T20I"]))},
+            {"field": "eligibility", "value": facts.get("eligibility", {})},
+            {"field": "bootstrap_resamples", "value": facts.get("bootstrap_resamples")},
+            {"field": "selection_gates", "value": "median rank <=15 across available alternatives; pressure evidence in >=2 seasons"},
+            {"field": "other_t20", "value": "sensitivity only; excluded from the primary pressure ranking"},
+            {"field": "super_overs", "value": "excluded from ratings"},
+            {"field": "dataset_id", "value": bundle.get("meta", {}).get("dataset_id")},
+            {"field": "config_fingerprint", "value": bundle.get("meta", {}).get("config_fingerprint")},
+        ])
     return write_excel(out_dir / "royal_scout_export.xlsx", sheets, provenance_block(bundle))
 
 
