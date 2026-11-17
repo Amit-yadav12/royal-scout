@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 import { createServerSupabase } from "@/lib/supabase";
 import { isPlatformAdmin } from "@/lib/staff-access";
 import { isInvitableStaffRole } from "@/lib/auth-policy";
+import { isSameOriginRequest } from "@/lib/request-security";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -13,16 +14,8 @@ function jsonError(error: string, status: number) {
 }
 
 export async function POST(request: Request) {
-  const requestOrigin = request.headers.get("origin");
-  let appOrigin: string;
-  try {
-    appOrigin = new URL(request.url).origin;
-  } catch {
-    return jsonError("The request origin could not be verified.", 403);
-  }
-  if (!requestOrigin || requestOrigin !== appOrigin) {
-    return jsonError("Cross-origin staff invitations are not allowed.", 403);
-  }
+  if (!isSameOriginRequest(request)) return jsonError("Cross-origin staff invitations are not allowed.", 403);
+  const appOrigin = new URL(request.headers.get("origin")!).origin;
 
   const session = await createServerSupabase();
   if (!session) return jsonError("Staff authentication is not configured.", 503);

@@ -1,11 +1,13 @@
 import { NextResponse } from "next/server";
 import { createServerSupabase } from "@/lib/supabase";
 import { mayManageIngestion } from "@/lib/staff-access";
+import { isSameOriginRequest } from "@/lib/request-security";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-export async function POST(_request: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  if (!isSameOriginRequest(request)) return NextResponse.json({ error: "Cross-origin job retries are not allowed." }, { status: 403 });
   const { id } = await params;
   if (!/^job_[a-f0-9]{16}$/.test(id)) {
     return NextResponse.json({ error: "Invalid job identifier." }, { status: 400 });

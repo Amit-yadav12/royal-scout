@@ -7,9 +7,15 @@ import { Card, CardBody, CardHeader, Stat } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Notice } from "@/components/ui/empty";
 import { DataTable, TBody, TD, TH, THead } from "@/components/ui/table";
+import { UploadPanel } from "@/components/upload-panel";
+import { createServerSupabase } from "@/lib/supabase";
+import { getStaffRole } from "@/lib/staff-access";
 
 export default async function IngestionPage() {
-  const bundle = (await loadDashboardDataset()).bundle;
+  const [datasetContext, session] = await Promise.all([loadDashboardDataset(), createServerSupabase()]);
+  const { data: { user } } = session ? await session.auth.getUser() : { data: { user: null } };
+  const role = user && session ? await getStaffRole(session, user.id) : null;
+  const bundle = datasetContext.bundle;
   const ready = hasBundle(bundle);
   const ing = ready ? bundle.ingestion : null;
 
@@ -18,10 +24,10 @@ export default async function IngestionPage() {
       <PageHeader
         title="Data Ingestion"
         icon={UploadCloud}
-        description="Read-only record of files represented in the active public dataset. Dataset uploads and processing controls are disabled in this no-login dashboard."
+        description="Upload cricket datasets directly to private Supabase Storage, then follow validation, queueing, processing and publication with source-level provenance."
       />
 
-      <Notice>Public visitors can inspect the processed source history but cannot upload files, start jobs, retry processing, or change staff access.</Notice>
+      <UploadPanel role={role} />
 
       {ing && bundle ? (
         <>

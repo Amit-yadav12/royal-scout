@@ -1,17 +1,48 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { createServerClient, type CookieOptions } from "@supabase/ssr";
 
-/**
- * Royal Scout's dashboard is intentionally public and read-only.
- * Mutating APIs (uploads, queue/retry, invitations) keep their own session and
- * role checks; never rely on middleware alone to protect an API operation.
+/** Public dashboard reads stay open; staff workflows require a verified session.
+ * Every API route enforces its own authentication/role policy (including GETs).
  */
-export function middleware(request: NextRequest) {
-  if (request.nextUrl.pathname === "/login") {
-    return NextResponse.redirect(new URL("/", request.url));
+export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+  const protectedPage = pathname === "/ingestion" || pathname.startsWith("/ingestion/") ||
+    pathname === "/staff" || pathname.startsWith("/staff/");
+  const alwaysPublic = pathname === "/login" || pathname === "/auth/callback" ||
+    pathname.startsWith("/_next/") || pathname === "/favicon.ico" || pathname.startsWith("/api/") ||
+    /\.(?:avif|css|gif|ico|jpe?g|js|map|png|svg|webp|woff2?|ttf)$/i.test(pathname);
+  if (alwaysPublic || !protectedPage) return NextResponse.next();
+
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+  if (!url || !key) {
+    const destination = request.nextUrl.clone();
+    destination.pathname = "/login";
+    destination.searchParams.set("next", `${pathname}${request.nextUrl.search}`);
+    destination.searchParams.set("setup", "required");
+    return NextResponse.redirect(destination);
   }
-  return NextResponse.next();
+
+  let response = NextResponse.next({ request });
+  const supabase = createServerClient(url, key, {
+    cookies: {
+      getAll: () => request.cookies.getAll(),
+      setAll: (cookiesToSet: { name: string; value: string; options: CookieOptions }[]) => {
+        cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
+        response = NextResponse.next({ request });
+        cookiesToSet.forEach(({ name, value, options }) => response.cookies.set(name, value, options));
+      },
+    },
+  });
+  const { data, error } = await supabase.auth.getUser();
+  if (error || !data.user) {
+    const destination = request.nextUrl.clone();
+    destination.pathname = "/login";
+    destination.searchParams.set("next", `${pathname}${request.nextUrl.search}`);
+    return NextResponse.redirect(destination);
+  }
+  response.headers.set("x-royal-scout-auth", "authenticated");
+  return response;
 }
 
-export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
-};
+export const config = { matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"] };
