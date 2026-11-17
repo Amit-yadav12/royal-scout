@@ -14,18 +14,18 @@ describe("dataset history selection", () => {
     ]);
   });
 
-  it("defaults to the first uploaded dataset and preserves explicit dataset selection", () => {
+  it("defaults to the latest successful upload and preserves explicit dataset selection", () => {
     const options = datasetOptionsFrom(successful);
-    expect(primaryDatasetId(options)).toBe("ds_old");
-    expect(resolveDatasetSelection(null, options).selectedId).toBe("ds_old");
-    expect(resolveDatasetSelection("ds_new", options).selectedId).toBe("ds_new");
+    expect(primaryDatasetId(options)).toBe("ds_new");
+    expect(resolveDatasetSelection(null, options).selectedId).toBe("ds_new");
+    expect(resolveDatasetSelection("ds_old", options).selectedId).toBe("ds_old");
   });
 
   it("keeps a reprocessed dataset's original first-upload date", () => {
     const rerun = { ...successful[0], created_at: "2026-12-01T12:00:00Z", finished_at: "2026-12-01T12:04:00Z" };
     const options = datasetOptionsFrom([rerun, successful[0], successful[1]]);
     expect(options[0].created_at).toBe(successful[0].created_at);
-    expect(primaryDatasetId(options)).toBe("ds_old");
+    expect(primaryDatasetId(options)).toBe("ds_new");
   });
 
   it("does not silently replace a stale selection with another dataset", () => {
