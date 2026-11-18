@@ -2,6 +2,7 @@ from pathlib import Path
 import zipfile
 
 import polars as pl
+import pytest
 
 from royalscout.canonical import reduce_ball_events_to_innings
 from royalscout.config import DEFAULT_CONFIG
@@ -57,6 +58,17 @@ def test_detects_prefixed_nested_five_file_pack_without_teams(tmp_path: Path) ->
     assert raw.matches.height == 1
     assert raw.teams.height == 0
     assert len(raw.source_files) == 5
+
+
+def test_incomplete_provider_pack_reports_missing_tables(tmp_path: Path) -> None:
+    pack = _write_pack(tmp_path)
+    (pack / "upload-b-match.csv").unlink()
+    (pack / "upload-c-comp.csv").unlink()
+    (pack / "upload-e-mapping.csv").unlink()
+
+    assert detect([tmp_path]) == pack.resolve()
+    with pytest.raises(FileNotFoundError, match="matches, competitions, mapping"):
+        load_raw(tmp_path)
 
 
 def test_pipeline_uses_provider_pressure_method_and_labels_missing_team_names(tmp_path: Path) -> None:

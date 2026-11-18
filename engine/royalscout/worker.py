@@ -28,6 +28,12 @@ from .store import publish_to_supabase
 _shutdown = False
 
 
+def _is_permanent_pack_error(error: Exception) -> bool:
+    """A missing SupeRR source table cannot be fixed by rerunning the same inputs."""
+    return isinstance(error, FileNotFoundError) and str(error).startswith(
+        "SupeRR pack is missing required table(s):")
+
+
 def _handle_signal(signum: int, frame: Any) -> None:  # pragma: no cover
     global _shutdown
     _shutdown = True
@@ -212,12 +218,23 @@ def run_worker(storage: Path, once: bool = False, interval: float = 5.0, max_job
             processed += 1
         except Exception as exc:
             tb = traceback.format_exc()
-            retryable = job.attempts < job.max_attempts
-            queue.update(job.id, status=JOB_FAILED if not retryable else "failed",
-                         stage="failed", error=f"{type(exc).__name__}: {exc}",
-                         detail=("will retry" if retryable else "retries exhausted"),
-                         finished_at=None if retryable else time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()))
-            print(f"[worker] job {job.id} failed ({'retryable' if retryable else 'exhausted'}): {exc}\n{tb}",
+            permanent_input_error = _is_permanent_pack_error(exc)
+            retryable = job.attempts < job.max_attempts and not permanent_input_error
+            update = {
+                "status": JOB_FAILED if not retryable else "failed",
+                "stage": "failed",
+                "error": f"{type(exc).__name__}: {exc}",
+                "detail": ("upload a complete SupeRR pack with the missing source tables"
+                           if permanent_input_error else "will retry" if retryable else "retries exhausted"),
+                "finished_at": None if retryable else time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+            }
+            if permanent_input_error:
+                # Failed jobs remain claimable while attempts < max_attempts. Mark this
+                # deterministic input error exhausted immediately instead of wasting retries.
+                update["attempts"] = job.max_attempts
+            queue.update(job.id, **update)
+            reason = "permanent input error" if permanent_input_error else "retryable" if retryable else "exhausted"
+            print(f"[worker] job {job.id} failed ({reason}): {exc}\n{tb}",
                   file=sys.stderr, flush=True)
         finally:
             heartbeat_stop.set()

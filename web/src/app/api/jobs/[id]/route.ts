@@ -31,7 +31,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
     const baseUrl = supabaseUrl.replace(/\/$/, "");
     const headers = supabaseServerHeaders({ Accept: "application/json" });
     const jobUrl = new URL(`${baseUrl}/rest/v1/processing_jobs`);
-    jobUrl.searchParams.set("select", "id,dataset_id,status,progress,stage,detail,error,created_by,updated_at");
+    jobUrl.searchParams.set("select", "id,dataset_id,status,progress,stage,detail,error,created_by,updated_at,attempts,max_attempts");
     jobUrl.searchParams.set("id", `eq.${id}`);
     const jobResponse = await fetch(jobUrl, {
       headers, cache: "no-store", signal: AbortSignal.timeout(10_000),
@@ -76,6 +76,8 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
       dataset_id: typeof row.dataset_id === "string" ? row.dataset_id : undefined,
       status: typeof row.status === "string" ? row.status : "unknown",
       progress: Number.isFinite(Number(row.progress)) ? Number(row.progress) : 0,
+      attempts: Number.isInteger(Number(row.attempts)) ? Number(row.attempts) : 0,
+      max_attempts: Number.isInteger(Number(row.max_attempts)) ? Number(row.max_attempts) : 3,
       stage: typeof row.stage === "string" ? row.stage : "unknown",
       detail: typeof row.detail === "string" ? row.detail : "",
       error: typeof row.error === "string" ? row.error : null,

@@ -9,6 +9,7 @@ import { Notice } from "./ui/empty";
 import type { StaffAccess, StaffRole } from "@/lib/staff-access";
 import { WORKER_AUTO_RETRIES, WORKER_HEALTH_TIMEOUT_MS, workerHealthState, workerRetryDelay } from "@/lib/worker-health";
 import { ACCEPTED_UPLOAD_TYPES, validateUploadFiles } from "@/lib/upload-validation";
+import { isIncompleteSuperrPackError, validateSuperrPackHeaders } from "@/lib/superr-pack-validation";
 
 interface JobState {
   job_id?: string;
@@ -18,6 +19,8 @@ interface JobState {
   stage?: string;
   detail?: string;
   progress?: number;
+  attempts?: number;
+  max_attempts?: number;
   updated_at?: string | null;
   heartbeat_stale?: boolean;
   error?: string | null;
@@ -394,6 +397,16 @@ export function UploadPanel({ initialAccess }: { initialAccess: StaffAccess }) {
     if (!files.length || busy || worker !== "ok" || !canUpload) return;
     const validationError = validateUploadFiles(files);
     if (validationError) { setError(validationError); return; }
+    const csvHeaders = await Promise.all(files
+      .filter((file) => /\.(csv|tsv)$/i.test(file.name))
+      .map(async (file) => ({ name: file.name, header: await file.slice(0, 64 * 1024).text() })));
+    const containsArchive = files.some((file) => /\.(zip|tar|tgz|tar\.gz)$/i.test(file.name));
+    const packError = validateSuperrPackHeaders(csvHeaders, containsArchive);
+    if (packError) {
+      setError(packError);
+      setHint("Select the missing source files together with the ball-by-ball file, then submit them as one dataset.");
+      return;
+    }
     const controller = new AbortController();
     uploadAbortRef.current = controller;
     setBusy(true);
@@ -484,6 +497,11 @@ export function UploadPanel({ initialAccess }: { initialAccess: StaffAccess }) {
             CSV, TSV, Excel, ODS, JSON/JSONL, XML, Parquet, Feather, PDF, DOCX or ZIP/TAR archives with nested folders.
             Large files use resumable 6 MB TUS chunks directly to private storage; Vercel only handles small metadata requests.
           </p>
+          <p className="mt-2 text-xs text-ink-soft">
+            <strong className="text-ink">For a complete SupeRR analysis:</strong> upload ball-by-ball, matches, competitions,
+            playing-eleven and competition/player-mapping tables together (matching columns are detected even if filenames differ).
+            The teams table is optional. Separate uploads are never silently combined.
+          </p>
         </header>
         <div className="space-y-3 px-5 py-4">
           <div
@@ -569,11 +587,19 @@ export function UploadPanel({ initialAccess }: { initialAccess: StaffAccess }) {
               </div>
               <p className="mt-1.5 text-ink-soft">{job.stage}{job.detail ? ` · ${job.detail}` : ""}</p>
               {job.error ? <p className="mt-1 text-rose-700">{job.error}</p> : null}
-              {job.status === "failed" ? (
+              {job.status === "failed" && isIncompleteSuperrPackError(job.error) ? (
+                <p className="mt-1 text-rose-700">This upload is missing source tables and cannot be fixed by retrying. Upload all five required SupeRR CSV tables together; teams.csv is optional. Files from earlier uploads are not merged into this dataset.</p>
+              ) : null}
+              {job.status === "failed" && !isIncompleteSuperrPackError(job.error) &&
+                (job.attempts ?? 0) < (job.max_attempts ?? 3) ? (
                 <button className="btn mt-2" onClick={retryJob} disabled={busy}>
                   {busy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}
                   Retry processing
                 </button>
+              ) : null}
+              {job.status === "failed" && !isIncompleteSuperrPackError(job.error) &&
+                (job.attempts ?? 0) >= (job.max_attempts ?? 3) ? (
+                <p className="mt-1 text-rose-700">This job has used all {job.max_attempts ?? 3} attempts. Correct the problem and create a new upload.</p>
               ) : null}
               {job.logs?.length ? (
                 <ul className="mt-1.5 max-h-24 space-y-0.5 overflow-y-auto font-mono text-[0.6rem] text-ink-faint">
